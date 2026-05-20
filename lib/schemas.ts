@@ -9,7 +9,7 @@ export const enquirySchema = z.object({
     .optional()
     .or(z.literal("")),
   dates: z.string().max(120).optional().or(z.literal("")),
-  groupSize: z.coerce.number().int().min(1).max(50).optional(),
+  groupSize: z.number().int().min(1).max(50).optional(),
   boatId: z.string().max(64).optional().or(z.literal("")),
   boatName: z.string().max(120).optional().or(z.literal("")),
   message: z.string().max(2000).optional().or(z.literal("")),
