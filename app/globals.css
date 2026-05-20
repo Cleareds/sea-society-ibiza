@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  /* --- Azure Mediterranean palette (from designs/DESIGN.md) --- */
+  --color-surface: #fcf9f8;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #fcf9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f2;
+  --color-surface-container: #f0eded;
+  --color-surface-container-high: #eae7e7;
+  --color-surface-container-highest: #e5e2e1;
+
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #3e4949;
+  --color-inverse-surface: #313030;
+  --color-inverse-on-surface: #f3f0ef;
+
+  --color-outline: #6e7979;
+  --color-outline-variant: #bdc9c8;
+
+  --color-primary: #006565;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #008080;
+  --color-on-primary-container: #e3fffe;
+  --color-inverse-primary: #76d6d5;
+
+  --color-secondary: #bc0100;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #eb0000;
+  --color-on-secondary-container: #fffbff;
+
+  --color-tertiary: #5a5a58;
+  --color-on-tertiary: #ffffff;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+
+  --color-background: #fcf9f8;
+  --color-on-background: #1c1b1b;
+
+  /* --- Brand convenience aliases used in the brief --- */
+  --color-ink: #1c1b1b;
+  --color-cream: #fcf9f8;
+  --color-sea: #006565;
+  --color-coral: #bc0100;
+  --color-muted: #6e7979;
+  --color-line: #e5e2e1;
+
+  /* --- Typography (Fraunces + Inter, wired via next/font in app/layout.tsx) --- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+
+  /* --- Radii --- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+
+  /* --- Layout tokens --- */
+  --spacing-container-max: 1440px;
+  --spacing-gutter: 24px;
+  --spacing-margin-desktop: 80px;
+  --spacing-margin-tablet: 40px;
+  --spacing-margin-mobile: 20px;
+  --spacing-section-gap: 160px;
+
+  /* --- Motion --- */
+  --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Base styles --- */
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-on-background);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* Visible custom focus ring, never removed. */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Respect reduced motion across the app. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip-to-content link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: var(--color-on-surface);
+  color: var(--color-surface);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  z-index: 100;
+  transition: top 0.2s var(--ease-luxury);
+}
+.skip-link:focus {
+  top: 1rem;
+}

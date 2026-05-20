@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sea Society Ibiza by Ibimar | Luxury Yacht Charters</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#eb0000",
+                        "surface-container": "#f0eded",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#002020",
+                        "on-surface": "#1c1b1b",
+                        "outline": "#6e7979",
+                        "inverse-primary": "#76d6d5",
+                        "background": "#fcf9f8",
+                        "on-background": "#1c1b1b",
+                        "surface-tint": "#006a6a",
+                        "primary-fixed-dim": "#76d6d5",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-high": "#eae7e7",
+                        "secondary-fixed-dim": "#ffb4a8",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#5a5a58",
+                        "on-tertiary-container": "#faf9f6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#004f4f",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#bdc9c8",
+                        "primary-fixed": "#93f2f2",
+                        "surface-variant": "#e5e2e1",
+                        "on-surface-variant": "#3e4949",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#ffdad4",
+                        "primary-container": "#008080",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-container": "#727371",
+                        "secondary": "#bc0100",
+                        "on-secondary-fixed": "#410000",
+                        "on-primary": "#ffffff",
+                        "surface": "#fcf9f8",
+                        "surface-bright": "#fcf9f8",
+                        "on-secondary-fixed-variant": "#930100",
+                        "inverse-surface": "#313030",
+                        "tertiary-fixed-dim": "#c7c6c4",
+                        "primary": "#006565",
+                        "on-tertiary-fixed": "#1a1c1a",
+                        "on-tertiary-fixed-variant": "#464745",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#e3fffe",
+                        "inverse-on-surface": "#f3f0ef",
+                        "tertiary-fixed": "#e3e2e0"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-desktop": "80px",
+                        "gutter": "24px",
+                        "section-gap": "160px",
+                        "container-max": "1440px",
+                        "margin-tablet": "40px",
+                        "margin-mobile": "20px"
+                    },
+                    fontFamily: {
+                        "label-lg": ["Manrope"],
+                        "headline-md": ["Playfair Display"],
+                        "body-md": ["Manrope"],
+                        "display-lg": ["Playfair Display"],
+                        "label-sm": ["Manrope"],
+                        "headline-lg": ["Playfair Display"],
+                        "display-lg-mobile": ["Playfair Display"],
+                        "body-lg": ["Manrope"]
+                    },
+                    fontSize: {
+                        "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.1em", fontWeight: "600" }],
+                        "headline-md": ["32px", { lineHeight: "40px", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "26px", fontWeight: "400" }],
+                        "display-lg": ["84px", { lineHeight: "92px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "headline-lg": ["48px", { lineHeight: "56px", fontWeight: "600" }],
+                        "display-lg-mobile": ["48px", { lineHeight: "54px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "30px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { scroll-behavior: smooth; }
+        .parallax-bg { background-attachment: fixed; background-position: center; background-repeat: no-repeat; background-size: cover; }
+        .glass-nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .boat-card-hover:hover img { transform: scale(1.05); }
+        .boat-card-hover img { transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="docked full-width top-0 sticky z-50 glass-nav bg-surface/90 border-b border-outline-variant/20 transition-all duration-300" id="mainNav">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+<a class="flex flex-col" href="#">
+<span class="text-headline-md font-headline-md font-bold text-primary tracking-tight">Sea Society Ibiza</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest -mt-1">by Ibimar</span>
+</a>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-label-lg font-label-lg text-primary border-b-2 border-primary pb-1 hover:text-surface-tint transition-colors duration-300" href="#fleet">The Fleet</a>
+<a class="text-label-lg font-label-lg text-on-surface-variant hover:text-primary transition-colors duration-300" href="#experience">Experiences</a>
+<a class="text-label-lg font-label-lg text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">Destinations</a>
+<a class="text-label-lg font-label-lg text-on-surface-variant hover:text-primary transition-colors duration-300" href="#">About</a>
+</div>
+<a class="hidden md:inline-flex items-center justify-center text-on-primary px-6 py-3 rounded-full text-label-lg font-label-lg transition-colors duration-300 shadow-sm bg-secondary hover:bg-secondary/90" href="#enquire">
+                Enquire Now
+            </a>
+<!-- Mobile Menu Button -->
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative h-[90vh] min-h-[600px] w-full flex items-center justify-center overflow-hidden bg-primary">
+<div class="absolute inset-0 z-0">
+<img alt="A breathtaking, cinematic wide shot of the iconic Es Vedra rock rising majestically from the turquoise Mediterranean Sea off the coast of Ibiza. The scene is bathed in golden hour sunlight, creating a luxurious, aspirational atmosphere. Three sleek, modern luxury yachts are anchored in the foreground waters, their white hulls gleaming. The sky is a clear, vibrant blue, emphasizing a serene, high-end lifestyle." class="w-full h-full object-cover parallax-bg opacity-80 mix-blend-overlay" data-alt="A breathtaking, cinematic wide shot of the iconic Es Vedra rock rising majestically from the turquoise Mediterranean Sea off the coast of Ibiza. The scene is bathed in golden hour sunlight, creating a luxurious, aspirational atmosphere. Three sleek, modern luxury yachts are anchored in the foreground waters, their white hulls gleaming. The sky is a clear, vibrant blue, emphasizing a serene, high-end lifestyle." data-location="Ibiza" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDztC3eDRI-qXNDO2cnXfQ4pjvLEYgtIK59xGESVcCyaw4aKrdoacMhe8uZEtMzRn_PPJxnJfPFm5tmUSPOzuChWBfiNZ757ifnwFvAT-vyxqcdVhBnYD63qVbrk5zDHxNYnNnHiSYQolhHoR9pwuq1q29-kO35MnY6TpbyJNr4onLRoOfuUrjPhdVyw-j11E1pvCgH8RnBYE-Cc5cLF5tNYsx7qrNjatUSMyPv-8jlalBoSbM5TKIvRwq271ZBlpr_OVuMygQY7hs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent"></div>
+</div>
+<div class="relative z-10 text-center px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto flex flex-col items-center mt-16">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-primary mb-6 drop-shadow-lg max-w-5xl leading-tight">
+                ONE PLATFORM.<br/>ENDLESS EXPERIENCES AT SEA.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-primary-container max-w-2xl mx-auto drop-shadow-md mb-10 text-xl md:text-2xl font-light">
+                Discover the ultimate Ibiza escape with our exclusive fleet of 19 luxury motor yachts and catamarans, curated for unforgettable memories.
+            </p>
+<div class="flex flex-col sm:flex-row gap-4 mb-16">
+<a class="inline-flex justify-center items-center px-10 py-4 rounded-full font-label-lg text-label-lg transition-colors duration-300 shadow-xl bg-secondary text-on-secondary hover:bg-secondary/90" href="#fleet">
+                    Book Your Charter
+                </a>
+<a class="inline-flex justify-center items-center px-10 py-4 bg-transparent border-2 border-on-primary text-on-primary rounded-full font-label-lg text-label-lg hover:bg-on-primary/10 transition-colors duration-300" href="#experience">
+                    Explore Experiences
+                </a>
+</div>
+<a class="animate-bounce flex flex-col items-center text-on-primary/80 hover:text-on-primary transition-colors duration-300 absolute bottom-8" href="#experience">
+<span class="font-label-sm text-label-sm uppercase tracking-widest mb-2">Scroll</span>
+<span class="material-symbols-outlined text-3xl">expand_more</span>
+</a>
+</div>
+</header>
+<!-- Introduction Section (Replaced 'A day on the water') -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto" id="experience">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-gutter items-center">
+<div class="space-y-8 pr-0 lg:pr-12">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-container/20 rounded-full text-primary font-label-sm text-label-sm uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">sailing</span>
+                    About Sea Society
+                </div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Redefining Mediterranean Luxury.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                    Backed by Ibimar's decades of maritime expertise, Sea Society Ibiza is your gateway to the pristine waters of the Balearics. We bridge the gap between discerning clients and an exceptional fleet of 19 premier yachts. Our dedicated team ensures every charter is a seamless, bespoke journey—from selecting the perfect vessel to curating onboard experiences that exceed expectations.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<a class="inline-flex justify-center items-center px-8 py-4 text-on-primary rounded-full font-label-lg text-label-lg hover:bg-surface-tint transition-colors duration-300 shadow-md" href="#">
+                        Learn More About Us
+                    </a>
+</div>
+</div>
+<div class="relative h-[600px] w-full rounded-3xl overflow-hidden group shadow-2xl">
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay z-10 transition-opacity duration-700 group-hover:opacity-0"></div>
+<img alt="A high-end editorial shot of a pristine white yacht cutting through deep turquoise waters. The perspective is dynamic, showing the sheer power and elegance of the vessel. The vibrant colors of the Mediterranean sea contrast beautifully with the sleek design." class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end editorial shot of a pristine white yacht cutting through deep turquoise waters. The perspective is dynamic, showing the sheer power and elegance of the vessel. The vibrant colors of the Mediterranean sea contrast beautifully with the sleek design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjU5LdJZN06UiJYnigqrepOl6BYjNjNO54Bj8RCTUZdRHtK9yHzzUKAr1vylptncWckTVstRtifPp4BXkTMJJqmix_DAo8xQa-JZhsXLh2JvBCSeA2xf9brjzdKZEtA37UtuMcgQYLlXOup-Qs4KdaQspgpC6mV2PmdfkjI0fCuGDIoG5htcOBfz8QFQfQDAUf_Xi2-sSuHaGArAF8ZkTXA4UKbrxcelnzoWRns1lQb1BK9ixwcc04BVQzSBMuhFJSgERXsAR2OpQ"/>
+</div>
+</div>
+<!-- Stats Bento -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-gutter mt-24">
+<div class="bg-primary/5 p-8 rounded-3xl flex flex-col items-center justify-center text-center border border-primary/10 transition-transform hover:-translate-y-1 duration-300">
+<span class="font-headline-lg text-headline-lg text-primary mb-2">19</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Luxury Yachts</span>
+</div>
+<div class="bg-primary/5 p-8 rounded-3xl flex flex-col items-center justify-center text-center border border-primary/10 transition-transform hover:-translate-y-1 duration-300">
+<span class="font-headline-lg text-headline-lg text-primary mb-2">20+</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Years Expertise</span>
+</div>
+<div class="bg-primary/5 p-8 rounded-3xl flex flex-col items-center justify-center text-center border border-primary/10 transition-transform hover:-translate-y-1 duration-300">
+<span class="font-headline-lg text-headline-lg text-primary mb-2">Botafoc</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Marina, Ibiza</span>
+</div>
+<div class="bg-primary/5 p-8 rounded-3xl flex flex-col items-center justify-center text-center border border-primary/10 transition-transform hover:-translate-y-1 duration-300">
+<span class="font-headline-md text-headline-md text-primary mb-2">Riva · Pershing</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Fleet Brands</span>
+</div>
+</div>
+</section>
+<!-- The Fleet Preview (Expanded) -->
+<section class="py-section-gap bg-surface-container-lowest px-margin-mobile md:px-margin-desktop w-full mx-auto relative" id="fleet">
+<!-- Decorative Background Elements -->
+<div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"></div>
+<div class="max-w-container-max mx-auto relative z-10">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div>
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-primary-container/20 rounded-full text-primary font-label-sm text-label-sm uppercase tracking-widest mb-6">
+<span class="material-symbols-outlined text-sm">directions_boat</span>
+                        The Fleet
+                    </div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-4">Discover Your Vessel.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">Browse a selection of our 19 premium yachts, meticulously maintained and ready to transform your Ibiza holiday into an extraordinary voyage.</p>
+</div>
+<a class="inline-flex items-center justify-center gap-2 text-on-primary px-8 py-4 rounded-full font-label-lg text-label-lg hover:bg-surface-tint transition-colors shadow-md group" href="#">
+                    View Entire Fleet
+                    <span class="material-symbols-outlined transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Boat Card 1 -->
+<div class="group cursor-pointer boat-card-hover bg-background rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,101,101,0.08)] border border-primary/5">
+<div class="relative h-72 overflow-hidden">
+<img alt="A sleek, modern Pershing yacht slicing through the vibrant turquoise waters of the Mediterranean. The white hull reflects the bright Ibiza sun. The style is dynamic, capturing the luxury and speed of the vessel against a minimalist horizon of sea and sky. High-end, editorial photography style." class="w-full h-full object-cover" data-alt="A sleek, modern Pershing yacht slicing through the vibrant turquoise waters of the Mediterranean. The white hull reflects the bright Ibiza sun. The style is dynamic, capturing the luxury and speed of the vessel against a minimalist horizon of sea and sky. High-end, editorial photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHP3kNwIhYfnraIRIZqz_GcetsaSFS2B4BUOQfd9mH_GSirGWwiobxNiAcB-93kiU59SP9UGTmOfpZ1gbEJZ7R2DKbaDE21t2G6LmKa58njdnTT6JknQprKrl2Pk0Sb7hTtlIkt7TPtKBiFxaXfwflrARCeeOZUZUJjb1vIIww-3A_BF-IFuWC9s-nvUVZjjZU8J3goPF_bx9QA5tSCaMWgoQ62kSuOtGdX4NoVKnBDFXjEVj-_UMECZIgB7UictgA0gQd20kKaGA"/>
+<div class="absolute top-4 left-4 bg-primary text-on-primary px-4 py-1.5 rounded-full font-label-sm text-label-sm uppercase tracking-wider shadow-sm">Popular</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Pershing 5X</h3>
+<div class="flex items-center gap-6 text-on-surface-variant font-label-sm text-label-sm mb-8 border-b border-outline-variant/30 pb-6">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">straighten</span> 16.5m</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">group</span> Up to 12 Guests</span>
+</div>
+<a class="inline-flex justify-center items-center w-full py-3.5 rounded-full font-label-lg text-label-lg hover:text-on-primary transition-colors duration-300 bg-secondary/10 text-secondary hover:bg-secondary hover:text-on-secondary" href="#">View Details</a>
+</div>
+</div>
+<!-- Boat Card 2 -->
+<div class="group cursor-pointer boat-card-hover bg-background rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,101,101,0.08)] border border-primary/5">
+<div class="relative h-72 overflow-hidden">
+<img alt="An elegant Riva yacht anchored in a secluded, crystal-clear cove in Ibiza. The classic, sophisticated lines of the yacht contrast beautifully with the organic, rugged coastline in the background. The water is a mesmerizing shade of azure, reflecting a serene, exclusive luxury lifestyle." class="w-full h-full object-cover" data-alt="An elegant Riva yacht anchored in a secluded, crystal-clear cove in Ibiza. The classic, sophisticated lines of the yacht contrast beautifully with the organic, rugged coastline in the background. The water is a mesmerizing shade of azure, reflecting a serene, exclusive luxury lifestyle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzHKXSY4ZpU6QQ_vPQIkiOCy5DwLRzMUw-VHPmpQrIeAx7d2lxERL0XA0R-RTWvdW_Af-6MXlapPVN0qDFkSraC6MyLwP9HjsboPcSZribSSbAmUrOyZJCbzdEKTJqOXRbOXCGMgqQVa4zcyMi5bIoYFGodMhiUOPEyVtaLXkeHrD9JBbI5IvTSPUgIqWoaL3Criy2XBtHWej6JaqRy7urer9TfO5VFzb74EB7U8upaHKGSr6gDPg22NKSDsLlqgBrPvRETFbtBtE"/>
+<div class="absolute top-4 left-4 bg-primary text-on-primary px-4 py-1.5 rounded-full font-label-sm text-label-sm uppercase tracking-wider shadow-sm">New for 2024</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Riva Rivale 56</h3>
+<div class="flex items-center gap-6 text-on-surface-variant font-label-sm text-label-sm mb-8 border-b border-outline-variant/30 pb-6">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">straighten</span> 17.2m</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">group</span> Up to 10 Guests</span>
+</div>
+<a class="inline-flex justify-center items-center w-full py-3.5 rounded-full font-label-lg text-label-lg hover:text-on-primary transition-colors duration-300 bg-secondary/10 text-secondary hover:bg-secondary hover:text-on-secondary" href="#">View Details</a>
+</div>
+</div>
+<!-- Boat Card 3 -->
+<div class="group cursor-pointer boat-card-hover bg-background rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,101,101,0.08)] border border-primary/5">
+<div class="relative h-72 overflow-hidden">
+<img alt="A spacious luxury catamaran sailing gently towards the horizon at sunset off the coast of Ibiza. The warm, golden light bathes the deck, highlighting the expansive lounging areas. The aesthetic is tranquil and expansive, conveying the ultimate relaxing escape on the Mediterranean Sea." class="w-full h-full object-cover" data-alt="A spacious luxury catamaran sailing gently towards the horizon at sunset off the coast of Ibiza. The warm, golden light bathes the deck, highlighting the expansive lounging areas. The aesthetic is tranquil and expansive, conveying the ultimate relaxing escape on the Mediterranean Sea." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbfcNjTGUceXpK6-YeDJxu5mKcaBO-TOeOJkwlOCbNILPWHcnJEWGvE-n_JIVp35qjeSrZh2y0Th0MPZg4mVGqXGsUPMgSMMq2nKDG3C0ItDKsFc_0KnQgeFBnQLZz-EEeHzmoqEzi0Lp16vvTRFLjk57hrt8b1Y4oOt-zsK72Tkz9VuVpmaz6Fb1anrDaqsZkEeL2F38qcBe16DDYLPoyah-jmcmCwEqZSnqQPG-T_JilQkcQ0yjVQQG1SmESH6b0dL8_fkZ2k9g"/>
+<div class="absolute top-4 left-4 bg-primary text-on-primary px-4 py-1.5 rounded-full font-label-sm text-label-sm uppercase tracking-wider shadow-sm">Spacious</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Sunreef 60</h3>
+<div class="flex items-center gap-6 text-on-surface-variant font-label-sm text-label-sm mb-8 border-b border-outline-variant/30 pb-6">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">straighten</span> 18.3m</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">group</span> Up to 12 Guests</span>
+</div>
+<a class="inline-flex justify-center items-center w-full py-3.5 rounded-full font-label-lg text-label-lg hover:text-on-primary transition-colors duration-300 bg-secondary/10 text-secondary hover:bg-secondary hover:text-on-secondary" href="#">View Details</a>
+</div>
+</div>
+<!-- Boat Card 4 (Added) -->
+<div class="group cursor-pointer boat-card-hover bg-background rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,101,101,0.08)] border border-primary/5">
+<div class="relative h-72 overflow-hidden">
+<img alt="A stunning Mangusta yacht cruising through deep blue waters, showcasing its long, elegant profile. The sun glints off the water, creating a vibrant, luxurious scene." class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDDw1CM2385buYMbl10gAQ76kVZ0lYFh7JFoAXa8eCLL9HPeQZhHYXhUgPxNcDuSZ_79LuKOmiTzNdUTOxpSlVse9gD4ZlmAjpFHaew-JAZd5jMRo7uKyFR1c61cy9clb0HnaRTwmqbIWWQJtDJvhJ41cLJ2bjvSZqoab-F0hKk42tY8d3-pG8BVlQeoTRTz8OrG99glhYgDulWVcOnhiaY_Ieilw5Vq6_EwrclYO_mDd1n-skio3wME1NpepCkxfGFS_E_EibA4M"/>
+</div>
+<div class="p-8">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Mangusta 72</h3>
+<div class="flex items-center gap-6 text-on-surface-variant font-label-sm text-label-sm mb-8 border-b border-outline-variant/30 pb-6">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">straighten</span> 22.0m</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">group</span> Up to 12 Guests</span>
+</div>
+<a class="inline-flex justify-center items-center w-full py-3.5 rounded-full font-label-lg text-label-lg hover:text-on-primary transition-colors duration-300 bg-secondary/10 text-secondary hover:bg-secondary hover:text-on-secondary" href="#">View Details</a>
+</div>
+</div>
+<!-- Boat Card 5 (Added) -->
+<div class="group cursor-pointer boat-card-hover bg-background rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,101,101,0.08)] border border-primary/5">
+<div class="relative h-72 overflow-hidden">
+<img alt="A beautiful Fjord 40 yacht anchored near a rocky coastline, with clear turquoise water surrounding it. The open deck design is visible, inviting for a day trip." class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBabsg-zloHWl1s2Vovuy4cJeArTxkklw1fpt1HQoEL7xcJM9C4MSrUeCI_PPIjA6CWwzgfcBYgqfrhs3gLqYeeDb1v1H0EP_aDGzjqvFHGW7vfWn8zyebBkd2lFH7EVctLsAY9wtigGYGm-JQs1UYDjHqjeuJwrT0FHplq7qBLhbARXNSSwYZwxwyS5WkwO8VdmKwTxqT7WJHuuHD-ZXKrLzm9ybGoVBxAnrI7JrVyyW7kRJRbG-8bmW6fn7Umfv8wZFjioUd1lCw"/>
+<div class="absolute top-4 left-4 bg-primary text-on-primary px-4 py-1.5 rounded-full font-label-sm text-label-sm uppercase tracking-wider shadow-sm">Day Charter</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Fjord 40</h3>
+<div class="flex items-center gap-6 text-on-surface-variant font-label-sm text-label-sm mb-8 border-b border-outline-variant/30 pb-6">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">straighten</span> 12.0m</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">group</span> Up to 11 Guests</span>
+</div>
+<a class="inline-flex justify-center items-center w-full py-3.5 rounded-full font-label-lg text-label-lg hover:text-on-primary transition-colors duration-300 bg-secondary/10 text-secondary hover:bg-secondary hover:text-on-secondary" href="#">View Details</a>
+</div>
+</div>
+<!-- Boat Card 6 (Added) -->
+<div class="group cursor-pointer boat-card-hover bg-background rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,101,101,0.08)] border border-primary/5">
+<div class="relative h-72 overflow-hidden">
+<img alt="An impressive Princess yacht navigating calm seas at golden hour. The multi-level deck and luxurious finishing are prominent against the soft sunset light." class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA9BK23PBUAX7vGWW0m_1m8BlJwCA7h5ubuSGCtZ93rbH825JsZOLqCCpfgtT4tRnVsYJMsnIcZwUEnYlBjWPo5-g1OsM115-CbKBA7EGOmsxEb21EolZV_Z_a4Khpy-zGEWS5pSxeztgXrJmE4BGpBPrhJxsapYXPIpp2l4S6gf20OfyHvFyM8Rc0-I0lKGn3m_2C_fXBnR3tqGOUTMfD6MTRofO25z91vV3xxFs1XCV32ioBrtFcp0bDP7c1tOlFYFm5v7jfokE"/>
+</div>
+<div class="p-8">
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Princess S65</h3>
+<div class="flex items-center gap-6 text-on-surface-variant font-label-sm text-label-sm mb-8 border-b border-outline-variant/30 pb-6">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">straighten</span> 20.1m</span>
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">group</span> Up to 12 Guests</span>
+</div>
+<a class="inline-flex justify-center items-center w-full py-3.5 rounded-full font-label-lg text-label-lg hover:text-on-primary transition-colors duration-300 bg-secondary/10 text-secondary hover:bg-secondary hover:text-on-secondary" href="#">View Details</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Enquiry CTA Section -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop w-full bg-primary relative overflow-hidden" id="enquire">
+<!-- Decorative elements -->
+<div class="absolute -top-40 -right-40 w-[600px] h-[600px] bg-primary-fixed rounded-full opacity-20 blur-3xl mix-blend-overlay pointer-events-none"></div>
+<div class="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-surface-tint rounded-full opacity-30 blur-3xl mix-blend-multiply pointer-events-none"></div>
+<div class="max-w-4xl mx-auto relative z-10 text-center">
+<h2 class="font-headline-lg text-headline-lg text-on-primary mb-6">Your charter starts with a message.</h2>
+<p class="font-body-lg text-body-lg text-on-primary-container mb-12 max-w-2xl mx-auto font-light">Connect with our dedicated brokers directly via WhatsApp to secure your vessel and tailor your perfect itinerary on the Mediterranean.</p>
+<form class="bg-surface p-8 md:p-12 rounded-[2rem] shadow-2xl space-y-8 text-left border border-white/20">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="relative">
+<input class="peer w-full border-0 border-b-2 border-outline-variant bg-transparent py-4 px-2 focus:ring-0 focus:border-b-2 focus:border-primary text-on-surface font-body-md transition-colors" id="date" required="" type="date"/>
+<label class="absolute left-2 -top-3.5 text-primary text-xs font-label-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-on-surface-variant peer-placeholder-shown:top-4 peer-focus:-top-3.5 peer-focus:text-primary peer-focus:text-xs" for="date">Preferred Date</label>
+</div>
+<div class="relative">
+<select class="peer w-full border-0 border-b-2 border-outline-variant bg-transparent py-4 px-2 focus:ring-0 focus:border-b-2 focus:border-primary text-on-surface font-body-md transition-colors appearance-none" id="guests" required="">
+<option disabled="" selected="" value=""></option>
+<option value="2-4">2 - 4 Guests</option>
+<option value="5-8">5 - 8 Guests</option>
+<option value="9-12">9 - 12 Guests</option>
+<option value="12+">12+ Guests</option>
+</select>
+<!-- Custom dropdown arrow -->
+<div class="pointer-events-none absolute inset-y-0 right-2 flex items-center px-2 text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+<label class="absolute left-2 -top-3.5 text-primary text-xs font-label-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-on-surface-variant peer-placeholder-shown:top-4 peer-focus:-top-3.5 peer-focus:text-primary peer-focus:text-xs" for="guests">Group Size</label>
+</div>
+</div>
+<div class="pt-8 flex justify-center">
+<button class="inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-10 py-5 rounded-full font-label-lg text-label-lg hover:bg-[#1ebe57] transition-all duration-300 w-full md:w-auto shadow-xl hover:shadow-2xl transform hover:-translate-y-1" type="button">
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"></path>
+</svg>
+                        Continue to WhatsApp
+                    </button>
+</div>
+</form>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant/20 pt-16 mt-0">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop pb-16 w-full max-w-container-max mx-auto">
+<div class="md:col-span-1 mb-8 md:mb-0 flex flex-col">
+<a class="flex flex-col mb-6" href="#">
+<span class="text-headline-lg font-headline-lg text-primary dark:text-inverse-primary tracking-tight">Sea Society Ibiza</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest -mt-1">by Ibimar</span>
+</a>
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant">The premier luxury charter broker in Ibiza, offering unparalleled access to a fleet of 19 exclusive vessels.</p>
+</div>
+<div class="flex flex-col gap-5">
+<h4 class="font-label-lg text-label-lg text-primary dark:text-inverse-primary mb-2 uppercase tracking-wider">Explore</h4>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">The Fleet</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">Experiences</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">Destinations</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">About Ibimar</a>
+</div>
+<div class="flex flex-col gap-5">
+<h4 class="font-label-lg text-label-lg text-primary dark:text-inverse-primary mb-2 uppercase tracking-wider">Connect</h4>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">Instagram</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">WhatsApp</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">Newsletter Signup</a>
+</div>
+<div class="flex flex-col gap-5">
+<h4 class="font-label-lg text-label-lg text-primary dark:text-inverse-primary mb-2 uppercase tracking-wider">Legal</h4>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-sm text-label-sm uppercase hover:text-primary transition-colors inline-block relative w-fit" href="#">Terms &amp; Conditions</a>
+</div>
+</div>
+<div class="bg-primary/5 border-t border-primary/10 px-margin-mobile md:px-margin-desktop py-8 text-center md:text-left">
+<p class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<span>© 2024 Sea Society Ibiza by Ibimar. All rights reserved.</span>
+<span class="text-primary font-label-sm uppercase tracking-widest">Ibiza, Spain</span>
+</p>
+</div>
+</footer>
+<!-- Sticky Mobile CTA -->
+<div class="md:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] z-50">
+<a class="flex items-center justify-center gap-2 text-on-primary w-full py-4 rounded-full font-label-lg text-label-lg shadow-2xl glass-nav bg-opacity-95 border border-primary-fixed/20 bg-secondary" href="#enquire">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"></path>
+</svg>
+            Book via WhatsApp
+        </a>
+</div>
+<script>
+        // Optional: Simple scroll detection to change nav appearance
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-md');
+                nav.classList.remove('border-b');
+            } else {
+                nav.classList.remove('shadow-md');
+                nav.classList.add('border-b');
+            }
+        });
+    </script>
+</body></html>
