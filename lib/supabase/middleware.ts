@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { supabaseUrl, supabasePublishableKey } from "./env";
 
 /**
- * Used by /middleware.ts to attach a refreshed Supabase session to incoming
+ * Used by /proxy.ts to attach a refreshed Supabase session to incoming
  * requests. No-op when Supabase isn't configured.
  */
 export async function updateSession(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = supabaseUrl();
+  const key = supabasePublishableKey();
   if (!url || !key) {
     return { response: NextResponse.next({ request }), user: null };
   }
