@@ -1,16 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Boat } from "@/lib/data/types";
+import { localePath, type Locale } from "@/lib/i18n/config";
 
 interface BoatCardProps {
   boat: Boat;
+  locale?: Locale;
   priority?: boolean;
+  /** Override for the "From €x,xxx" string (localised in parent). */
+  fromLabel?: string;
 }
 
-export function BoatCard({ boat, priority = false }: BoatCardProps) {
+export function BoatCard({ boat, locale = "en", priority = false, fromLabel }: BoatCardProps) {
+  const href = localePath(locale, `/fleet/${boat.slug}`);
   return (
     <Link
-      href={`/fleet/${boat.slug}`}
+      href={href}
       className="group block overflow-hidden rounded-2xl bg-[var(--color-surface-container-low)] transition-shadow hover:shadow-xl focus-visible:shadow-xl"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -36,7 +41,7 @@ export function BoatCard({ boat, priority = false }: BoatCardProps) {
             {boat.guests} guests · {boat.brand}
           </span>
           <span className="font-medium text-[var(--color-primary)]">
-            From €{boat.priceFrom.toLocaleString("en-GB")}
+            {fromLabel ?? `From €${boat.priceFrom.toLocaleString("en-GB")}`}
           </span>
         </div>
       </div>

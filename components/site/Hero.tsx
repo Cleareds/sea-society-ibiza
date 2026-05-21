@@ -11,6 +11,8 @@ interface HeroProps {
   primaryLabel?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
+  eyebrow?: string;
+  scrollLabel?: string;
   /**
    * When true (default), the hero pins to the top of the viewport via
    * `position: sticky`. Subsequent sections must carry `relative z-10`
@@ -30,6 +32,8 @@ export function Hero({
   primaryLabel = "Explore the fleet",
   secondaryHref = "/contact",
   secondaryLabel = "Plan your charter",
+  eyebrow = "One platform. Endless experiences at sea.",
+  scrollLabel = "Scroll",
   pinned = true,
 }: HeroProps) {
   return (
@@ -54,7 +58,7 @@ export function Hero({
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-5 pb-24 pt-28 text-center text-white md:pt-40">
         <p className="motion-safe:animate-hero-rise text-xs uppercase tracking-[0.35em] text-white/85 [animation-delay:120ms]">
-          One platform. Endless experiences at sea.
+          {eyebrow}
         </p>
         <h1 className="motion-safe:animate-hero-rise mt-6 max-w-4xl font-serif text-[11vw] leading-[1.02] tracking-tight [animation-delay:240ms] md:text-7xl lg:text-[88px]">
           {headline}
@@ -80,7 +84,7 @@ export function Hero({
           aria-label="Scroll to next section"
           className="motion-safe:animate-scroll-cue group pointer-events-auto inline-flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-white/85 hover:text-white"
         >
-          Scroll
+          {scrollLabel}
           <span aria-hidden className="block h-8 w-px bg-white/60" />
         </a>
       </div>

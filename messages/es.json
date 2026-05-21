@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "fleet": "La flota",
+    "experiences": "Experiencias",
+    "destinations": "Destinos",
+    "about": "Sobre nosotros",
+    "contact": "Contacto",
+    "enquireNow": "Reservar",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "skipToContent": "Saltar al contenido",
+    "menu": "Menú"
+  },
+  "footer": {
+    "explore": "Explorar",
+    "visitUs": "Visítanos",
+    "byIbimar": "by Ibimar",
+    "summary": "Charter de yates de lujo desde Botafoc Marina, Ibiza. Diecinueve barcos, veinte años en el agua, una llamada.",
+    "rightsReserved": "Todos los derechos reservados",
+    "privacy": "Privacidad",
+    "terms": "Términos y cookies"
+  },
+  "cta": {
+    "exploreTheFleet": "Explorar la flota",
+    "planYourCharter": "Planificar tu charter",
+    "browseFleet": "Ver la flota",
+    "messageWhatsApp": "Escríbenos por WhatsApp",
+    "openWhatsApp": "Abrir WhatsApp",
+    "bookWhatsApp": "Reservar por WhatsApp",
+    "sendEnquiry": "Enviar consulta",
+    "scroll": "Desliza"
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Fuera de rumbo",
+      "title": "Página no encontrada.",
+      "body": "No encontramos esa página. La flota sigue atracada en Botafoc.",
+      "back": "Volver al inicio"
+    },
+    "serverError": {
+      "eyebrow": "Aguas agitadas",
+      "title": "Algo ha ido mal por nuestra parte.",
+      "body": "Hemos registrado el problema. Inténtalo de nuevo en un momento — o envíanos un mensaje.",
+      "retry": "Reintentar",
+      "back": "Volver al inicio"
+    }
+  }
+}

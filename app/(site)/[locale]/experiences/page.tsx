@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { MarkdownBody } from "@/components/site/MarkdownBody";
@@ -11,35 +12,56 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { getExperiences } from "@/lib/data";
 import { addOns } from "@/lib/data/dummy";
 import { photo } from "@/lib/data/dummy/images";
+import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 export const revalidate = 3600;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   return pageMetadata({
     title: "Experiences",
     description:
       "Day trips, sunset cruises, multi-day Balearic charters and special occasions. Plus add-ons: catering, water toys, photographer, florals, champagne.",
     path: "/experiences",
+    locale: isLocale(locale) ? locale : "en",
   });
 }
 
-export default async function ExperiencesPage() {
+export default async function ExperiencesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const lc = locale as Locale;
+  const t = getMessages(lc);
+  const lp = (path: string) => localePath(lc, path);
   const experiences = await getExperiences();
+
   return (
     <>
       <JsonLd
         data={breadcrumbLd([
-          { name: "Home", path: "/" },
-          { name: "Experiences", path: "/experiences" },
+          { name: t("breadcrumb.home"), path: lp("/") },
+          { name: t("nav.experiences"), path: lp("/experiences") },
         ])}
       />
 
       <PageHero
         eyebrow="What you can do at sea"
-        title="Experiences"
+        title={t("nav.experiences")}
         sub="From a three-hour sunset cruise to a week across the Balearics — every charter is yours."
         imageSrc={photo.sunsetSailing}
-        breadcrumbs={[{ name: "Home", href: "/" }, { name: "Experiences" }]}
+        breadcrumbs={[
+          { name: t("breadcrumb.home"), href: lp("/") },
+          { name: t("nav.experiences") },
+        ]}
       />
 
       <Section>
@@ -72,7 +94,7 @@ export default async function ExperiencesPage() {
                   <MarkdownBody source={x.body} />
                 </div>
                 <Button asChild className="mt-8" size="md">
-                  <Link href="/contact">Plan this experience</Link>
+                  <Link href={lp("/contact")}>{t("nav.contact")}</Link>
                 </Button>
               </div>
             </li>

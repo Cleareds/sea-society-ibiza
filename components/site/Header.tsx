@@ -12,19 +12,27 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
+import { localePath, type Locale } from "@/lib/i18n/config";
 
-const navLinks = [
-  { href: "/fleet", label: "The Fleet" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/destinations", label: "Destinations" },
-  { href: "/about", label: "About" },
-];
+export interface HeaderLabels {
+  fleet: string;
+  experiences: string;
+  destinations: string;
+  about: string;
+  contact: string;
+  enquireNow: string;
+  menu: string;
+  openMenu: string;
+}
 
 interface HeaderProps {
   transparentOnHero?: boolean;
+  locale: Locale;
+  labels: HeaderLabels;
 }
 
-export function Header({ transparentOnHero = false }: HeaderProps) {
+export function Header({ transparentOnHero = false, locale, labels }: HeaderProps) {
   // Initialise from `transparentOnHero` so we never need a sync setState
   // inside the effect for the static-header case (React 19.2 forbids it).
   const [scrolled, setScrolled] = React.useState(!transparentOnHero);
@@ -33,13 +41,19 @@ export function Header({ transparentOnHero = false }: HeaderProps) {
     if (!transparentOnHero) return;
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
-    // Sync once on mount, deferred via microtask so we never set state inside
-    // the effect body (react-hooks/set-state-in-effect).
     queueMicrotask(onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, [transparentOnHero]);
 
   const isSolid = scrolled || !transparentOnHero;
+  const lp = (path: string) => localePath(locale, path);
+
+  const navLinks = [
+    { href: lp("/fleet"), label: labels.fleet },
+    { href: lp("/experiences"), label: labels.experiences },
+    { href: lp("/destinations"), label: labels.destinations },
+    { href: lp("/about"), label: labels.about },
+  ];
 
   return (
     <header
@@ -55,13 +69,13 @@ export function Header({ transparentOnHero = false }: HeaderProps) {
         className="mx-auto flex h-16 max-w-(--spacing-container-max) items-center justify-between px-5 md:h-20 md:px-10"
       >
         <Link
-          href="/"
+          href={lp("/")}
           className={cn(
             "flex flex-col leading-none",
             isSolid ? "text-[var(--color-primary)]" : "text-white",
           )}
         >
-          <span className="font-serif text-xl md:text-2xl tracking-tight">Sea Society Ibiza</span>
+          <span className="font-serif text-xl tracking-tight md:text-2xl">Sea Society Ibiza</span>
           <span className="text-[10px] uppercase tracking-[0.25em] opacity-70">by Ibimar</span>
         </Link>
 
@@ -83,14 +97,15 @@ export function Header({ transparentOnHero = false }: HeaderProps) {
           ))}
         </ul>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-4 md:flex">
+          <LocaleSwitcher currentLocale={locale} variant={isSolid ? "solid" : "transparent"} />
           <Button
             asChild
             variant="primary"
             size="sm"
             className={cn(!isSolid && "shadow-lg")}
           >
-            <Link href="/contact">Enquire now</Link>
+            <Link href={lp("/contact")}>{labels.enquireNow}</Link>
           </Button>
         </div>
 
@@ -98,7 +113,7 @@ export function Header({ transparentOnHero = false }: HeaderProps) {
           <SheetTrigger asChild>
             <button
               type="button"
-              aria-label="Open menu"
+              aria-label={labels.openMenu}
               className={cn(
                 "inline-flex h-10 w-10 items-center justify-center rounded-full md:hidden",
                 isSolid ? "text-[var(--color-on-surface)]" : "text-white",
@@ -108,7 +123,7 @@ export function Header({ transparentOnHero = false }: HeaderProps) {
             </button>
           </SheetTrigger>
           <SheetContent side="right" className="flex flex-col gap-8">
-            <SheetTitle className="text-3xl">Menu</SheetTitle>
+            <SheetTitle className="text-3xl">{labels.menu}</SheetTitle>
             <ul className="flex flex-col gap-2 text-2xl">
               {navLinks.map((l) => (
                 <li key={l.href}>
@@ -121,15 +136,18 @@ export function Header({ transparentOnHero = false }: HeaderProps) {
               ))}
               <li>
                 <SheetClose asChild>
-                  <Link href="/contact" className="block py-2 font-serif">
-                    Contact
+                  <Link href={lp("/contact")} className="block py-2 font-serif">
+                    {labels.contact}
                   </Link>
                 </SheetClose>
               </li>
             </ul>
+            <div className="mt-4">
+              <LocaleSwitcher currentLocale={locale} variant="solid" />
+            </div>
             <SheetClose asChild>
               <Button asChild variant="primary" size="lg" className="mt-auto">
-                <Link href="/contact">Enquire now</Link>
+                <Link href={lp("/contact")}>{labels.enquireNow}</Link>
               </Button>
             </SheetClose>
           </SheetContent>

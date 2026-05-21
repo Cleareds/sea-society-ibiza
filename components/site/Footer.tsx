@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Settings } from "@/lib/data/types";
+import { localePath, type Locale } from "@/lib/i18n/config";
+import type { Translator } from "@/lib/i18n/messages";
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -22,9 +24,12 @@ function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
 
 interface FooterProps {
   settings: Settings;
+  locale: Locale;
+  t: Translator;
 }
 
-export function Footer({ settings }: FooterProps) {
+export function Footer({ settings, locale, t }: FooterProps) {
+  const lp = (path: string) => localePath(locale, path);
   return (
     <footer className="border-t border-[var(--color-outline-variant)]/40 bg-[var(--color-surface-container-low)]">
       <div className="mx-auto max-w-(--spacing-container-max) px-5 py-16 md:px-10 md:py-20">
@@ -32,11 +37,10 @@ export function Footer({ settings }: FooterProps) {
           <div className="md:col-span-2">
             <p className="font-serif text-2xl text-[var(--color-primary)]">Sea Society Ibiza</p>
             <p className="mt-1 text-xs uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
-              by Ibimar
+              {t("footer.byIbimar")}
             </p>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-              Luxury yacht charter from Botafoc Marina, Ibiza. Nineteen boats, twenty years on the
-              water, one phone call.
+              {t("footer.summary")}
             </p>
             <a
               href={settings.instagramUrl}
@@ -51,32 +55,32 @@ export function Footer({ settings }: FooterProps) {
 
           <div>
             <h2 className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-              Explore
+              {t("footer.explore")}
             </h2>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
-                <Link href="/fleet" className="hover:text-[var(--color-primary)]">
-                  The Fleet
+                <Link href={lp("/fleet")} className="hover:text-[var(--color-primary)]">
+                  {t("nav.fleet")}
                 </Link>
               </li>
               <li>
-                <Link href="/experiences" className="hover:text-[var(--color-primary)]">
-                  Experiences
+                <Link href={lp("/experiences")} className="hover:text-[var(--color-primary)]">
+                  {t("nav.experiences")}
                 </Link>
               </li>
               <li>
-                <Link href="/destinations" className="hover:text-[var(--color-primary)]">
-                  Destinations
+                <Link href={lp("/destinations")} className="hover:text-[var(--color-primary)]">
+                  {t("nav.destinations")}
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-[var(--color-primary)]">
-                  About
+                <Link href={lp("/about")} className="hover:text-[var(--color-primary)]">
+                  {t("nav.about")}
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[var(--color-primary)]">
-                  Contact &amp; FAQ
+                <Link href={lp("/contact")} className="hover:text-[var(--color-primary)]">
+                  {t("nav.contact")}
                 </Link>
               </li>
             </ul>
@@ -84,7 +88,7 @@ export function Footer({ settings }: FooterProps) {
 
           <div>
             <h2 className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-              Visit us
+              {t("footer.visitUs")}
             </h2>
             <address className="mt-4 not-italic text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
               {settings.address}
@@ -106,13 +110,13 @@ export function Footer({ settings }: FooterProps) {
           <p>© {new Date().getFullYear()} Sea Society Ibiza. By Ibimar.</p>
           <ul className="flex flex-wrap gap-4">
             <li>
-              <Link href="/privacy" className="hover:text-[var(--color-primary)]">
-                Privacy
+              <Link href={lp("/privacy")} className="hover:text-[var(--color-primary)]">
+                {t("footer.privacy")}
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="hover:text-[var(--color-primary)]">
-                Terms &amp; cookies
+              <Link href={lp("/terms")} className="hover:text-[var(--color-primary)]">
+                {t("footer.terms")}
               </Link>
             </li>
           </ul>

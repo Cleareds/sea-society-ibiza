@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "fleet": "Die Flotte",
+    "experiences": "Erlebnisse",
+    "destinations": "Reiseziele",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "enquireNow": "Jetzt anfragen",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "skipToContent": "Zum Inhalt springen",
+    "menu": "Menü"
+  },
+  "footer": {
+    "explore": "Entdecken",
+    "visitUs": "Besuchen Sie uns",
+    "byIbimar": "by Ibimar",
+    "summary": "Luxus-Yachtcharter von Botafoc Marina, Ibiza. Neunzehn Boote, zwanzig Jahre auf dem Wasser, ein Anruf.",
+    "rightsReserved": "Alle Rechte vorbehalten",
+    "privacy": "Datenschutz",
+    "terms": "AGB & Cookies"
+  },
+  "cta": {
+    "exploreTheFleet": "Flotte entdecken",
+    "planYourCharter": "Charter planen",
+    "browseFleet": "Flotte ansehen",
+    "messageWhatsApp": "WhatsApp uns",
+    "openWhatsApp": "WhatsApp öffnen",
+    "bookWhatsApp": "Über WhatsApp buchen",
+    "sendEnquiry": "Anfrage senden",
+    "scroll": "Scrollen"
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Vom Kurs ab",
+      "title": "Seite nicht gefunden.",
+      "body": "Wir können diese Seite nicht finden. Die Flotte liegt noch in Botafoc.",
+      "back": "Zur Startseite"
+    },
+    "serverError": {
+      "eyebrow": "Stürmische See",
+      "title": "Auf unserer Seite ist etwas schiefgegangen.",
+      "body": "Wir haben das Problem protokolliert. Versuchen Sie es gleich noch einmal — oder schreiben Sie uns.",
+      "retry": "Erneut versuchen",
+      "back": "Zur Startseite"
+    }
+  }
+}

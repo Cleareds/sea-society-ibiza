@@ -13,21 +13,23 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { boatProductLd, breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getBoatBySlug, getBoats, getSettings } from "@/lib/data";
+import { isLocale, locales, localePath, type Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 export const revalidate = 3600;
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const boats = await getBoats();
-  return boats.map((b) => ({ slug: b.slug }));
+  return locales.flatMap((locale) => boats.map((b) => ({ locale, slug: b.slug })));
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const boat = await getBoatBySlug(slug);
   if (!boat) return { title: "Boat not found" };
   return pageMetadata({
@@ -35,15 +37,21 @@ export async function generateMetadata({
     description: boat.metaDescription || boat.description,
     path: `/fleet/${boat.slug}`,
     image: boat.heroImage,
+    locale: isLocale(locale) ? locale : "en",
   });
 }
 
 export default async function BoatDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  if (!isLocale(locale)) notFound();
+  const lc = locale as Locale;
+  const t = getMessages(lc);
+  const lp = (path: string) => localePath(lc, path);
+
   const [boat, all, settings] = await Promise.all([
     getBoatBySlug(slug),
     getBoats(),
@@ -58,15 +66,14 @@ export default async function BoatDetailPage({
       <JsonLd
         data={[
           breadcrumbLd([
-            { name: "Home", path: "/" },
-            { name: "Fleet", path: "/fleet" },
-            { name: boat.name, path: `/fleet/${boat.slug}` },
+            { name: t("breadcrumb.home"), path: lp("/") },
+            { name: t("breadcrumb.fleet"), path: lp("/fleet") },
+            { name: boat.name, path: lp(`/fleet/${boat.slug}`) },
           ]),
           boatProductLd(boat),
         ]}
       />
 
-      {/* Hero band */}
       <section className="relative isolate min-h-[60vh] w-full overflow-hidden bg-[var(--color-primary)] pt-24 pb-16 md:pt-32 md:pb-24">
         <Image
           src={boat.heroImage}
@@ -80,8 +87,8 @@ export default async function BoatDetailPage({
         <div className="relative z-10 mx-auto max-w-(--spacing-container-max) px-5 md:px-10">
           <Breadcrumb
             items={[
-              { name: "Home", href: "/" },
-              { name: "Fleet", href: "/fleet" },
+              { name: t("breadcrumb.home"), href: lp("/") },
+              { name: t("breadcrumb.fleet"), href: lp("/fleet") },
               { name: boat.name },
             ]}
           />
@@ -92,21 +99,18 @@ export default async function BoatDetailPage({
         </div>
       </section>
 
-      {/* Body */}
       <Section>
         <div className="grid gap-12 lg:grid-cols-12">
-          {/* Left: gallery + description */}
           <div className="lg:col-span-8">
             <Gallery images={boat.gallery} boatName={boat.name} />
 
-            {/* Pills */}
             <ul className="mt-8 flex flex-wrap gap-2">
               {[
                 `${boat.lengthM} m`,
                 `${boat.guests} guests`,
                 boat.type.replace("_", " "),
                 `${boat.brand} · ${boat.buildYear}`,
-                `Full day from €${boat.priceFrom.toLocaleString("en-GB")}`,
+                t("fleet.fromPrice", { amount: boat.priceFrom.toLocaleString("en-GB") }),
               ].map((p) => (
                 <li
                   key={p}
@@ -126,8 +130,11 @@ export default async function BoatDetailPage({
 
             <div className="mt-12 grid gap-10 md:grid-cols-2">
               <section aria-labelledby="included-h">
-                <h2 id="included-h" className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]">
-                  What&apos;s included
+                <h2
+                  id="included-h"
+                  className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]"
+                >
+                  {t("boat.whatsIncluded")}
                 </h2>
                 <ul className="mt-4 grid gap-2">
                   {boat.whatIncluded.map((item) => (
@@ -140,8 +147,11 @@ export default async function BoatDetailPage({
               </section>
 
               <section aria-labelledby="specs-h">
-                <h2 id="specs-h" className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]">
-                  Specifications
+                <h2
+                  id="specs-h"
+                  className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]"
+                >
+                  {t("boat.specifications")}
                 </h2>
                 <dl className="mt-4 divide-y divide-[var(--color-outline-variant)]">
                   {boat.specs.map((s) => (
@@ -155,18 +165,17 @@ export default async function BoatDetailPage({
             </div>
           </div>
 
-          {/* Right: sticky enquiry sidebar */}
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-28">
               <div className="rounded-3xl bg-[var(--color-surface-container-low)] p-6 md:p-8">
                 <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                  Check availability
+                  {t("boat.checkAvailability")}
                 </p>
                 <p className="mt-3 font-serif text-2xl text-[var(--color-on-surface)]">
-                  Tell us your dates.
+                  {t("boat.tellDates")}
                 </p>
                 <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
-                  We confirm availability for the {boat.name} within a few hours.
+                  {t("boat.confirmWithin", { name: boat.name })}
                 </p>
                 <div className="mt-6">
                   <EnquiryForm
@@ -181,7 +190,7 @@ export default async function BoatDetailPage({
                     number={settings.whatsappNumber}
                     boatName={boat.name}
                     variant="inline"
-                    label="Or WhatsApp us directly"
+                    label={t("boat.orWhatsApp")}
                     className="w-full"
                   />
                 </div>
@@ -196,19 +205,25 @@ export default async function BoatDetailPage({
           <div>
             <div className="flex items-baseline justify-between">
               <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
-                Similar boats
+                {t("boat.similar")}
               </h2>
               <Link
-                href="/fleet"
+                href={lp("/fleet")}
                 className="text-sm font-medium text-[var(--color-primary)] hover:underline"
               >
-                All 19 boats →
+                {t("boat.allBoats")}
               </Link>
             </div>
             <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((b) => (
                 <li key={b.id}>
-                  <BoatCard boat={b} />
+                  <BoatCard
+                    boat={b}
+                    locale={lc}
+                    fromLabel={t("fleet.fromPrice", {
+                      amount: b.priceFrom.toLocaleString("en-GB"),
+                    })}
+                  />
                 </li>
               ))}
             </ul>

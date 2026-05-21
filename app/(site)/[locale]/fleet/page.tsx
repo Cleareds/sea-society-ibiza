@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
 import { FilterBar } from "@/components/site/FilterBar";
@@ -12,15 +13,23 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { getBoats } from "@/lib/data";
 import { photo } from "@/lib/data/dummy/images";
 import type { Boat, BoatType } from "@/lib/data/types";
+import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 export const revalidate = 3600;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   return pageMetadata({
     title: "The Fleet",
     description:
       "Explore 19 luxury yachts available for charter from Botafoc Marina, Ibiza. Filter by type, capacity, brand and budget.",
     path: "/fleet",
+    locale: isLocale(locale) ? locale : "en",
   });
 }
 
@@ -46,10 +55,17 @@ function applyFilters(boats: Boat[], sp: SearchParams): Boat[] {
 }
 
 export default async function FleetPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<SearchParams>;
 }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const lc = locale as Locale;
+  const t = getMessages(lc);
+  const lp = (path: string) => localePath(lc, path);
   const sp = await searchParams;
   const allBoats = await getBoats();
   const boats = applyFilters(allBoats, sp);
@@ -60,14 +76,13 @@ export default async function FleetPage({
       <JsonLd
         data={[
           breadcrumbLd([
-            { name: "Home", path: "/" },
-            { name: "Fleet", path: "/fleet" },
+            { name: t("breadcrumb.home"), path: lp("/") },
+            { name: t("breadcrumb.fleet"), path: lp("/fleet") },
           ]),
           fleetItemListLd(boats),
         ]}
       />
 
-      {/* Page hero */}
       <section className="relative isolate h-[55vh] min-h-[420px] w-full overflow-hidden bg-[var(--color-primary)]">
         <Image
           src={photo.yachtAerial}
@@ -82,42 +97,40 @@ export default async function FleetPage({
           <div className="mx-auto w-full max-w-(--spacing-container-max)">
             <Breadcrumb
               items={[
-                { name: "Home", href: "/" },
-                { name: "Fleet" },
+                { name: t("breadcrumb.home"), href: lp("/") },
+                { name: t("breadcrumb.fleet") },
               ]}
             />
             <h1 className="mt-4 max-w-3xl font-serif text-5xl leading-tight md:text-7xl">
-              The fleet
+              {t("fleet.title")}
             </h1>
-            <p className="mt-3 max-w-xl text-base text-white/80 md:text-lg">
-              Nineteen boats based at Botafoc Marina. Filter to the right one — or send us the
-              shape of your day and we will choose for you.
-            </p>
+            <p className="mt-3 max-w-xl text-base text-white/80 md:text-lg">{t("fleet.subtitle")}</p>
           </div>
         </div>
       </section>
 
       <Section>
-        <FilterBar brands={brands} />
+        <FilterBar brands={brands} locale={lc} />
 
         <p className="mt-6 text-sm text-[var(--color-on-surface-variant)]">
-          {boats.length} {boats.length === 1 ? "boat" : "boats"} matching
+          {boats.length} {boats.length === 1 ? t("fleet.boatSingular") : t("fleet.boatPlural")}{" "}
+          {t("fleet.matching", { count: boats.length })}
         </p>
 
         {boats.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-dashed border-[var(--color-outline)] p-10 text-center">
             <p className="font-serif text-2xl text-[var(--color-on-surface)]">
-              No boats match those filters.
+              {t("fleet.noResults")}
             </p>
             <p className="mt-3 text-sm text-[var(--color-on-surface-variant)]">
-              Reset the filters or send us a message — we will suggest something from the wider fleet.
+              {t("fleet.noResultsHint")}
             </p>
             <div className="mt-6 flex justify-center gap-3">
               <Button asChild variant="outline">
-                <Link href="/fleet">Reset filters</Link>
+                <Link href={lp("/fleet")}>{t("fleet.reset")}</Link>
               </Button>
               <Button asChild>
-                <Link href="/contact">Send a message</Link>
+                <Link href={lp("/contact")}>{t("nav.contact")}</Link>
               </Button>
             </div>
           </div>
@@ -125,7 +138,12 @@ export default async function FleetPage({
           <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {boats.map((b, i) => (
               <li key={b.id}>
-                <BoatCard boat={b} priority={i < 3} />
+                <BoatCard
+                  boat={b}
+                  locale={lc}
+                  priority={i < 3}
+                  fromLabel={t("fleet.fromPrice", { amount: b.priceFrom.toLocaleString("en-GB") })}
+                />
               </li>
             ))}
           </ul>

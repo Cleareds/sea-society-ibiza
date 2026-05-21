@@ -49,6 +49,8 @@ interface SettingsRow {
   testimonials: Testimonial[] | null;
   about: import("../types").PageCopy | null;
   contact: import("../types").PageCopy | null;
+  about_i18n: Partial<Record<string, Partial<import("../types").PageCopy>>> | null;
+  contact_i18n: Partial<Record<string, Partial<import("../types").PageCopy>>> | null;
 }
 
 const emptyCopy = (): import("../types").PageCopy => ({
@@ -297,6 +299,8 @@ export async function getSettings(): Promise<Settings> {
     testimonials: data.testimonials ?? [],
     about: { ...emptyCopy(), ...(data.about ?? {}) },
     contact: { ...emptyCopy(), ...(data.contact ?? {}) },
+    aboutI18n: data.about_i18n ?? {},
+    contactI18n: data.contact_i18n ?? {},
   };
 }
 

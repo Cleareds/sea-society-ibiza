@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "fleet": "La flotte",
+    "experiences": "Expériences",
+    "destinations": "Destinations",
+    "about": "À propos",
+    "contact": "Contact",
+    "enquireNow": "Demander",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "skipToContent": "Aller au contenu",
+    "menu": "Menu"
+  },
+  "footer": {
+    "explore": "Explorer",
+    "visitUs": "Nous trouver",
+    "byIbimar": "by Ibimar",
+    "summary": "Affrètement de yachts de luxe depuis Botafoc Marina, Ibiza. Dix-neuf bateaux, vingt ans sur l'eau, un seul appel.",
+    "rightsReserved": "Tous droits réservés",
+    "privacy": "Confidentialité",
+    "terms": "Conditions & cookies"
+  },
+  "cta": {
+    "exploreTheFleet": "Découvrir la flotte",
+    "planYourCharter": "Planifier votre charter",
+    "browseFleet": "Voir la flotte",
+    "messageWhatsApp": "Nous écrire sur WhatsApp",
+    "openWhatsApp": "Ouvrir WhatsApp",
+    "bookWhatsApp": "Réserver via WhatsApp",
+    "sendEnquiry": "Envoyer la demande",
+    "scroll": "Défiler"
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Hors cap",
+      "title": "Page introuvable.",
+      "body": "Nous ne trouvons pas cette page. La flotte est toujours amarrée à Botafoc.",
+      "back": "Retour à l'accueil"
+    },
+    "serverError": {
+      "eyebrow": "Eaux agitées",
+      "title": "Une erreur s'est produite.",
+      "body": "Nous avons enregistré le problème. Réessayez dans un instant — ou envoyez-nous un message.",
+      "retry": "Réessayer",
+      "back": "Retour à l'accueil"
+    }
+  }
+}

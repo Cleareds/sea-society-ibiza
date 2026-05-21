@@ -1,30 +1,49 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { photo } from "@/lib/data/dummy/images";
+import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 export const revalidate = 3600;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   return pageMetadata({
     title: "Terms & cookie policy",
     description:
       "Terms governing the use of seasocietyibiza.com and our cookie policy. Template — to be reviewed by counsel before launch.",
     path: "/terms",
+    locale: isLocale(locale) ? locale : "en",
   });
 }
 
 // TODO: lawyer review before launch.
-export default function TermsPage() {
+export default async function TermsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const lc = locale as Locale;
+  const t = getMessages(lc);
+  const lp = (path: string) => localePath(lc, path);
+
   return (
     <>
       <JsonLd
         data={breadcrumbLd([
-          { name: "Home", path: "/" },
-          { name: "Terms", path: "/terms" },
+          { name: t("breadcrumb.home"), path: lp("/") },
+          { name: t("footer.terms"), path: lp("/terms") },
         ])}
       />
 
@@ -32,7 +51,10 @@ export default function TermsPage() {
         eyebrow="Legal"
         title="Terms & cookie policy"
         imageSrc={photo.yachtBow}
-        breadcrumbs={[{ name: "Home", href: "/" }, { name: "Terms" }]}
+        breadcrumbs={[
+          { name: t("breadcrumb.home"), href: lp("/") },
+          { name: t("footer.terms") },
+        ]}
       />
 
       <Section>

@@ -1,0 +1,48 @@
+{
+  "nav": {
+    "fleet": "De vloot",
+    "experiences": "Ervaringen",
+    "destinations": "Bestemmingen",
+    "about": "Over ons",
+    "contact": "Contact",
+    "enquireNow": "Boek nu",
+    "openMenu": "Menu openen",
+    "closeMenu": "Menu sluiten",
+    "skipToContent": "Naar inhoud",
+    "menu": "Menu"
+  },
+  "footer": {
+    "explore": "Ontdek",
+    "visitUs": "Bezoek ons",
+    "byIbimar": "by Ibimar",
+    "summary": "Luxe jachtcharter vanuit Botafoc Marina, Ibiza. Negentien boten, twintig jaar op het water, één telefoontje.",
+    "rightsReserved": "Alle rechten voorbehouden",
+    "privacy": "Privacy",
+    "terms": "Voorwaarden & cookies"
+  },
+  "cta": {
+    "exploreTheFleet": "Ontdek de vloot",
+    "planYourCharter": "Plan uw charter",
+    "browseFleet": "Bekijk de vloot",
+    "messageWhatsApp": "Stuur ons een WhatsApp",
+    "openWhatsApp": "WhatsApp openen",
+    "bookWhatsApp": "Boek via WhatsApp",
+    "sendEnquiry": "Aanvraag versturen",
+    "scroll": "Scrol"
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Verdwaald",
+      "title": "Pagina niet gevonden.",
+      "body": "We kunnen die pagina niet vinden. De vloot ligt nog steeds in Botafoc.",
+      "back": "Terug naar de startpagina"
+    },
+    "serverError": {
+      "eyebrow": "Ruw weer",
+      "title": "Er ging iets mis aan onze kant.",
+      "body": "We hebben het probleem geregistreerd. Probeer het over een moment opnieuw — of stuur ons een bericht.",
+      "retry": "Opnieuw proberen",
+      "back": "Terug naar de startpagina"
+    }
+  }
+}

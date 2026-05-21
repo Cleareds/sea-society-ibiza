@@ -85,6 +85,13 @@ export interface PageCopy {
   body: string;
 }
 
+/**
+ * Partial per-locale overrides keyed by Locale (excluding "en", which is
+ * stored canonically in the row's top-level columns). Any missing field
+ * on a locale falls back to the canonical English value at read time.
+ */
+export type I18nOverrides<T> = Partial<Record<string, Partial<T>>>;
+
 export interface Settings {
   whatsappNumber: string;
   whatsappDefaultMessage: string;
@@ -99,6 +106,9 @@ export interface Settings {
   testimonials: Testimonial[];
   about: PageCopy;
   contact: PageCopy;
+  /** Locale-keyed PageCopy overrides for /about and /contact. */
+  aboutI18n: Partial<Record<string, Partial<PageCopy>>>;
+  contactI18n: Partial<Record<string, Partial<PageCopy>>>;
 }
 
 export interface EnquiryInput {

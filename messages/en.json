@@ -1,0 +1,165 @@
+{
+  "nav": {
+    "fleet": "The Fleet",
+    "experiences": "Experiences",
+    "destinations": "Destinations",
+    "about": "About",
+    "contact": "Contact",
+    "enquireNow": "Enquire now",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "skipToContent": "Skip to content",
+    "menu": "Menu"
+  },
+  "footer": {
+    "explore": "Explore",
+    "visitUs": "Visit us",
+    "byIbimar": "by Ibimar",
+    "summary": "Luxury yacht charter from Botafoc Marina, Ibiza. Nineteen boats, twenty years on the water, one phone call.",
+    "rightsReserved": "All rights reserved",
+    "privacy": "Privacy",
+    "terms": "Terms & cookies"
+  },
+  "cta": {
+    "exploreTheFleet": "Explore the fleet",
+    "planYourCharter": "Plan your charter",
+    "browseFleet": "Browse the fleet",
+    "messageWhatsApp": "Message us on WhatsApp",
+    "openWhatsApp": "Open WhatsApp",
+    "bookWhatsApp": "Book via WhatsApp",
+    "sendEnquiry": "Send enquiry",
+    "scroll": "Scroll"
+  },
+  "home": {
+    "tagline": "One platform. Endless experiences at sea.",
+    "intro": {
+      "eyebrow": "The experience",
+      "title": "A day on the water. A memory for life.",
+      "body": "From the moment you step aboard at Botafoc Marina to the moment you watch the sun dissolve into the Mediterranean, every detail is handled. The captain knows where the other boats aren't. The chef knows what the sea wants you to eat. You just bring the people."
+    },
+    "featured": {
+      "eyebrow": "Discover your vessel",
+      "title": "Featured fleet",
+      "all": "All 19 boats →"
+    },
+    "experiences": {
+      "eyebrow": "For every kind of day",
+      "title": "Experiences",
+      "all": "All experiences →"
+    },
+    "destinations": {
+      "eyebrow": "Where you'll go",
+      "title": "Destinations",
+      "all": "All destinations →"
+    },
+    "instagram": {
+      "title": "Follow the journey"
+    },
+    "enquiry": {
+      "eyebrow": "Your charter starts with a message.",
+      "title": "Tell us your dates and group — we'll handle the rest.",
+      "orWhatsApp": "Or message us directly on"
+    }
+  },
+  "fleet": {
+    "title": "The fleet",
+    "subtitle": "Nineteen boats based at Botafoc Marina. Filter to the right one — or send us the shape of your day and we will choose for you.",
+    "matching": "{count} matching",
+    "boatSingular": "boat",
+    "boatPlural": "boats",
+    "noResults": "No boats match those filters.",
+    "noResultsHint": "Reset the filters or send us a message — we will suggest something from the wider fleet.",
+    "reset": "Reset filters",
+    "filters": {
+      "allTypes": "All types",
+      "motor_yacht": "Motor yacht",
+      "sailing_yacht": "Sailing",
+      "catamaran": "Catamaran",
+      "day_boat": "Day boat",
+      "sport_yacht": "Sport yacht",
+      "anySize": "Any size",
+      "guestsPlus": "{n}+ guests",
+      "allBrands": "All brands",
+      "anyBudget": "Any budget",
+      "upTo": "Up to €{amount}"
+    },
+    "fromPrice": "From €{amount}"
+  },
+  "boat": {
+    "checkAvailability": "Check availability",
+    "tellDates": "Tell us your dates.",
+    "confirmWithin": "We confirm availability for the {name} within a few hours.",
+    "whatsIncluded": "What's included",
+    "specifications": "Specifications",
+    "similar": "Similar boats",
+    "allBoats": "All 19 boats →",
+    "orWhatsApp": "Or WhatsApp us directly"
+  },
+  "form": {
+    "name": "Your name",
+    "email": "Email",
+    "phone": "Phone (optional)",
+    "dates": "Dates",
+    "datesPlaceholder": "e.g. 12–14 July",
+    "groupSize": "Group size",
+    "boatPreference": "Boat preference",
+    "boatNotSure": "Not sure yet",
+    "message": "Message",
+    "messagePlaceholder": "Tell us about your charter — occasion, route, anything special.",
+    "responseTime": "We respond within a few hours. By submitting, you agree to our",
+    "privacyPolicy": "privacy policy",
+    "submitting": "Sending…",
+    "successTitle": "Thank you.",
+    "successBody": "We have your message and will be in touch within a few hours.",
+    "errorGeneric": "Something went wrong. Please try again."
+  },
+  "contact": {
+    "orMessageDirect": "Or message directly",
+    "fasterWhatsApp": "Faster on WhatsApp.",
+    "whatsAppHint": "For dates within seven days, WhatsApp gets the fastest answer.",
+    "email": "Email",
+    "phone": "Phone",
+    "marina": "Marina",
+    "mapTitle": "Botafoc Marina on the map",
+    "mapAttribution": "Map © OpenStreetMap contributors",
+    "faqEyebrow": "Frequently asked",
+    "faqTitle": "Before you write",
+    "moreQuestions": "More questions?",
+    "sendMessage": "Send a message",
+    "personally": "— we answer each one personally."
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "fleet": "Fleet"
+  },
+  "errors": {
+    "notFound": {
+      "eyebrow": "Off-course",
+      "title": "Page not found.",
+      "body": "We cannot find that page. The fleet is still moored at Botafoc.",
+      "back": "Back to home"
+    },
+    "serverError": {
+      "eyebrow": "Choppy waters",
+      "title": "Something went wrong on our side.",
+      "body": "We have logged the issue. Try again in a moment — or send us a message and we will sort it out.",
+      "retry": "Try again",
+      "back": "Back to home"
+    }
+  },
+  "cookies": {
+    "title": "Cookies, the short version.",
+    "body": "We use cookies that keep the site working, plus optional ones for analytics and marketing. Choose what you would like to allow.",
+    "necessary": "Necessary",
+    "necessaryHint": "required for the site to function.",
+    "analytics": "Analytics",
+    "analyticsHint": "anonymous usage to improve the site (Google Analytics).",
+    "marketing": "Marketing",
+    "marketingHint": "measure ad performance (Meta Pixel).",
+    "acceptAll": "Accept all",
+    "choose": "Choose",
+    "saveSelection": "Save selection",
+    "rejectAll": "Reject all",
+    "preferences": "Preferences"
+  }
+}

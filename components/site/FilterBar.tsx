@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { localePath, type Locale } from "@/lib/i18n/config";
 
 const TYPES: Array<{ value: string; label: string }> = [
   { value: "", label: "All types" },
@@ -17,21 +18,23 @@ const GUESTS = ["", "6", "8", "10", "12"];
 
 interface Props {
   brands: string[];
+  locale?: Locale;
 }
 
-export function FilterBar({ brands }: Props) {
+export function FilterBar({ brands, locale = "en" }: Props) {
   const router = useRouter();
   const params = useSearchParams();
+  const base = localePath(locale, "/fleet");
 
   const update = (key: string, value: string) => {
     const next = new URLSearchParams(params.toString());
     if (value) next.set(key, value);
     else next.delete(key);
     const qs = next.toString();
-    router.replace(qs ? `/fleet?${qs}` : "/fleet", { scroll: false });
+    router.replace(qs ? `${base}?${qs}` : base, { scroll: false });
   };
 
-  const reset = () => router.replace("/fleet", { scroll: false });
+  const reset = () => router.replace(base, { scroll: false });
 
   const selectClass =
     "h-11 rounded-full border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] px-4 text-sm text-[var(--color-on-surface)] focus-visible:border-[var(--color-primary)] focus-visible:outline-none";
@@ -40,7 +43,9 @@ export function FilterBar({ brands }: Props) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <label className="sr-only" htmlFor="filter-type">Boat type</label>
+      <label className="sr-only" htmlFor="filter-type">
+        Boat type
+      </label>
       <select
         id="filter-type"
         value={params.get("type") ?? ""}
@@ -54,7 +59,9 @@ export function FilterBar({ brands }: Props) {
         ))}
       </select>
 
-      <label className="sr-only" htmlFor="filter-guests">Minimum guests</label>
+      <label className="sr-only" htmlFor="filter-guests">
+        Minimum guests
+      </label>
       <select
         id="filter-guests"
         value={params.get("minGuests") ?? ""}
@@ -68,7 +75,9 @@ export function FilterBar({ brands }: Props) {
         ))}
       </select>
 
-      <label className="sr-only" htmlFor="filter-brand">Brand</label>
+      <label className="sr-only" htmlFor="filter-brand">
+        Brand
+      </label>
       <select
         id="filter-brand"
         value={params.get("brand") ?? ""}
@@ -83,7 +92,9 @@ export function FilterBar({ brands }: Props) {
         ))}
       </select>
 
-      <label className="sr-only" htmlFor="filter-price">Max price</label>
+      <label className="sr-only" htmlFor="filter-price">
+        Max price
+      </label>
       <select
         id="filter-price"
         value={params.get("maxPrice") ?? ""}

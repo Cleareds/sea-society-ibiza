@@ -11,6 +11,22 @@ interface Consent {
   marketing: boolean;
 }
 
+export interface CookieLabels {
+  title: string;
+  body: string;
+  preferences: string;
+  necessary: string;
+  necessaryHint: string;
+  analytics: string;
+  analyticsHint: string;
+  marketing: string;
+  marketingHint: string;
+  acceptAll: string;
+  choose: string;
+  saveSelection: string;
+  rejectAll: string;
+}
+
 function read(): Consent | null {
   if (typeof document === "undefined") return null;
   const raw = document.cookie
@@ -32,16 +48,13 @@ function write(consent: Consent) {
   window.dispatchEvent(new CustomEvent("ssi:consent", { detail: consent }));
 }
 
-export function CookieBanner() {
+export function CookieBanner({ labels }: { labels: CookieLabels }) {
   const [visible, setVisible] = React.useState(false);
   const [showDetails, setShowDetails] = React.useState(false);
   const [analytics, setAnalytics] = React.useState(false);
   const [marketing, setMarketing] = React.useState(false);
 
   React.useEffect(() => {
-    // Defer via microtask so we don't synchronously set state inside the
-    // effect (react-hooks/set-state-in-effect). The banner shows after
-    // hydration if no consent cookie is present.
     queueMicrotask(() => {
       if (!read()) setVisible(true);
     });
@@ -70,22 +83,21 @@ export function CookieBanner() {
       className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-3xl rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface)] p-5 shadow-2xl backdrop-blur md:p-6"
     >
       <h2 id="cookie-title" className="font-serif text-xl text-[var(--color-on-surface)]">
-        Cookies, the short version.
+        {labels.title}
       </h2>
       <p id="cookie-desc" className="mt-2 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-        We use cookies that keep the site working, plus optional ones for analytics and marketing.
-        Choose what you would like to allow.
+        {labels.body}
       </p>
 
       {showDetails && (
         <fieldset className="mt-4 grid gap-3 rounded-lg border border-[var(--color-outline-variant)] p-4 text-sm">
           <legend className="px-1 text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
-            Preferences
+            {labels.preferences}
           </legend>
           <label className="flex items-start gap-3">
             <input type="checkbox" checked disabled className="mt-1" />
             <span>
-              <span className="font-medium">Necessary</span> — required for the site to function.
+              <span className="font-medium">{labels.necessary}</span> — {labels.necessaryHint}
             </span>
           </label>
           <label className="flex items-start gap-3">
@@ -96,8 +108,7 @@ export function CookieBanner() {
               className="mt-1"
             />
             <span>
-              <span className="font-medium">Analytics</span> — anonymous usage to improve the site
-              (Google Analytics).
+              <span className="font-medium">{labels.analytics}</span> — {labels.analyticsHint}
             </span>
           </label>
           <label className="flex items-start gap-3">
@@ -108,7 +119,7 @@ export function CookieBanner() {
               className="mt-1"
             />
             <span>
-              <span className="font-medium">Marketing</span> — measure ad performance (Meta Pixel).
+              <span className="font-medium">{labels.marketing}</span> — {labels.marketingHint}
             </span>
           </label>
         </fieldset>
@@ -116,19 +127,19 @@ export function CookieBanner() {
 
       <div className="mt-4 flex flex-wrap gap-2">
         <Button variant="primary" size="sm" onClick={acceptAll}>
-          Accept all
+          {labels.acceptAll}
         </Button>
         {showDetails ? (
           <Button variant="outline" size="sm" onClick={acceptSelection}>
-            Save selection
+            {labels.saveSelection}
           </Button>
         ) : (
           <Button variant="outline" size="sm" onClick={() => setShowDetails(true)}>
-            Choose
+            {labels.choose}
           </Button>
         )}
         <Button variant="ghost" size="sm" onClick={rejectAll}>
-          Reject all
+          {labels.rejectAll}
         </Button>
       </div>
     </div>

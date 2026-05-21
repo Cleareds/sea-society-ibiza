@@ -71,4 +71,6 @@ For dates within seven days, WhatsApp gets the fastest answer.
 
 We respond within a few hours during the season (April–October), within a day off-season.`,
   },
+  aboutI18n: {},
+  contactI18n: {},
 };
