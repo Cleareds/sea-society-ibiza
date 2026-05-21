@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -174,9 +175,9 @@ export function EnquiryForm({
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-[var(--color-on-surface-variant)]">
           We respond within a few hours. By submitting, you agree to our{" "}
-          <a href="/privacy" className="underline hover:text-[var(--color-primary)]">
+          <Link href="/privacy" className="underline hover:text-[var(--color-primary)]">
             privacy policy
-          </a>
+          </Link>
           .
         </p>
         <Button type="submit" size="lg" disabled={isSubmitting}>

@@ -7,6 +7,7 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+  preload: true,
 });
 
 const fraunces = Fraunces({
@@ -14,9 +15,19 @@ const fraunces = Fraunces({
   display: "swap",
   variable: "--font-fraunces",
   axes: ["SOFT", "WONK", "opsz"],
+  preload: true,
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://seasocietyibiza.com";
+
+const supabaseHost = (() => {
+  try {
+    const u = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    return u ? new URL(u).host : null;
+  } catch {
+    return null;
+  }
+})();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -31,8 +42,19 @@ export const metadata: Metadata = {
     languages: { en: "/", "x-default": "/" },
   },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
+  manifest: "/manifest.webmanifest",
+  applicationName: "Sea Society Ibiza",
+  appleWebApp: {
+    title: "Sea Society Ibiza",
+    statusBarStyle: "default",
+  },
+  formatDetection: { telephone: false, address: false, email: false },
 };
 
 export const viewport: Viewport = {
@@ -42,12 +64,24 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // <html lang> defaults to "en" so the root layout stays statically
+  // renderable (no headers()/cookies() calls). The [locale] layout renders
+  // <HtmlLang> which client-side updates document.documentElement.lang on
+  // hydration — preserves SSG + ISR while still giving screen readers and
+  // Google the correct lang attribute after the first paint.
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <head>
-        {/* Preconnect to the image CDN — opens TCP + TLS early so LCP image loads sooner */}
+        {/* Preconnects open TCP + TLS early — biggest LCP win for the hero image. */}
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        {supabaseHost && (
+          <>
+            <link rel="preconnect" href={`https://${supabaseHost}`} crossOrigin="" />
+            <link rel="dns-prefetch" href={`https://${supabaseHost}`} />
+          </>
+        )}
+        <link rel="preconnect" href="https://wa.me" />
       </head>
       <body>
         <a href="#main" className="skip-link">

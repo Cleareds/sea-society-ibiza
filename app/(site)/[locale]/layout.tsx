@@ -6,6 +6,7 @@ import { WhatsAppCTA } from "@/components/site/WhatsAppCTA";
 import { CookieBanner, type CookieLabels } from "@/components/site/CookieBanner";
 import { Analytics } from "@/components/site/Analytics";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { HtmlLang } from "@/components/site/HtmlLang";
 import { organizationLd } from "@/lib/seo/jsonld";
 import { isLocale, locales, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -57,6 +58,7 @@ export default async function SiteLayout({
 
   return (
     <>
+      <HtmlLang locale={lc} />
       <JsonLd data={organizationLd(settings)} />
       <Header transparentOnHero locale={lc} labels={headerLabels} />
       <main id="main" className="pt-0">

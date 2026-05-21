@@ -94,6 +94,7 @@ export default function GlobalError({
             >
               Try again
             </button>
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- global-error is the last-line-of-defence; using next/Link would risk re-throwing if the failure originated in routing. */}
             <a
               href="/"
               style={{
