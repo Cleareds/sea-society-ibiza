@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
+import { AxeDev } from "@/components/site/AxeDev";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,16 +30,31 @@ export const metadata: Metadata = {
     canonical: "/",
     languages: { en: "/", "x-default": "/" },
   },
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#006565",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+      <head>
+        {/* Preconnect to the image CDN — opens TCP + TLS early so LCP image loads sooner */}
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+      </head>
       <body>
         <a href="#main" className="skip-link">
           Skip to content
         </a>
         {children}
+        <AxeDev />
       </body>
     </html>
   );
