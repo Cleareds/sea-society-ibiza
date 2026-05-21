@@ -28,8 +28,24 @@ export async function getExperiences(): Promise<Experience[]> {
   return experiences.filter((e) => e.isPublished).sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
+export async function getAllExperiences(): Promise<Experience[]> {
+  return experiences.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+export async function getExperienceById(id: string): Promise<Experience | null> {
+  return experiences.find((e) => e.id === id) ?? null;
+}
+
 export async function getDestinations(): Promise<Destination[]> {
   return destinations.filter((d) => d.isPublished);
+}
+
+export async function getAllDestinations(): Promise<Destination[]> {
+  return destinations.slice();
+}
+
+export async function getDestinationById(id: string): Promise<Destination | null> {
+  return destinations.find((d) => d.id === id) ?? null;
 }
 
 export async function getFaqs(): Promise<Faq[]> {

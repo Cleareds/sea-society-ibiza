@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getDestinations } from "@/lib/data";
+import { MarkdownBody } from "@/components/site/MarkdownBody";
 import { photo } from "@/lib/data/dummy/images";
 
 export const revalidate = 3600;
@@ -66,7 +67,9 @@ export default async function DestinationsPage() {
                 <p className="mt-4 font-serif text-xl italic text-[var(--color-on-surface-variant)]">
                   {d.intro}
                 </p>
-                <p className="mt-6 leading-relaxed text-[var(--color-on-surface)]">{d.body}</p>
+                <div className="mt-6">
+                  <MarkdownBody source={d.body} />
+                </div>
                 <ul className="mt-6 flex flex-wrap gap-2">
                   {d.highlights.map((h) => (
                     <li

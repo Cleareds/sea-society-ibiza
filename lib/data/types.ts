@@ -78,6 +78,13 @@ export interface Testimonial {
   location: string;
 }
 
+export interface PageCopy {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroSub: string;
+  body: string;
+}
+
 export interface Settings {
   whatsappNumber: string;
   whatsappDefaultMessage: string;
@@ -90,6 +97,8 @@ export interface Settings {
   heroHeadline: string;
   heroSub: string;
   testimonials: Testimonial[];
+  about: PageCopy;
+  contact: PageCopy;
 }
 
 export interface EnquiryInput {

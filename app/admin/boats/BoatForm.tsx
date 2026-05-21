@@ -1,4 +1,12 @@
+"use client";
+
+import * as React from "react";
+import { useActionState } from "react";
+import { useRouter } from "next/navigation";
 import { saveBoat } from "../actions";
+import { initialSaveBoatState } from "../actions-state";
+import { SubmitButton } from "@/components/admin/SubmitButton";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import type { Boat } from "@/lib/data/types";
 
 interface Props {
@@ -7,22 +15,63 @@ interface Props {
 }
 
 const TYPES = ["motor_yacht", "sailing_yacht", "catamaran", "day_boat", "sport_yacht"] as const;
+const FLASH_MS = 2200;
 
 export function BoatForm({ boat, editable }: Props) {
+  const router = useRouter();
+  const [state, formAction] = useActionState(saveBoat, initialSaveBoatState);
+
+  const [justSavedTick, setJustSavedTick] = React.useState(0);
+  const [heroImage, setHeroImage] = React.useState<string>(boat?.heroImage ?? "");
+
+  // Flash the "Saved" affordance briefly after a successful save,
+  // then refresh the route so dashboard counts + list pages update.
+  React.useEffect(() => {
+    if (state.status !== "ok" || !state.savedAt) return;
+    // queueMicrotask defer keeps React 19.2's set-state-in-effect rule happy.
+    queueMicrotask(() => setJustSavedTick(state.savedAt!));
+    const t = setTimeout(() => {
+      setJustSavedTick(0);
+      router.refresh();
+    }, FLASH_MS);
+    return () => clearTimeout(t);
+  }, [state.status, state.savedAt, router]);
+
+  const justSaved = justSavedTick !== 0;
+
   return (
-    <form action={saveBoat} className="space-y-6">
+    <form action={formAction} className="space-y-6">
       {boat?.id && <input type="hidden" name="id" value={boat.id} />}
+      <input type="hidden" name="heroImage" value={heroImage} />
+
+      <ImageUpload
+        boatSlug={boat?.slug}
+        value={heroImage}
+        onChange={setHeroImage}
+        disabled={!editable}
+      />
 
       <fieldset className="grid gap-4 md:grid-cols-2" disabled={!editable}>
         <Field label="Name" name="name" defaultValue={boat?.name ?? ""} required />
         <Field label="Slug" name="slug" defaultValue={boat?.slug ?? ""} required />
         <Field label="Tagline" name="tagline" defaultValue={boat?.tagline ?? ""} />
         <Field label="Brand" name="brand" defaultValue={boat?.brand ?? ""} />
-        <Field label="Length (m)" name="lengthM" type="number" step="0.1" defaultValue={boat?.lengthM ?? ""} />
+        <Field
+          label="Length (m)"
+          name="lengthM"
+          type="number"
+          step="0.1"
+          defaultValue={boat?.lengthM ?? ""}
+        />
         <Field label="Guests" name="guests" type="number" defaultValue={boat?.guests ?? ""} />
         <Field label="Cabins" name="cabins" type="number" defaultValue={boat?.cabins ?? ""} />
         <Field label="Build year" name="buildYear" type="number" defaultValue={boat?.buildYear ?? ""} />
-        <Field label="Price from (EUR)" name="priceFrom" type="number" defaultValue={boat?.priceFrom ?? ""} />
+        <Field
+          label="Price from (EUR)"
+          name="priceFrom"
+          type="number"
+          defaultValue={boat?.priceFrom ?? ""}
+        />
         <Field label="Sort order" name="sortOrder" type="number" defaultValue={boat?.sortOrder ?? 0} />
 
         <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
@@ -39,8 +88,6 @@ export function BoatForm({ boat, editable }: Props) {
             ))}
           </select>
         </label>
-
-        <Field label="Hero image URL" name="heroImage" defaultValue={boat?.heroImage ?? ""} />
       </fieldset>
 
       <fieldset className="space-y-3" disabled={!editable}>
@@ -75,17 +122,38 @@ export function BoatForm({ boat, editable }: Props) {
         </label>
       </fieldset>
 
-      <button
-        type="submit"
-        disabled={!editable}
-        className="rounded-full bg-[var(--color-primary)] px-6 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {boat ? "Save changes" : "Create boat"}
-      </button>
+      <div className="flex flex-wrap items-center gap-4">
+        <SubmitButton
+          idleLabel={boat ? "Save changes" : "Create boat"}
+          pendingLabel={boat ? "Saving…" : "Creating…"}
+          justSaved={justSaved}
+          disabled={!editable}
+        />
+
+        {state.status === "ok" && (
+          <p
+            role="status"
+            aria-live="polite"
+            className="text-sm text-[var(--color-primary)]"
+          >
+            {state.message}
+          </p>
+        )}
+        {state.status === "error" && (
+          <p
+            role="alert"
+            aria-live="assertive"
+            className="text-sm text-[var(--color-secondary)]"
+          >
+            {state.message}
+          </p>
+        )}
+      </div>
 
       {!editable && (
         <p className="text-xs text-[var(--color-on-surface-variant)]">
-          Read-only — Supabase is not configured. Set USE_SUPABASE=true with credentials to enable saves.
+          Read-only — Supabase is not configured. Set USE_SUPABASE=true with credentials to enable
+          saves.
         </p>
       )}
     </form>

@@ -14,6 +14,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, faqPageLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getFaqs, getSettings } from "@/lib/data";
+import { MarkdownBody } from "@/components/site/MarkdownBody";
 import { photo } from "@/lib/data/dummy/images";
 
 export const revalidate = 3600;
@@ -42,9 +43,12 @@ export default async function ContactPage() {
       />
 
       <PageHero
-        eyebrow="Get in touch"
-        title="Your charter starts with a message."
-        sub="Send the dates and group — we will come back within a few hours with availability."
+        eyebrow={settings.contact.heroEyebrow || "Get in touch"}
+        title={settings.contact.heroTitle || "Your charter starts with a message."}
+        sub={
+          settings.contact.heroSub ||
+          "Send the dates and group — we will come back within a few hours with availability."
+        }
         imageSrc={photo.ibizaSea}
         breadcrumbs={[{ name: "Home", href: "/" }, { name: "Contact" }]}
       />
@@ -58,15 +62,21 @@ export default async function ContactPage() {
           </div>
 
           <aside className="lg:col-span-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-              Or message directly
-            </p>
-            <h2 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)]">
-              Faster on WhatsApp.
-            </h2>
-            <p className="mt-3 text-sm text-[var(--color-on-surface-variant)]">
-              For dates within seven days, WhatsApp gets the fastest answer.
-            </p>
+            {settings.contact.body ? (
+              <MarkdownBody source={settings.contact.body} />
+            ) : (
+              <>
+                <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
+                  Or message directly
+                </p>
+                <h2 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)]">
+                  Faster on WhatsApp.
+                </h2>
+                <p className="mt-3 text-sm text-[var(--color-on-surface-variant)]">
+                  For dates within seven days, WhatsApp gets the fastest answer.
+                </p>
+              </>
+            )}
             <WhatsAppCTA
               number={settings.whatsappNumber}
               variant="inline"

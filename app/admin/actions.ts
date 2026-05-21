@@ -4,6 +4,11 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import type {
+  SaveBoatState,
+  SavePageBlockState,
+  SaveSettingsState,
+} from "./actions-state";
 
 const ADMIN_COOKIE = "ssi-dev-admin";
 
@@ -83,6 +88,180 @@ export async function toggleBoatPublished(formData: FormData) {
   await supabase.from("boats").update({ is_published: next }).eq("id", id);
   revalidatePath("/admin/boats");
   revalidatePath("/fleet");
+  revalidatePath("/");
+}
+
+// ---------- Experiences ----------
+
+interface PageBlockRow {
+  slug: string;
+  title: string;
+  intro: string | null;
+  body: string | null;
+  hero_image: string | null;
+  is_published: boolean;
+  sort_order: number;
+}
+
+function readPageBlock(formData: FormData): PageBlockRow {
+  return {
+    slug: String(formData.get("slug") ?? "").trim(),
+    title: String(formData.get("title") ?? "").trim(),
+    intro: String(formData.get("intro") ?? "") || null,
+    body: String(formData.get("body") ?? "") || null,
+    hero_image: String(formData.get("heroImage") ?? "") || null,
+    is_published: formData.get("isPublished") === "on",
+    sort_order: Number(formData.get("sortOrder") ?? 0) || 0,
+  };
+}
+
+async function savePageBlock(
+  table: "experiences" | "destinations",
+  publicPath: string,
+  extra: Record<string, unknown> | undefined,
+  prev: SavePageBlockState,
+  formData: FormData,
+): Promise<SavePageBlockState> {
+  if (!isSupabaseConfigured()) {
+    return { status: "error", message: "Supabase is not configured." };
+  }
+  const id = (formData.get("id") as string) || null;
+  const row: Record<string, unknown> = { ...readPageBlock(formData), ...(extra ?? {}) };
+  if (!row.slug || !row.title) {
+    return { status: "error", message: "Title and slug are required." };
+  }
+  const supabase = await createSupabaseServerClient();
+  if (id) {
+    const { error } = await supabase.from(table).update(row).eq("id", id);
+    if (error) return { status: "error", message: error.message };
+  } else {
+    const { data, error } = await supabase
+      .from(table)
+      .insert(row)
+      .select("id")
+      .single();
+    if (error) return { status: "error", message: error.message };
+    return {
+      status: "ok",
+      message: `Created ${row.title as string}.`,
+      savedAt: Date.now(),
+      id: (data?.id as string) ?? null,
+    };
+  }
+  revalidatePath(`/admin/${table}`);
+  revalidatePath(publicPath);
+  revalidatePath("/");
+  void prev;
+  return {
+    status: "ok",
+    message: `Saved changes to ${row.title as string}.`,
+    savedAt: Date.now(),
+    id,
+  };
+}
+
+export async function saveExperience(
+  prev: SavePageBlockState,
+  formData: FormData,
+): Promise<SavePageBlockState> {
+  return savePageBlock("experiences", "/experiences", undefined, prev, formData);
+}
+
+export async function deleteExperience(formData: FormData) {
+  if (!isSupabaseConfigured()) return;
+  const id = String(formData.get("id") ?? "");
+  const supabase = await createSupabaseServerClient();
+  await supabase.from("experiences").delete().eq("id", id);
+  revalidatePath("/admin/experiences");
+  revalidatePath("/experiences");
+  redirect("/admin/experiences");
+}
+
+export async function toggleExperiencePublished(formData: FormData) {
+  if (!isSupabaseConfigured()) return;
+  const id = String(formData.get("id") ?? "");
+  const next = formData.get("next") === "true";
+  const supabase = await createSupabaseServerClient();
+  await supabase.from("experiences").update({ is_published: next }).eq("id", id);
+  revalidatePath("/admin/experiences");
+  revalidatePath("/experiences");
+}
+
+// ---------- Destinations ----------
+
+export async function saveDestination(
+  prev: SavePageBlockState,
+  formData: FormData,
+): Promise<SavePageBlockState> {
+  // Highlights come in as a newline-separated text field
+  const highlightsRaw = String(formData.get("highlights") ?? "");
+  const highlights = highlightsRaw
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return savePageBlock("destinations", "/destinations", { highlights }, prev, formData);
+}
+
+export async function deleteDestination(formData: FormData) {
+  if (!isSupabaseConfigured()) return;
+  const id = String(formData.get("id") ?? "");
+  const supabase = await createSupabaseServerClient();
+  await supabase.from("destinations").delete().eq("id", id);
+  revalidatePath("/admin/destinations");
+  revalidatePath("/destinations");
+  redirect("/admin/destinations");
+}
+
+export async function toggleDestinationPublished(formData: FormData) {
+  if (!isSupabaseConfigured()) return;
+  const id = String(formData.get("id") ?? "");
+  const next = formData.get("next") === "true";
+  const supabase = await createSupabaseServerClient();
+  await supabase.from("destinations").update({ is_published: next }).eq("id", id);
+  revalidatePath("/admin/destinations");
+  revalidatePath("/destinations");
+}
+
+// ---------- Site settings + page copy (About / Contact) ----------
+
+export async function saveSettings(
+  _prev: SaveSettingsState,
+  formData: FormData,
+): Promise<SaveSettingsState> {
+  if (!isSupabaseConfigured()) {
+    return { status: "error", message: "Supabase is not configured." };
+  }
+  const row = {
+    whatsapp_number: String(formData.get("whatsappNumber") ?? "") || null,
+    whatsapp_default_message: String(formData.get("whatsappDefaultMessage") ?? "") || null,
+    instagram_url: String(formData.get("instagramUrl") ?? "") || null,
+    instagram_handle: String(formData.get("instagramHandle") ?? "") || null,
+    email: String(formData.get("email") ?? "") || null,
+    phone: String(formData.get("phone") ?? "") || null,
+    address: String(formData.get("address") ?? "") || null,
+    hero_headline: String(formData.get("heroHeadline") ?? "") || null,
+    hero_sub: String(formData.get("heroSub") ?? "") || null,
+    about: {
+      heroEyebrow: String(formData.get("aboutEyebrow") ?? ""),
+      heroTitle: String(formData.get("aboutTitle") ?? ""),
+      heroSub: String(formData.get("aboutSub") ?? ""),
+      body: String(formData.get("aboutBody") ?? ""),
+    },
+    contact: {
+      heroEyebrow: String(formData.get("contactEyebrow") ?? ""),
+      heroTitle: String(formData.get("contactTitle") ?? ""),
+      heroSub: String(formData.get("contactSub") ?? ""),
+      body: String(formData.get("contactBody") ?? ""),
+    },
+  };
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("site_settings").upsert({ id: 1, ...row }, { onConflict: "id" });
+  if (error) return { status: "error", message: error.message };
+  revalidatePath("/admin/settings");
+  revalidatePath("/about");
+  revalidatePath("/contact");
+  revalidatePath("/");
+  return { status: "ok", message: "Settings saved.", savedAt: Date.now() };
 }
 
 export async function deleteBoat(formData: FormData) {
@@ -95,15 +274,18 @@ export async function deleteBoat(formData: FormData) {
   redirect("/admin/boats");
 }
 
-export async function saveBoat(formData: FormData) {
+export async function saveBoat(
+  _prev: SaveBoatState,
+  formData: FormData,
+): Promise<SaveBoatState> {
   if (!isSupabaseConfigured()) {
-    redirect("/admin/boats?error=supabase_required");
+    return { status: "error", message: "Supabase is not configured." };
   }
   const supabase = await createSupabaseServerClient();
   const id = (formData.get("id") as string) || null;
   const row = {
-    slug: String(formData.get("slug") ?? ""),
-    name: String(formData.get("name") ?? ""),
+    slug: String(formData.get("slug") ?? "").trim(),
+    name: String(formData.get("name") ?? "").trim(),
     tagline: String(formData.get("tagline") ?? "") || null,
     description: String(formData.get("description") ?? "") || null,
     long_description: String(formData.get("longDescription") ?? "") || null,
@@ -120,12 +302,36 @@ export async function saveBoat(formData: FormData) {
     sort_order: Number(formData.get("sortOrder") ?? 0) || 0,
   };
 
-  if (id) {
-    await supabase.from("boats").update(row).eq("id", id);
-  } else {
-    await supabase.from("boats").insert(row);
+  if (!row.slug || !row.name) {
+    return { status: "error", message: "Name and slug are required." };
   }
+
+  if (id) {
+    const { error } = await supabase.from("boats").update(row).eq("id", id);
+    if (error) return { status: "error", message: error.message };
+  } else {
+    const { data, error } = await supabase
+      .from("boats")
+      .insert(row)
+      .select("id")
+      .single();
+    if (error) return { status: "error", message: error.message };
+    return {
+      status: "ok",
+      message: `Created ${row.name}.`,
+      savedAt: Date.now(),
+      boatId: (data?.id as string) ?? null,
+    };
+  }
+
   revalidatePath("/admin/boats");
   revalidatePath("/fleet");
-  redirect("/admin/boats");
+  revalidatePath(`/fleet/${row.slug}`);
+  revalidatePath("/");
+  return {
+    status: "ok",
+    message: `Saved changes to ${row.name}.`,
+    savedAt: Date.now(),
+    boatId: id,
+  };
 }

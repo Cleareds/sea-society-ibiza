@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
+import { MarkdownBody } from "@/components/site/MarkdownBody";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -67,7 +68,9 @@ export default async function ExperiencesPage() {
                 <p className="mt-4 font-serif text-xl italic text-[var(--color-on-surface-variant)]">
                   {x.intro}
                 </p>
-                <p className="mt-6 leading-relaxed text-[var(--color-on-surface)]">{x.body}</p>
+                <div className="mt-6">
+                  <MarkdownBody source={x.body} />
+                </div>
                 <Button asChild className="mt-8" size="md">
                   <Link href="/contact">Plan this experience</Link>
                 </Button>

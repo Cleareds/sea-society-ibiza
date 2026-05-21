@@ -23,6 +23,7 @@ export type {
   EnquiryInput,
   Experience,
   Faq,
+  PageCopy,
   Settings,
   Testimonial,
 } from "./types";
@@ -34,8 +35,16 @@ export const getFeaturedBoats = (limit?: number) =>
   supabaseEnabled() ? supa.getFeaturedBoats(limit) : dummy.getFeaturedBoats(limit);
 export const getExperiences = () =>
   supabaseEnabled() ? supa.getExperiences() : dummy.getExperiences();
+export const getAllExperiences = () =>
+  supabaseEnabled() ? supa.getAllExperiences() : dummy.getAllExperiences();
+export const getExperienceById = (id: string) =>
+  supabaseEnabled() ? supa.getExperienceById(id) : dummy.getExperienceById(id);
 export const getDestinations = () =>
   supabaseEnabled() ? supa.getDestinations() : dummy.getDestinations();
+export const getAllDestinations = () =>
+  supabaseEnabled() ? supa.getAllDestinations() : dummy.getAllDestinations();
+export const getDestinationById = (id: string) =>
+  supabaseEnabled() ? supa.getDestinationById(id) : dummy.getDestinationById(id);
 export const getFaqs = () => (supabaseEnabled() ? supa.getFaqs() : dummy.getFaqs());
 export const getSettings = () => (supabaseEnabled() ? supa.getSettings() : dummy.getSettings());
 export const createEnquiry = (input: import("./types").EnquiryInput) =>

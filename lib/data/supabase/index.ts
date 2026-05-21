@@ -47,7 +47,16 @@ interface SettingsRow {
   hero_headline: string | null;
   hero_sub: string | null;
   testimonials: Testimonial[] | null;
+  about: import("../types").PageCopy | null;
+  contact: import("../types").PageCopy | null;
 }
+
+const emptyCopy = (): import("../types").PageCopy => ({
+  heroEyebrow: "",
+  heroTitle: "",
+  heroSub: "",
+  body: "",
+});
 
 // Row shapes (snake_case as stored in Supabase).
 interface BoatRow {
@@ -145,6 +154,19 @@ export async function getFeaturedBoats(limit = 6): Promise<Boat[]> {
   return (data ?? []).map(mapBoat);
 }
 
+function mapExperience(r: ExperienceRow): Experience {
+  return {
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    intro: r.intro ?? "",
+    body: r.body ?? "",
+    heroImage: r.hero_image ?? "",
+    sortOrder: r.sort_order,
+    isPublished: r.is_published,
+  };
+}
+
 export async function getExperiences(): Promise<Experience[]> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
@@ -154,16 +176,44 @@ export async function getExperiences(): Promise<Experience[]> {
     .order("sort_order", { ascending: true })
     .returns<ExperienceRow[]>();
   if (error) throw error;
-  return (data ?? []).map((r) => ({
+  return (data ?? []).map(mapExperience);
+}
+
+export async function getAllExperiences(): Promise<Experience[]> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase
+    .from("experiences")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .returns<ExperienceRow[]>();
+  if (error) throw error;
+  return (data ?? []).map(mapExperience);
+}
+
+export async function getExperienceById(id: string): Promise<Experience | null> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase
+    .from("experiences")
+    .select("*")
+    .eq("id", id)
+    .returns<ExperienceRow[]>()
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapExperience(data) : null;
+}
+
+function mapDestination(r: DestinationRow): Destination {
+  return {
     id: r.id,
     slug: r.slug,
     title: r.title,
     intro: r.intro ?? "",
     body: r.body ?? "",
     heroImage: r.hero_image ?? "",
-    sortOrder: r.sort_order,
+    gallery: r.gallery ?? [],
+    highlights: r.highlights ?? [],
     isPublished: r.is_published,
-  }));
+  };
 }
 
 export async function getDestinations(): Promise<Destination[]> {
@@ -174,17 +224,29 @@ export async function getDestinations(): Promise<Destination[]> {
     .eq("is_published", true)
     .returns<DestinationRow[]>();
   if (error) throw error;
-  return (data ?? []).map((r) => ({
-    id: r.id,
-    slug: r.slug,
-    title: r.title,
-    intro: r.intro ?? "",
-    body: r.body ?? "",
-    heroImage: r.hero_image ?? "",
-    gallery: r.gallery ?? [],
-    highlights: r.highlights ?? [],
-    isPublished: r.is_published,
-  }));
+  return (data ?? []).map(mapDestination);
+}
+
+export async function getAllDestinations(): Promise<Destination[]> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase
+    .from("destinations")
+    .select("*")
+    .returns<DestinationRow[]>();
+  if (error) throw error;
+  return (data ?? []).map(mapDestination);
+}
+
+export async function getDestinationById(id: string): Promise<Destination | null> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase
+    .from("destinations")
+    .select("*")
+    .eq("id", id)
+    .returns<DestinationRow[]>()
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapDestination(data) : null;
 }
 
 export async function getFaqs(): Promise<Faq[]> {
@@ -233,6 +295,8 @@ export async function getSettings(): Promise<Settings> {
     heroHeadline: data.hero_headline ?? "",
     heroSub: data.hero_sub ?? "",
     testimonials: data.testimonials ?? [],
+    about: { ...emptyCopy(), ...(data.about ?? {}) },
+    contact: { ...emptyCopy(), ...(data.contact ?? {}) },
   };
 }
 
