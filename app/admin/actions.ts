@@ -224,6 +224,33 @@ export async function toggleDestinationPublished(formData: FormData) {
 
 // ---------- Site settings + page copy (About / Contact) ----------
 
+// Locales that get an override block. Mirrors lib/i18n/config (kept inline so
+// this "use server" file has no JSON/object exports beyond async functions).
+const OVERRIDE_LOCALES = ["nl", "fr", "de", "es"] as const;
+
+function readCopy(formData: FormData, prefix: string) {
+  return {
+    heroEyebrow: String(formData.get(`${prefix}Eyebrow`) ?? ""),
+    heroTitle: String(formData.get(`${prefix}Title`) ?? ""),
+    heroSub: String(formData.get(`${prefix}Sub`) ?? ""),
+    body: String(formData.get(`${prefix}Body`) ?? ""),
+  };
+}
+
+function readI18nOverrides(formData: FormData, basePrefix: "about" | "contact") {
+  const out: Record<string, Record<string, string>> = {};
+  for (const lc of OVERRIDE_LOCALES) {
+    const localePrefix = `${basePrefix}_${lc}`;
+    const block = readCopy(formData, localePrefix);
+    // Persist only locales that have at least one non-empty field so the
+    // public page's mergeI18n() correctly falls back to EN otherwise.
+    if (Object.values(block).some((v) => v && v.trim().length > 0)) {
+      out[lc] = block;
+    }
+  }
+  return out;
+}
+
 export async function saveSettings(
   _prev: SaveSettingsState,
   formData: FormData,
@@ -241,26 +268,26 @@ export async function saveSettings(
     address: String(formData.get("address") ?? "") || null,
     hero_headline: String(formData.get("heroHeadline") ?? "") || null,
     hero_sub: String(formData.get("heroSub") ?? "") || null,
-    about: {
-      heroEyebrow: String(formData.get("aboutEyebrow") ?? ""),
-      heroTitle: String(formData.get("aboutTitle") ?? ""),
-      heroSub: String(formData.get("aboutSub") ?? ""),
-      body: String(formData.get("aboutBody") ?? ""),
-    },
-    contact: {
-      heroEyebrow: String(formData.get("contactEyebrow") ?? ""),
-      heroTitle: String(formData.get("contactTitle") ?? ""),
-      heroSub: String(formData.get("contactSub") ?? ""),
-      body: String(formData.get("contactBody") ?? ""),
-    },
+    about: readCopy(formData, "about"),
+    contact: readCopy(formData, "contact"),
+    about_i18n: readI18nOverrides(formData, "about"),
+    contact_i18n: readI18nOverrides(formData, "contact"),
   };
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.from("site_settings").upsert({ id: 1, ...row }, { onConflict: "id" });
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ id: 1, ...row }, { onConflict: "id" });
   if (error) return { status: "error", message: error.message };
   revalidatePath("/admin/settings");
   revalidatePath("/about");
   revalidatePath("/contact");
   revalidatePath("/");
+  // Each locale variant of about/contact lives at its own URL — invalidate
+  // them too so editors see translations immediately.
+  for (const lc of OVERRIDE_LOCALES) {
+    revalidatePath(`/${lc}/about`);
+    revalidatePath(`/${lc}/contact`);
+  }
   return { status: "ok", message: "Settings saved.", savedAt: Date.now() };
 }
 
