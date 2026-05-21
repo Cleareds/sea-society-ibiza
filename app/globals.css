@@ -87,8 +87,10 @@
 }
 
 @keyframes scroll-cue {
-  0%, 100% { transform: translate(-50%, 0); opacity: 0.85; }
-  50%      { transform: translate(-50%, 8px); opacity: 0.55; }
+  /* No X translation here — centering is handled by a flex wrapper.
+     This avoids fighting Tailwind's transform var composition. */
+  0%, 100% { transform: translate3d(0, 0, 0);   opacity: 0.9; }
+  50%      { transform: translate3d(0, 8px, 0); opacity: 0.55; }
 }
 
 @keyframes reveal {

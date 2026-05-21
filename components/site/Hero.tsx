@@ -72,17 +72,18 @@ export function Hero({
         </div>
       </div>
 
-      {/* Scroll cue — gently floats up & down */}
-      <a
-        href="#after-hero"
-        aria-label="Scroll to next section"
-        className="motion-safe:animate-scroll-cue group pointer-events-auto absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-[10px] uppercase tracking-[0.35em] text-white/80 hover:text-white"
-      >
-        <span className="inline-flex flex-col items-center gap-2">
+      {/* Scroll cue — centered via flex wrapper so we don't fight the
+          keyframe transform on iOS Safari. Animation only translates Y. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
+        <a
+          href="#after-hero"
+          aria-label="Scroll to next section"
+          className="motion-safe:animate-scroll-cue group pointer-events-auto inline-flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-white/85 hover:text-white"
+        >
           Scroll
           <span aria-hidden className="block h-8 w-px bg-white/60" />
-        </span>
-      </a>
+        </a>
+      </div>
     </section>
   );
 }
