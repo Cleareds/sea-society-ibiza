@@ -1,5 +1,53 @@
-import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, Settings } from "../types";
+import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, Settings, Testimonial } from "../types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseStaticClient } from "@/lib/supabase/static";
+
+interface ExperienceRow {
+  id: string;
+  slug: string;
+  title: string;
+  intro: string | null;
+  body: string | null;
+  hero_image: string | null;
+  sort_order: number;
+  is_published: boolean;
+}
+
+interface DestinationRow {
+  id: string;
+  slug: string;
+  title: string;
+  intro: string | null;
+  body: string | null;
+  hero_image: string | null;
+  gallery: Array<{ src: string; alt: string }> | null;
+  highlights: string[] | null;
+  is_published: boolean;
+}
+
+interface FaqRow {
+  id: string;
+  question: string;
+  answer: string;
+  category: string | null;
+  sort_order: number;
+  is_published: boolean;
+}
+
+interface SettingsRow {
+  id: number;
+  whatsapp_number: string | null;
+  whatsapp_default_message: string | null;
+  instagram_url: string | null;
+  instagram_handle: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  stats: Array<{ label: string; value: string }> | null;
+  hero_headline: string | null;
+  hero_sub: string | null;
+  testimonials: Testimonial[] | null;
+}
 
 // Row shapes (snake_case as stored in Supabase).
 interface BoatRow {
@@ -59,48 +107,52 @@ function mapBoat(row: BoatRow): Boat {
 }
 
 export async function getBoats(): Promise<Boat[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("boats")
     .select("*")
     .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true })
+    .returns<BoatRow[]>();
   if (error) throw error;
   return (data ?? []).map(mapBoat);
 }
 
 export async function getBoatBySlug(slug: string): Promise<Boat | null> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("boats")
     .select("*")
     .eq("slug", slug)
     .eq("is_published", true)
+    .returns<BoatRow[]>()
     .maybeSingle();
   if (error) throw error;
   return data ? mapBoat(data) : null;
 }
 
 export async function getFeaturedBoats(limit = 6): Promise<Boat[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("boats")
     .select("*")
     .eq("is_published", true)
     .eq("featured", true)
     .order("sort_order", { ascending: true })
-    .limit(limit);
+    .limit(limit)
+    .returns<BoatRow[]>();
   if (error) throw error;
   return (data ?? []).map(mapBoat);
 }
 
 export async function getExperiences(): Promise<Experience[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("experiences")
     .select("*")
     .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true })
+    .returns<ExperienceRow[]>();
   if (error) throw error;
   return (data ?? []).map((r) => ({
     id: r.id,
@@ -115,11 +167,12 @@ export async function getExperiences(): Promise<Experience[]> {
 }
 
 export async function getDestinations(): Promise<Destination[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("destinations")
     .select("*")
-    .eq("is_published", true);
+    .eq("is_published", true)
+    .returns<DestinationRow[]>();
   if (error) throw error;
   return (data ?? []).map((r) => ({
     id: r.id,
@@ -135,12 +188,13 @@ export async function getDestinations(): Promise<Destination[]> {
 }
 
 export async function getFaqs(): Promise<Faq[]> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("faqs")
     .select("*")
     .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+    .order("sort_order", { ascending: true })
+    .returns<FaqRow[]>();
   if (error) throw error;
   return (data ?? []).map((r) => ({
     id: r.id,
@@ -153,11 +207,12 @@ export async function getFaqs(): Promise<Faq[]> {
 }
 
 export async function getSettings(): Promise<Settings> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("site_settings")
     .select("*")
     .eq("id", 1)
+    .returns<SettingsRow[]>()
     .maybeSingle();
   if (error) throw error;
   if (!data) {

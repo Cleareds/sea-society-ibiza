@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { devMockSignIn, sendMagicLink } from "../actions";
+import { devMockSignIn, signInWithPassword } from "../actions";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -16,6 +16,9 @@ export default async function AdminLoginPage({
   const sp = await searchParams;
   const supabaseOn = isSupabaseConfigured();
 
+  const inputClass =
+    "mt-2 h-11 w-full rounded-full border border-[var(--color-outline)] bg-transparent px-4 text-sm normal-case tracking-normal text-[var(--color-on-surface)] focus-visible:border-[var(--color-primary)] focus-visible:outline-none";
+
   return (
     <main className="grid min-h-screen place-items-center bg-[var(--color-surface-container-low)] px-5">
       <div className="w-full max-w-md rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-8">
@@ -27,24 +30,32 @@ export default async function AdminLoginPage({
         </Link>
 
         {sp.error && (
-          <p role="alert" className="mt-4 rounded-md bg-[var(--color-error)]/10 px-3 py-2 text-sm text-[var(--color-error)]">
+          <p
+            role="alert"
+            className="mt-4 rounded-md bg-[var(--color-error)]/10 px-3 py-2 text-sm text-[var(--color-error)]"
+          >
             {sp.error === "supabase_not_configured"
-              ? "Supabase is not configured. Use the dev sign-in below."
+              ? "Supabase is not configured."
               : sp.error === "mock_disabled"
                 ? "Dev mock sign-in is only available in development."
                 : sp.error === "unauthorized"
                   ? "That email is not on the ADMIN_EMAILS whitelist."
-                  : sp.error}
+                  : sp.error === "credentials_required"
+                    ? "Email and password are required."
+                    : sp.error}
           </p>
         )}
         {sp.sent && (
-          <p role="status" className="mt-4 rounded-md bg-[var(--color-primary)]/10 px-3 py-2 text-sm text-[var(--color-primary)]">
+          <p
+            role="status"
+            className="mt-4 rounded-md bg-[var(--color-primary)]/10 px-3 py-2 text-sm text-[var(--color-primary)]"
+          >
             Magic link sent. Check your inbox.
           </p>
         )}
 
         {supabaseOn ? (
-          <form action={sendMagicLink} className="mt-6 space-y-4">
+          <form action={signInWithPassword} className="mt-6 space-y-4">
             <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
               Email
               <input
@@ -52,14 +63,24 @@ export default async function AdminLoginPage({
                 name="email"
                 required
                 autoComplete="email"
-                className="mt-2 h-11 w-full rounded-full border border-[var(--color-outline)] bg-transparent px-4 text-sm focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
+                className={inputClass}
+              />
+            </label>
+            <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
+              Password
+              <input
+                type="password"
+                name="password"
+                required
+                autoComplete="current-password"
+                className={inputClass}
               />
             </label>
             <button
               type="submit"
-              className="h-11 w-full rounded-full bg-[var(--color-primary)] text-sm font-medium text-white"
+              className="h-11 w-full rounded-full bg-[var(--color-primary)] text-sm font-medium text-white hover:bg-[var(--color-primary-container)]"
             >
-              Send magic link
+              Sign in
             </button>
           </form>
         ) : (

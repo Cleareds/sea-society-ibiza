@@ -38,14 +38,17 @@ const TABLES = ["boats", "experiences", "destinations", "faqs", "enquiries", "si
 
 let allOk = true;
 for (const t of TABLES) {
-  const { count, error } = await supabase
+  // Use a regular GET (no head:true) so PGRST205 surfaces as a real error
+  // instead of being swallowed by the count path.
+  const { data, count, error } = await supabase
     .from(t)
-    .select("*", { count: "exact", head: true });
+    .select("*", { count: "exact" })
+    .limit(1);
   if (error) {
     allOk = false;
     console.log(`✗ ${t.padEnd(15)} ${error.code ?? ""} ${error.message}`);
   } else {
-    console.log(`✓ ${t.padEnd(15)} ${count ?? 0} rows`);
+    console.log(`✓ ${t.padEnd(15)} ${count ?? data?.length ?? 0} rows`);
   }
 }
 
