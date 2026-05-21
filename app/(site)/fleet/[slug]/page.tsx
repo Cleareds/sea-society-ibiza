@@ -192,8 +192,8 @@ export default async function BoatDetailPage({
       </Section>
 
       {related.length > 0 && (
-        <Section className="bg-[var(--color-surface-container-low)] -mx-5 px-5 md:-mx-10 md:px-10">
-          <div className="mx-auto max-w-(--spacing-container-max)">
+        <Section bleed className="bg-[var(--color-surface-container-low)]">
+          <div>
             <div className="flex items-baseline justify-between">
               <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
                 Similar boats

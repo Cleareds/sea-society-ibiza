@@ -130,7 +130,7 @@ export default async function ContactPage() {
         </div>
       </Section>
 
-      <Section className="-mx-5 bg-[var(--color-surface-container-low)] px-5 md:-mx-10 md:px-10">
+      <Section bleed className="bg-[var(--color-surface-container-low)]">
         <div className="mx-auto max-w-3xl">
           <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
             Frequently asked

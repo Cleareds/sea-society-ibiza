@@ -96,8 +96,8 @@ export default async function HomePage() {
       </Section>
 
       {/* Featured fleet */}
-      <Section className="-mx-5 bg-[var(--color-surface-container-low)] px-5 md:-mx-10 md:px-10">
-        <div className="mx-auto max-w-(--spacing-container-max)">
+      <Section bleed className="bg-[var(--color-surface-container-low)]">
+        <div>
           <div className="flex flex-col items-baseline justify-between gap-3 md:flex-row">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
@@ -170,8 +170,8 @@ export default async function HomePage() {
       </Section>
 
       {/* Destinations teaser */}
-      <Section className="-mx-5 bg-[var(--color-surface-container-low)] px-5 md:-mx-10 md:px-10">
-        <div className="mx-auto max-w-(--spacing-container-max)">
+      <Section bleed className="bg-[var(--color-surface-container-low)]">
+        <div>
           <div className="flex flex-col items-baseline justify-between gap-3 md:flex-row">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
@@ -225,7 +225,7 @@ export default async function HomePage() {
       </Section>
 
       {/* Enquiry CTA */}
-      <Section className="-mx-5 bg-[var(--color-primary)] px-5 text-[var(--color-on-primary)] md:-mx-10 md:px-10">
+      <Section bleed className="bg-[var(--color-primary)] text-[var(--color-on-primary)]">
         <div className="mx-auto max-w-3xl">
           <p className="text-center text-xs uppercase tracking-[0.25em] text-white/70">
             Your charter starts with a message.

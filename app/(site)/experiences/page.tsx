@@ -77,8 +77,8 @@ export default async function ExperiencesPage() {
         </ul>
       </Section>
 
-      <Section className="-mx-5 bg-[var(--color-surface-container-low)] px-5 md:-mx-10 md:px-10">
-        <div className="mx-auto max-w-(--spacing-container-max)">
+      <Section bleed className="bg-[var(--color-surface-container-low)]">
+        <div>
           <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
             Make it yours
           </p>

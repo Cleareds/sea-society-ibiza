@@ -84,8 +84,8 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section className="-mx-5 bg-[var(--color-surface-container-low)] px-5 md:-mx-10 md:px-10">
-        <div className="mx-auto max-w-(--spacing-container-max)">
+      <Section bleed className="bg-[var(--color-surface-container-low)]">
+        <div>
           <ul className="grid gap-8 md:grid-cols-3">
             {pillars.map((p, i) => (
               <li key={p.h}>
