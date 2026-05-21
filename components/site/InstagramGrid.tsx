@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { photo } from "@/lib/data/dummy/images";
+import { imageVariant } from "@/lib/image-url";
 
 const tiles = [
   photo.ibizaSea,
@@ -38,7 +39,7 @@ export function InstagramGrid({ handle, href }: Props) {
         {tiles.map((src, i) => (
           <li key={src + i} className="relative aspect-square overflow-hidden rounded-xl">
             <Image
-              src={src}
+              src={imageVariant(src, 600)}
               alt=""
               fill
               loading="lazy"

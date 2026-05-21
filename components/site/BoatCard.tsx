@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Boat } from "@/lib/data/types";
 import { localePath, type Locale } from "@/lib/i18n/config";
+import { imageVariant } from "@/lib/image-url";
 
 interface BoatCardProps {
   boat: Boat;
@@ -20,7 +21,7 @@ export function BoatCard({ boat, locale = "en", priority = false, fromLabel }: B
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         <Image
-          src={boat.heroImage}
+          src={imageVariant(boat.heroImage, 900)}
           alt={`${boat.name} — ${boat.tagline}`}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 90vw"

@@ -24,6 +24,7 @@ import {
 import { photo } from "@/lib/data/dummy/images";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { imageVariant } from "@/lib/image-url";
 
 const HOME_HERO = "/images/hero/el-verde.webp";
 
@@ -106,7 +107,7 @@ export default async function HomePage({
             </div>
             <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
               <Image
-                src={photo.yachtAerial}
+                src={imageVariant(photo.yachtAerial, 1200)}
                 alt="Aerial view of a luxury yacht circling in shallow turquoise water near Ibiza."
                 fill
                 sizes="(min-width: 768px) 40vw, 90vw"
@@ -181,7 +182,7 @@ export default async function HomePage({
               >
                 <div className="relative aspect-[4/3]">
                   <Image
-                    src={x.heroImage}
+                    src={imageVariant(x.heroImage, 900)}
                     alt=""
                     fill
                     sizes="(min-width: 768px) 30vw, 90vw"
@@ -225,7 +226,7 @@ export default async function HomePage({
                 >
                   <div className="relative aspect-[3/4]">
                     <Image
-                      src={d.heroImage}
+                      src={imageVariant(d.heroImage, 900)}
                       alt={`${d.title} — ${d.intro}`}
                       fill
                       sizes="(min-width: 768px) 30vw, 90vw"

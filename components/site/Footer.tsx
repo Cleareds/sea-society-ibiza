@@ -93,13 +93,20 @@ export function Footer({ settings, locale, t }: FooterProps) {
             <address className="mt-4 not-italic text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
               {settings.address}
             </address>
+            {/* min-height ensures these meet WCAG 2.5.5 (24×24 touch target). */}
             <p className="mt-3 text-sm">
-              <a href={`mailto:${settings.email}`} className="hover:text-[var(--color-primary)]">
+              <a
+                href={`mailto:${settings.email}`}
+                className="inline-flex min-h-[28px] items-center hover:text-[var(--color-primary)]"
+              >
                 {settings.email}
               </a>
             </p>
             <p className="text-sm">
-              <a href={`tel:${settings.phone}`} className="hover:text-[var(--color-primary)]">
+              <a
+                href={`tel:${settings.phone}`}
+                className="inline-flex min-h-[28px] items-center hover:text-[var(--color-primary)]"
+              >
                 {settings.phone}
               </a>
             </p>
