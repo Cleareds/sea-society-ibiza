@@ -9,6 +9,7 @@ import { Testimonials } from "@/components/site/Testimonials";
 import { InstagramGrid } from "@/components/site/InstagramGrid";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
 import { WhatsAppCTA } from "@/components/site/WhatsAppCTA";
+import { Reveal } from "@/components/site/Reveal";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { websiteLd, fleetItemListLd } from "@/lib/seo/jsonld";
@@ -20,6 +21,8 @@ import {
   getSettings,
 } from "@/lib/data";
 import { photo } from "@/lib/data/dummy/images";
+
+const HOME_HERO = "/images/hero/el-verde.png";
 
 export const revalidate = 3600;
 
@@ -47,13 +50,16 @@ export default async function HomePage() {
       <Hero
         headline={settings.heroHeadline}
         sub={settings.heroSub}
-        imageSrc={photo.esVedra}
-        imageAlt="Es Vedra rock rising from a turquoise sea off the south coast of Ibiza, with yachts at anchor."
+        imageSrc={HOME_HERO}
+        imageAlt="Es Vedra rock at golden hour off the south coast of Ibiza, with a fleet of luxury yachts at anchor on the turquoise sea."
       />
+
+      {/* Everything below the hero scrolls over the sticky hero image. */}
+      <div id="after-hero" className="relative z-10 bg-[var(--color-surface)]">
 
       {/* Intro */}
       <Section>
-        <div className="grid items-center gap-12 md:grid-cols-12">
+        <Reveal className="grid items-center gap-12 md:grid-cols-12">
           <div className="md:col-span-7">
             <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
               The experience
@@ -87,17 +93,19 @@ export default async function HomePage() {
               className="object-cover"
             />
           </div>
-        </div>
+        </Reveal>
       </Section>
 
       {/* Stats */}
       <Section spacing="tight">
-        <StatsBar stats={settings.stats} />
+        <Reveal>
+          <StatsBar stats={settings.stats} />
+        </Reveal>
       </Section>
 
       {/* Featured fleet */}
       <Section bleed className="bg-[var(--color-surface-container-low)]">
-        <div>
+        <Reveal>
           <div className="flex flex-col items-baseline justify-between gap-3 md:flex-row">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
@@ -123,12 +131,12 @@ export default async function HomePage() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </Section>
 
       {/* Experiences teaser */}
       <Section>
-        <div className="flex flex-col items-baseline justify-between gap-3 md:flex-row">
+        <Reveal className="flex flex-col items-baseline justify-between gap-3 md:flex-row">
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
               For every kind of day
@@ -143,11 +151,13 @@ export default async function HomePage() {
           >
             All experiences →
           </Link>
-        </div>
+        </Reveal>
         <ul className="mt-10 grid gap-6 md:grid-cols-3">
-          {experiences.slice(0, 3).map((x) => (
-            <li
+          {experiences.slice(0, 3).map((x, i) => (
+            <Reveal
+              as="li"
               key={x.id}
+              delay={i * 120}
               className="overflow-hidden rounded-2xl bg-[var(--color-surface-container-low)]"
             >
               <div className="relative aspect-[4/3]">
@@ -164,14 +174,14 @@ export default async function HomePage() {
                 <h3 className="font-serif text-2xl text-[var(--color-on-surface)]">{x.title}</h3>
                 <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">{x.intro}</p>
               </div>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </Section>
 
       {/* Destinations teaser */}
       <Section bleed className="bg-[var(--color-surface-container-low)]">
-        <div>
+        <Reveal>
           <div className="flex flex-col items-baseline justify-between gap-3 md:flex-row">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
@@ -211,12 +221,14 @@ export default async function HomePage() {
               </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
       </Section>
 
       {/* Testimonials */}
       <Section>
-        <Testimonials items={settings.testimonials} />
+        <Reveal>
+          <Testimonials items={settings.testimonials} />
+        </Reveal>
       </Section>
 
       {/* Instagram placeholder grid */}
@@ -226,7 +238,7 @@ export default async function HomePage() {
 
       {/* Enquiry CTA */}
       <Section bleed className="bg-[var(--color-primary)] text-[var(--color-on-primary)]">
-        <div className="mx-auto max-w-3xl">
+        <Reveal className="mx-auto max-w-3xl">
           <p className="text-center text-xs uppercase tracking-[0.25em] text-white/70">
             Your charter starts with a message.
           </p>
@@ -248,8 +260,10 @@ export default async function HomePage() {
             </a>
             .
           </p>
-        </div>
+        </Reveal>
       </Section>
+
+      </div>{/* /after-hero overlap wrapper */}
     </>
   );
 }

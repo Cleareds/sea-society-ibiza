@@ -11,6 +11,14 @@ interface HeroProps {
   primaryLabel?: string;
   secondaryHref?: string;
   secondaryLabel?: string;
+  /**
+   * When true (default), the hero pins to the top of the viewport via
+   * `position: sticky`. Subsequent sections must carry `relative z-10`
+   * + a solid background so they scroll *over* it, creating the
+   * background-cover-fixed illusion without the iOS Safari bugs that
+   * `background-attachment: fixed` has.
+   */
+  pinned?: boolean;
 }
 
 export function Hero({
@@ -22,28 +30,39 @@ export function Hero({
   primaryLabel = "Explore the fleet",
   secondaryHref = "/contact",
   secondaryLabel = "Plan your charter",
+  pinned = true,
 }: HeroProps) {
   return (
-    <section className="relative isolate min-h-[100svh] w-full overflow-hidden bg-[var(--color-primary)]">
+    <section
+      className={
+        pinned
+          ? "sticky top-0 z-0 isolate h-[100svh] w-full overflow-hidden bg-[var(--color-primary)]"
+          : "relative isolate min-h-[100svh] w-full overflow-hidden bg-[var(--color-primary)]"
+      }
+    >
       <Image
         src={imageSrc}
         alt={imageAlt}
         fill
         priority
         sizes="100vw"
-        className="object-cover"
+        quality={85}
+        className="object-cover motion-safe:animate-hero-zoom"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/55" />
+      {/* Subtle vignette — dark at the foot for legibility of the CTAs, light at the top */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/0 to-black/55" />
 
-      <div className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-5 pb-24 pt-32 text-center text-white md:pt-40">
-        <p className="text-xs uppercase tracking-[0.35em] text-white/80">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-5 pb-24 pt-28 text-center text-white md:pt-40">
+        <p className="motion-safe:animate-hero-rise text-xs uppercase tracking-[0.35em] text-white/85 [animation-delay:120ms]">
           One platform. Endless experiences at sea.
         </p>
-        <h1 className="mt-6 max-w-4xl font-serif text-[10vw] leading-[1.02] tracking-tight md:text-7xl lg:text-[88px]">
+        <h1 className="motion-safe:animate-hero-rise mt-6 max-w-4xl font-serif text-[11vw] leading-[1.02] tracking-tight [animation-delay:240ms] md:text-7xl lg:text-[88px]">
           {headline}
         </h1>
-        <p className="mt-6 max-w-xl text-base text-white/85 md:text-lg">{sub}</p>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+        <p className="motion-safe:animate-hero-rise mt-6 max-w-xl text-base text-white/90 [animation-delay:380ms] md:text-lg">
+          {sub}
+        </p>
+        <div className="motion-safe:animate-hero-rise mt-10 flex flex-col gap-3 [animation-delay:520ms] sm:flex-row">
           <Button asChild size="lg" variant="primary">
             <Link href={primaryHref}>{primaryLabel}</Link>
           </Button>
@@ -53,9 +72,17 @@ export function Hero({
         </div>
       </div>
 
-      <div className="pointer-events-none absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-xs uppercase tracking-[0.3em] text-white/70">
-        <span aria-hidden>↓</span> scroll
-      </div>
+      {/* Scroll cue — gently floats up & down */}
+      <a
+        href="#after-hero"
+        aria-label="Scroll to next section"
+        className="motion-safe:animate-scroll-cue group pointer-events-auto absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-[10px] uppercase tracking-[0.35em] text-white/80 hover:text-white"
+      >
+        <span className="inline-flex flex-col items-center gap-2">
+          Scroll
+          <span aria-hidden className="block h-8 w-px bg-white/60" />
+        </span>
+      </a>
     </section>
   );
 }
