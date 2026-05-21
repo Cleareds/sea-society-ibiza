@@ -27,12 +27,14 @@ export function Analytics() {
   const [consent, setConsent] = React.useState<Consent>({ analytics: false, marketing: false });
 
   React.useEffect(() => {
-    setConsent(readConsent());
     const onUpdate = (e: Event) => {
       const detail = (e as CustomEvent<Consent>).detail;
       if (detail) setConsent({ analytics: !!detail.analytics, marketing: !!detail.marketing });
     };
     window.addEventListener("ssi:consent", onUpdate);
+    // Sync from cookie after hydration, deferred to satisfy
+    // react-hooks/set-state-in-effect.
+    queueMicrotask(() => setConsent(readConsent()));
     return () => window.removeEventListener("ssi:consent", onUpdate);
   }, []);
 

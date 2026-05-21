@@ -10,7 +10,7 @@ function adminEmails(): string[] {
     .filter(Boolean);
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (!pathname.startsWith("/admin")) return NextResponse.next();
   if (pathname === "/admin/login" || pathname === "/admin/auth/callback") {

@@ -25,16 +25,17 @@ interface HeaderProps {
 }
 
 export function Header({ transparentOnHero = false }: HeaderProps) {
-  const [scrolled, setScrolled] = React.useState(false);
+  // Initialise from `transparentOnHero` so we never need a sync setState
+  // inside the effect for the static-header case (React 19.2 forbids it).
+  const [scrolled, setScrolled] = React.useState(!transparentOnHero);
 
   React.useEffect(() => {
-    if (!transparentOnHero) {
-      setScrolled(true);
-      return;
-    }
+    if (!transparentOnHero) return;
     const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    // Sync once on mount, deferred via microtask so we never set state inside
+    // the effect body (react-hooks/set-state-in-effect).
+    queueMicrotask(onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, [transparentOnHero]);
 

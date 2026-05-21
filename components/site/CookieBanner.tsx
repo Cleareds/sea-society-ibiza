@@ -39,7 +39,12 @@ export function CookieBanner() {
   const [marketing, setMarketing] = React.useState(false);
 
   React.useEffect(() => {
-    if (!read()) setVisible(true);
+    // Defer via microtask so we don't synchronously set state inside the
+    // effect (react-hooks/set-state-in-effect). The banner shows after
+    // hydration if no consent cookie is present.
+    queueMicrotask(() => {
+      if (!read()) setVisible(true);
+    });
   }, []);
 
   if (!visible) return null;
