@@ -22,7 +22,7 @@ import {
 } from "@/lib/data";
 import { photo } from "@/lib/data/dummy/images";
 
-const HOME_HERO = "/images/hero/el-verde.png";
+const HOME_HERO = "/images/hero/el-verde.webp";
 
 export const revalidate = 3600;
 
