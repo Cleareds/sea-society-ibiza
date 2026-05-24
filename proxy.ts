@@ -3,12 +3,26 @@ import { updateSession } from "@/lib/supabase/middleware";
 import { defaultLocale, isLocale } from "@/lib/i18n/config";
 
 const ADMIN_COOKIE = "ssi-dev-admin";
+const PREVIEW_COOKIE = "ssi-preview";
 
 function adminEmails(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")
     .split(",")
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean);
+}
+
+function bypassIps(): string[] {
+  return (process.env.MAINTENANCE_BYPASS_IPS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function clientIp(request: NextRequest): string | null {
+  const xff = request.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0]?.trim() ?? null;
+  return request.headers.get("x-real-ip");
 }
 
 // Static-asset extensions we never want touched by locale routing —
@@ -23,6 +37,7 @@ function isExcludedPath(pathname: string): boolean {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/admin") ||
+    pathname === "/maintenance" ||
     pathname.startsWith("/images/") ||
     pathname.startsWith("/brand/") ||
     pathname.startsWith("/fonts/") ||
@@ -47,6 +62,75 @@ function setSecurityHeaders(res: NextResponse): NextResponse {
   res.headers.set("X-Frame-Options", "SAMEORIGIN");
   res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   return res;
+}
+
+/**
+ * Maintenance / coming-soon gate. Active when MAINTENANCE_MODE=true.
+ * Three bypass paths:
+ *   1. URL contains `?preview=<MAINTENANCE_BYPASS_TOKEN>` — sets a cookie
+ *      and redirects to the same URL without the query.
+ *   2. The `ssi-preview` cookie matches MAINTENANCE_BYPASS_TOKEN.
+ *   3. The client IP appears in MAINTENANCE_BYPASS_IPS.
+ *
+ * /admin/*, /api/*, /_next/*, static assets and /maintenance itself
+ * always pass through.
+ */
+function handleMaintenance(request: NextRequest): NextResponse | null {
+  if (process.env.MAINTENANCE_MODE !== "true") return null;
+
+  const { pathname, searchParams } = request.nextUrl;
+
+  if (
+    pathname === "/maintenance" ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/admin") ||
+    STATIC_EXT_RE.test(pathname) ||
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/brand/") ||
+    pathname.startsWith("/fonts/") ||
+    pathname.startsWith("/og/")
+  ) {
+    return null;
+  }
+
+  const token = process.env.MAINTENANCE_BYPASS_TOKEN ?? "";
+
+  // 1. Query-string bypass — set cookie, drop the param, redirect clean
+  const queryToken = searchParams.get("preview");
+  if (token && queryToken === token) {
+    const clean = request.nextUrl.clone();
+    clean.searchParams.delete("preview");
+    const response = NextResponse.redirect(clean, 307);
+    response.cookies.set(PREVIEW_COOKIE, token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+    return setSecurityHeaders(response);
+  }
+
+  // 2. Cookie bypass
+  if (token && request.cookies.get(PREVIEW_COOKIE)?.value === token) return null;
+
+  // 3. IP allowlist
+  const ips = bypassIps();
+  if (ips.length > 0) {
+    const ip = clientIp(request);
+    if (ip && ips.includes(ip)) return null;
+  }
+
+  // Otherwise: rewrite to the coming-soon page with 503 status
+  const url = request.nextUrl.clone();
+  url.pathname = "/maintenance";
+  url.search = "";
+  const response = NextResponse.rewrite(url, { status: 503 });
+  // Caches must never serve a stale maintenance copy after the gate flips
+  response.headers.set("Cache-Control", "no-store, must-revalidate");
+  response.headers.set("Retry-After", "3600");
+  return setSecurityHeaders(response);
 }
 
 // Locale block — must run before admin routing so /admin/* falls through cleanly.
@@ -82,7 +166,11 @@ function handleLocale(request: NextRequest): NextResponse | null {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Admin gate (unchanged)
+  // 0. Maintenance gate — must be first so it covers locale + admin routing.
+  const maintenance = handleMaintenance(request);
+  if (maintenance) return maintenance;
+
+  // 1. Admin gate
   if (pathname.startsWith("/admin")) {
     if (pathname === "/admin/login" || pathname === "/admin/auth/callback") {
       return setSecurityHeaders(NextResponse.next());
@@ -115,8 +203,8 @@ export async function proxy(request: NextRequest) {
   return setSecurityHeaders(passthrough);
 }
 
-// Run on every request — locale logic needs the path. The internal filter in
-// isExcludedPath() keeps next-internal + static paths free.
+// Run on every request — locale + maintenance logic needs the path. The
+// internal filter in isExcludedPath() keeps next-internal + static paths free.
 export const config = {
   matcher: ["/((?!_next/static|_next/image).*)"],
 };
