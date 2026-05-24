@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Starc Serif';
+    src: url('StarcSerifRegular.woff2') format('woff2'),
+        url('StarcSerifRegular.woff') format('woff'),
+        url('StarcSerifRegular.ttf') format('truetype'),
+        url('StarcSerifRegular.svg#StarcSerifRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

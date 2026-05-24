@@ -151,6 +151,245 @@ h1, h2, h3, h4 {
   [data-reveal] { opacity: 1; transform: none; }
 }
 
+/* =================================================================
+   Parallax Journey (used on /journey route)
+
+   How it works:
+   1. A tall outer section (default 400svh) drives the scroll position.
+   2. A sticky inner stage stays pinned at 100svh during the scroll.
+   3. A client component writes a 0→1 progress value to `--p` on the
+      outer section every animation frame.
+   4. Each layer / cloud / text element has a paused keyframe animation
+      with `animation-delay: calc(var(--p) * -1s)` — i.e. it sits at a
+      specific point in its 1s timeline equal to the scroll progress.
+      No transform recalcs, no scroll-listener layout thrash; the
+      browser interpolates the keyframes on the compositor.
+   5. Each animation is GPU-only (opacity + transform). will-change set.
+   ================================================================= */
+
+.pj {
+  --p: 0;
+}
+
+.pj-stage,
+.pj-layer,
+.pj-cloud,
+.pj-yacht,
+.pj-text,
+.pj-eyebrow,
+.pj-cue {
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-play-state: paused;
+  animation-delay: calc(var(--p) * -1s);
+}
+
+.pj-layer {
+  position: absolute;
+  inset: 0;
+  will-change: opacity, transform;
+}
+
+/* Layer 1 — Sky / top of mountain */
+.pj-layer--sky { animation-name: pj-sky; }
+@keyframes pj-sky {
+  0%   { opacity: 1; transform: scale(1.02); }
+  18%  { opacity: 1; transform: scale(1.07); }
+  32%  { opacity: 0; transform: scale(1.10); }
+  100% { opacity: 0; transform: scale(1.10); }
+}
+
+/* Layer 2 — Mountainside, mid-altitude */
+.pj-layer--mid { animation-name: pj-mid; }
+@keyframes pj-mid {
+  0%   { opacity: 0; transform: scale(1.12); }
+  20%  { opacity: 0; transform: scale(1.08); }
+  35%  { opacity: 1; transform: scale(1.04); }
+  60%  { opacity: 1; transform: scale(1.00); }
+  72%  { opacity: 0; transform: scale(0.98); }
+  100% { opacity: 0; transform: scale(0.96); }
+}
+
+/* Layer 3 — Sea / Es Vedra */
+.pj-layer--sea { animation-name: pj-sea; }
+@keyframes pj-sea {
+  0%   { opacity: 0; transform: scale(1.08); }
+  65%  { opacity: 0; transform: scale(1.05); }
+  80%  { opacity: 1; transform: scale(1.01); }
+  100% { opacity: 1; transform: scale(1.00); }
+}
+
+/* Subtle dark gradient on every stage for text legibility */
+.pj-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.05) 35%,
+    rgba(0, 0, 0, 0.05) 65%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* Decorative clouds — three depths drifting across the viewport at
+   different speeds. The further they are, the slower they move. */
+.pj-cloud {
+  position: absolute;
+  pointer-events: none;
+  will-change: opacity, transform;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pj-cloud--back  { width: 38vw; top: 14%; animation-name: pj-cloud-back; }
+.pj-cloud--mid   { width: 52vw; top: 28%; animation-name: pj-cloud-mid; }
+.pj-cloud--front { width: 64vw; top: 8%;  animation-name: pj-cloud-front; }
+
+@keyframes pj-cloud-back {
+  0%   { opacity: 0.0; transform: translate3d(120vw, 0, 0); }
+  10%  { opacity: 0.7; }
+  45%  { opacity: 0.7; transform: translate3d(-10vw, 0, 0); }
+  70%  { opacity: 0.0; transform: translate3d(-80vw, 0, 0); }
+  100% { opacity: 0.0; }
+}
+@keyframes pj-cloud-mid {
+  0%   { opacity: 0.0; transform: translate3d(140vw, 0, 0); }
+  8%   { opacity: 0.6; }
+  50%  { opacity: 0.6; transform: translate3d(-40vw, 0, 0); }
+  65%  { opacity: 0.0; transform: translate3d(-110vw, 0, 0); }
+  100% { opacity: 0.0; }
+}
+@keyframes pj-cloud-front {
+  0%   { opacity: 0.0; transform: translate3d(160vw, 0, 0); }
+  5%   { opacity: 0.85; }
+  35%  { opacity: 0.85; transform: translate3d(-80vw, 0, 0); }
+  55%  { opacity: 0.0; transform: translate3d(-200vw, 0, 0); }
+  100% { opacity: 0.0; }
+}
+
+/* Yacht silhouette — slides in late, settles at lower right */
+.pj-yacht {
+  position: absolute;
+  width: 36vw;
+  max-width: 520px;
+  bottom: 14%;
+  right: 8%;
+  pointer-events: none;
+  will-change: opacity, transform;
+  animation-name: pj-yacht;
+  color: rgba(255, 255, 255, 0.92);
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35));
+}
+@keyframes pj-yacht {
+  0%   { opacity: 0; transform: translate3d(60vw, 20px, 0); }
+  70%  { opacity: 0; transform: translate3d(40vw, 16px, 0); }
+  88%  { opacity: 1; transform: translate3d(0, 0, 0); }
+  100% { opacity: 1; transform: translate3d(-2vw, -4px, 0); }
+}
+
+/* Stage text — three stacked text blocks each visible during their stage */
+.pj-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 1.25rem;
+  text-align: center;
+  color: #fff;
+  pointer-events: none;
+  will-change: opacity, transform;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+}
+
+.pj-text--stage1 { animation-name: pj-text-1; }
+.pj-text--stage2 { animation-name: pj-text-2; }
+.pj-text--stage3 { animation-name: pj-text-3; }
+
+@keyframes pj-text-1 {
+  0%   { opacity: 0; transform: translate3d(0, 30px, 0); }
+  6%   { opacity: 1; transform: translate3d(0, 0, 0); }
+  22%  { opacity: 1; transform: translate3d(0, 0, 0); }
+  30%  { opacity: 0; transform: translate3d(0, -24px, 0); }
+  100% { opacity: 0; transform: translate3d(0, -24px, 0); }
+}
+@keyframes pj-text-2 {
+  0%   { opacity: 0; transform: translate3d(0, 30px, 0); }
+  38%  { opacity: 0; transform: translate3d(0, 20px, 0); }
+  46%  { opacity: 1; transform: translate3d(0, 0, 0); }
+  60%  { opacity: 1; transform: translate3d(0, 0, 0); }
+  68%  { opacity: 0; transform: translate3d(0, -24px, 0); }
+  100% { opacity: 0; }
+}
+@keyframes pj-text-3 {
+  0%   { opacity: 0; transform: translate3d(0, 30px, 0); }
+  72%  { opacity: 0; transform: translate3d(0, 20px, 0); }
+  82%  { opacity: 1; transform: translate3d(0, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Brand eyebrow + scroll cue */
+.pj-eyebrow,
+.pj-cue {
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.78);
+}
+.pj-eyebrow { animation-name: pj-eyebrow; }
+.pj-cue     { animation-name: pj-cue; }
+
+@keyframes pj-eyebrow {
+  0%   { opacity: 0; transform: translate3d(0, -8px, 0); }
+  4%   { opacity: 1; transform: translate3d(0, 0, 0); }
+  90%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes pj-cue {
+  0%   { opacity: 0; }
+  6%   { opacity: 0.8; }
+  18%  { opacity: 0.8; }
+  28%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* CTA card appears at the end of the journey */
+.pj-cta-card {
+  animation-name: pj-cta-card;
+}
+@keyframes pj-cta-card {
+  0%   { opacity: 0; transform: translate3d(0, 20px, 0); }
+  82%  { opacity: 0; transform: translate3d(0, 16px, 0); }
+  92%  { opacity: 1; transform: translate3d(0, 0, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Reduced motion — collapse to a static composition (the sea/final
+   stage with text 3 visible). The container shrinks to a single 100svh
+   so there's no useless 4× scroll. */
+@media (prefers-reduced-motion: reduce) {
+  .pj { height: 100svh !important; }
+  .pj-layer,
+  .pj-cloud,
+  .pj-yacht,
+  .pj-text,
+  .pj-eyebrow,
+  .pj-cue,
+  .pj-cta-card { animation: none !important; }
+  .pj-layer--sky,
+  .pj-layer--mid,
+  .pj-cloud,
+  .pj-eyebrow,
+  .pj-cue,
+  .pj-text--stage1,
+  .pj-text--stage2 { opacity: 0; }
+  .pj-layer--sea,
+  .pj-text--stage3,
+  .pj-yacht,
+  .pj-cta-card { opacity: 1; transform: none; }
+}
+
 /* Skip-to-content link */
 .skip-link {
   position: absolute;
