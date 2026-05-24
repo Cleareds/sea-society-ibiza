@@ -7,15 +7,17 @@ import { pageMetadata } from "@/lib/seo/metadata";
 export const revalidate = 3600;
 
 const JOURNEY_LAYERS = {
-  /** Stage 1 — looking down at clouds from above (aerial). */
+  /** Stage 1 — looking down at clouds from above (aerial). The opening
+   *  shot of the descent into Ibiza. */
   sky: "https://images.unsplash.com/photo-1493514789931-586cb221d7a7?w=2400&q=82&auto=format&fit=crop",
-  /** Stage 2 — mountainside / dramatic landscape mid-altitude. */
-  mid: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=82&auto=format&fit=crop",
-  /** Stage 3 — back to the brand: Es Vedra at golden hour with the fleet. */
+  /** Stage 2 — Botafoc Marina aerial (Ibiza, verified). Replaces the
+   *  off-brand Bavarian Alps photo with something on-island. */
+  mid: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=2400&q=82&auto=format&fit=crop",
+  /** Stage 3 — Es Vedra at golden hour with the fleet (local file). */
   sea: "/images/hero/el-verde.webp",
-  /** Drifting cloud overlay — a real cloud photo blended via mix-blend-mode:
-   *  screen, so only the white cloud pixels show through every stage.
-   *  Photo: clouds-against-blue-sky (Unsplash, verified). */
+  /** Drifting cloud overlay — sun rays through clouds, blended via
+   *  mix-blend-mode: screen so only the bright pixels show through.
+   *  Drifts diagonally (more vertical motion) across the whole journey. */
   cloudsOverlay:
     "https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=2400&q=78&auto=format&fit=crop",
 } as const;

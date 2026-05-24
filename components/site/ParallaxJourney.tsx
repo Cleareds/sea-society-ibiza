@@ -94,7 +94,9 @@ export function ParallaxJourney({ locale, layers, texts }: Props) {
 
         {/* Photographic cloud overlay — real clouds drifting across the
             entire journey, rendered with mix-blend-mode: screen so only
-            the bright cloud pixels show through against every layer. */}
+            the bright cloud pixels show through against every layer.
+            Now drifts diagonally (more vertical component) for the
+            "moving through cloud cover" feel. */}
         <div className="pj-clouds-overlay" aria-hidden>
           <Image
             src={layers.cloudsOverlay}
@@ -105,6 +107,12 @@ export function ParallaxJourney({ locale, layers, texts }: Props) {
             className="object-cover"
           />
         </div>
+
+        {/* Sun — pure-CSS radial gradient. Rises from above the viewport
+            during stage 1, descends through the scene as the scroll
+            progresses, and finally sets toward the horizon at stage 3.
+            No image, no asset weight, fully GPU-composited. */}
+        <div className="pj-sun" aria-hidden />
 
         <div className="pj-vignette" aria-hidden />
 
