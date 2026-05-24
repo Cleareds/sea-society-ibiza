@@ -71,23 +71,15 @@ export function Header({ transparentOnHero = false, locale, labels }: HeaderProp
       >
         <Link
           href={lp("/")}
-          className="flex flex-col items-start leading-none"
+          className="inline-flex items-center leading-none"
           aria-label="Sea Society Ibiza — home"
         >
           <Logo
             variant={isSolid ? "dark" : "light"}
-            height={28}
+            height={40}
             priority
             alt="Sea Society Ibiza"
           />
-          <span
-            className={cn(
-              "mt-1.5 text-[9px] uppercase tracking-[0.32em] opacity-75",
-              isSolid ? "text-[var(--color-on-surface-variant)]" : "text-white",
-            )}
-          >
-            by Ibimar
-          </span>
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">

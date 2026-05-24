@@ -36,10 +36,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
       <div className="mx-auto max-w-(--spacing-container-max) px-5 py-16 md:px-10 md:py-20">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <Logo variant="dark" height={32} alt="Sea Society Ibiza" />
-            <p className="mt-3 text-xs uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
-              {t("footer.byIbimar")}
-            </p>
+            <Logo variant="dark" height={44} alt="Sea Society Ibiza" />
             <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
               {t("footer.summary")}
             </p>
