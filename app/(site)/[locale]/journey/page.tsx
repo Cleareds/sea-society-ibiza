@@ -7,12 +7,17 @@ import { pageMetadata } from "@/lib/seo/metadata";
 export const revalidate = 3600;
 
 const JOURNEY_LAYERS = {
-  /** Stage 1 — top of the mountain, sky and clouds. */
-  sky: "https://images.unsplash.com/photo-1486520299386-6d106b22014b?w=2400&q=82&auto=format&fit=crop",
+  /** Stage 1 — looking down at clouds from above (aerial). */
+  sky: "https://images.unsplash.com/photo-1493514789931-586cb221d7a7?w=2400&q=82&auto=format&fit=crop",
   /** Stage 2 — mountainside / dramatic landscape mid-altitude. */
   mid: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=82&auto=format&fit=crop",
-  /** Stage 3 — back to the brand: Es Vedra, sea, yachts. */
+  /** Stage 3 — back to the brand: Es Vedra at golden hour with the fleet. */
   sea: "/images/hero/el-verde.webp",
+  /** Drifting cloud overlay — a real cloud photo blended via mix-blend-mode:
+   *  screen, so only the white cloud pixels show through every stage.
+   *  Photo: clouds-against-blue-sky (Unsplash, verified). */
+  cloudsOverlay:
+    "https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=2400&q=78&auto=format&fit=crop",
 } as const;
 
 // Copy lives inline for now — easy to lift into messages/*.json later if the
