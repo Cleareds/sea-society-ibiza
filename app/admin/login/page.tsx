@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { devMockSignIn, signInWithPassword } from "../actions";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { Logo } from "@/components/site/Logo";
 
 export const metadata: Metadata = {
   title: "Admin sign in",
@@ -22,9 +23,9 @@ export default async function AdminLoginPage({
   return (
     <main className="grid min-h-screen place-items-center bg-[var(--color-surface-container-low)] px-5">
       <div className="w-full max-w-md rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-8">
-        <Link href="/" className="block">
-          <p className="font-serif text-2xl text-[var(--color-primary)]">Sea Society Ibiza</p>
-          <p className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
+        <Link href="/" className="block" aria-label="Sea Society Ibiza — home">
+          <Logo variant="dark" height={28} alt="Sea Society Ibiza" />
+          <p className="mt-3 text-[10px] uppercase tracking-[0.32em] text-[var(--color-on-surface-variant)]">
             Admin
           </p>
         </Link>

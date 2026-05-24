@@ -11,21 +11,23 @@ function adminEmails(): string[] {
     .filter(Boolean);
 }
 
+// Static-asset extensions we never want touched by locale routing —
+// catches /icon-192.png, /favicon.ico, /manifest.webmanifest, etc.
+// without needing to enumerate every individual path.
+const STATIC_EXT_RE =
+  /\.(?:png|jpg|jpeg|webp|avif|svg|ico|gif|woff2?|ttf|otf|eot|css|js|map|mp4|webm|json|webmanifest|txt|xml|pdf)$/i;
+
 // Paths that should never be touched by locale routing
 function isExcludedPath(pathname: string): boolean {
   return (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/admin") ||
-    pathname === "/favicon.svg" ||
-    pathname === "/favicon.ico" ||
-    pathname === "/apple-touch-icon.png" ||
-    pathname === "/manifest.webmanifest" ||
-    pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml" ||
     pathname.startsWith("/images/") ||
+    pathname.startsWith("/brand/") ||
     pathname.startsWith("/fonts/") ||
-    pathname.startsWith("/og/")
+    pathname.startsWith("/og/") ||
+    STATIC_EXT_RE.test(pathname)
   );
 }
 

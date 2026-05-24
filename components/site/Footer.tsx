@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Settings } from "@/lib/data/types";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Translator } from "@/lib/i18n/messages";
+import { Logo } from "@/components/site/Logo";
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -35,8 +36,8 @@ export function Footer({ settings, locale, t }: FooterProps) {
       <div className="mx-auto max-w-(--spacing-container-max) px-5 py-16 md:px-10 md:py-20">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <p className="font-serif text-2xl text-[var(--color-primary)]">Sea Society Ibiza</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
+            <Logo variant="dark" height={32} alt="Sea Society Ibiza" />
+            <p className="mt-3 text-xs uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
               {t("footer.byIbimar")}
             </p>
             <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--color-on-surface-variant)]">

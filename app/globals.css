@@ -47,9 +47,13 @@
   --color-muted: #6e7979;
   --color-line: #e5e2e1;
 
-  /* --- Typography (Fraunces + Inter, wired via next/font in app/layout.tsx) --- */
+  /* --- Typography (wired via next/font in app/layout.tsx) ---
+   * Sans: Inter (body, UI, labels, navigation).
+   * Serif: brand "Starc Serif" for display headings + Fraunces as the
+   * italic / heavier-weight fallback (Starc ships Regular only). */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+  --font-serif:
+    var(--font-starc), var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
 
   /* --- Radii --- */
   --radius-sm: 0.25rem;

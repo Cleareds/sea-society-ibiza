@@ -13,6 +13,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
+import { Logo } from "@/components/site/Logo";
 import { localePath, type Locale } from "@/lib/i18n/config";
 
 export interface HeaderLabels {
@@ -70,13 +71,23 @@ export function Header({ transparentOnHero = false, locale, labels }: HeaderProp
       >
         <Link
           href={lp("/")}
-          className={cn(
-            "flex flex-col leading-none",
-            isSolid ? "text-[var(--color-primary)]" : "text-white",
-          )}
+          className="flex flex-col items-start leading-none"
+          aria-label="Sea Society Ibiza — home"
         >
-          <span className="font-serif text-xl tracking-tight md:text-2xl">Sea Society Ibiza</span>
-          <span className="text-[10px] uppercase tracking-[0.25em] opacity-70">by Ibimar</span>
+          <Logo
+            variant={isSolid ? "dark" : "light"}
+            height={28}
+            priority
+            alt="Sea Society Ibiza"
+          />
+          <span
+            className={cn(
+              "mt-1.5 text-[9px] uppercase tracking-[0.32em] opacity-75",
+              isSolid ? "text-[var(--color-on-surface-variant)]" : "text-white",
+            )}
+          >
+            by Ibimar
+          </span>
         </Link>
 
         <ul className="hidden items-center gap-8 md:flex">

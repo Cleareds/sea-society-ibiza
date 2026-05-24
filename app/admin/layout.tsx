@@ -2,6 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { logout } from "./actions";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { Logo } from "@/components/site/Logo";
 
 const nav = [
   { href: "/admin", label: "Dashboard" },
@@ -29,10 +30,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="mx-auto flex max-w-(--spacing-container-max)">
         <aside className="hidden w-60 shrink-0 border-r border-[var(--color-outline-variant)] bg-[var(--color-surface)] md:block">
           <div className="border-b border-[var(--color-outline-variant)]/40 px-5 py-5">
-            <Link href="/admin" className="block font-serif text-lg text-[var(--color-primary)]">
-              Sea Society
+            <Link href="/admin" className="block" aria-label="Sea Society Ibiza — admin home">
+              <Logo variant="dark" height={22} alt="Sea Society Ibiza" />
             </Link>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+            <p className="mt-2 text-[10px] uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
               Admin
             </p>
           </div>
