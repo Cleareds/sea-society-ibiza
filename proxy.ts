@@ -122,14 +122,14 @@ function handleMaintenance(request: NextRequest): NextResponse | null {
     if (ip && ips.includes(ip)) return null;
   }
 
-  // Otherwise: rewrite to the coming-soon page with 503 status
+  // Otherwise: rewrite to the coming-soon page. 200 (not 503) so the
+  // platform doesn't treat every visit as an error in dashboards/alerts —
+  // robots are still excluded via the page's <meta name="robots" /> tag.
   const url = request.nextUrl.clone();
   url.pathname = "/maintenance";
   url.search = "";
-  const response = NextResponse.rewrite(url, { status: 503 });
-  // Caches must never serve a stale maintenance copy after the gate flips
+  const response = NextResponse.rewrite(url);
   response.headers.set("Cache-Control", "no-store, must-revalidate");
-  response.headers.set("Retry-After", "3600");
   return setSecurityHeaders(response);
 }
 

@@ -50,3 +50,7 @@ next-env.d.ts
 # OS
 Thumbs.db
 proposal.html
+
+# Source brochure PDFs — used to seed boat data, kept out of git (131 MB)
+/boats/
+

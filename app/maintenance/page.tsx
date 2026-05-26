@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Logo } from "@/components/site/Logo";
 
 export const metadata: Metadata = {
   title: "Coming soon — Sea Society Ibiza",
@@ -21,16 +20,17 @@ export const viewport: Viewport = {
 export default function MaintenancePage() {
   return (
     <main className="grid min-h-screen place-items-center bg-[var(--color-primary)] px-5 text-white">
-      <div className="text-center">
-        <Logo
-          variant="light"
-          height={32}
+      <div className="flex flex-col items-center text-center">
+        {/* eslint-disable-next-line @next/next/no-img-element -- static brand vector */}
+        <img
+          src="/brand/seasociety-logo.svg"
           alt="Sea Society Ibiza"
-          className="mx-auto"
-          priority
+          className="block w-[min(92vw,1100px)] h-auto"
+          decoding="async"
+          fetchPriority="high"
         />
-        <p className="mt-14 font-serif text-3xl tracking-tight md:text-4xl">
-          Coming soon…
+        <p className="mt-12 font-serif text-base tracking-[0.18em] uppercase opacity-70 md:text-lg">
+          Coming soon
         </p>
       </div>
     </main>
