@@ -1,0 +1,74 @@
+/* ---------------------------------------------------------------------------
+   Parallax hero — paired with components/site/ParallaxHero.tsx.
+   --p (0 → 1) is set by the component on scroll. All layer animations
+   are pure CSS interpolations off that single variable so the main thread
+   only writes one property per frame.
+--------------------------------------------------------------------------- */
+.parallax-wrap {
+  /* 4 viewport screens of scroll distance — phase boundaries below assume
+     each screen is roughly 0.25 wide in --p. */
+  height: 400vh;
+  --p: 0;
+}
+
+/* Give the sticky stage 3D perspective so the rotateY on bg-above renders
+   with depth instead of skewing flat. */
+.parallax-wrap > .sticky {
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+}
+
+/* Layer 1: coastline aerial.
+   The element is bottom-anchored and 200vh tall. At pa=0 it's pushed down by
+   100vh so only its top half is visible at the top of the stage; at pa=1 it
+   sits flush so the bottom half is visible.
+   transform-origin is the bottom edge so rotateX/scale pivot *from* that
+   edge — keeping it aligned with bg-top's bottom regardless of tilt/zoom.
+   The -56px Y offset on the translate matches bg-top's bottom offset below. */
+.parallax-above {
+  --pa: clamp(0, var(--p) / 0.5, 1);
+  transform-origin: 50% 100%;
+  transform:
+    translate3d(0, calc((1 - var(--pa)) * 100vh - 56px), 0)
+    rotateX(calc(var(--pa) * -45deg));
+}
+
+/* Layer 3: the yacht. Rises from below the fold during screens 2 → 3 and
+   exits past the top of the stage *before* the screen-4 copy ("Step on
+   board.") fades in at p≈0.82. Window: p 0.40 → 0.78. */
+.parallax-boat {
+  --pb: clamp(0, (var(--p) - 0.4) / 0.38, 1);
+  /* +110vh (below) → -150vh (well past the top of the stage) */
+  transform: translate3d(0, calc(110vh - var(--pb) * 260vh), 0);
+  /* fade in early, fade out before screen-4 text lands */
+  opacity:
+    calc(
+      clamp(0, (var(--p) - 0.4) / 0.05, 1)
+      * (1 - clamp(0, (var(--p) - 0.74) / 0.06, 1))
+    );
+}
+
+/* Headline shadow — for legibility over the bright bg-above sea + sand. A
+   close, soft drop plus a wider, faint cast gives depth without bleeding
+   into a halo. */
+.parallax-headline {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.parallax-sub {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-wrap { height: 100vh; }
+  .parallax-above,
+  .parallax-top,
+  .parallax-boat {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .parallax-above { display: none; }
+}

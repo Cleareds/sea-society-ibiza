@@ -65,20 +65,32 @@ interface BoatRow {
   id: string;
   slug: string;
   name: string;
+  model_name: string | null;
   tagline: string | null;
   description: string | null;
   long_description: string | null;
   length_m: number | null;
+  beam_m: number | null;
   guests: number | null;
+  guests_night: number | null;
   cabins: number | null;
   type: BoatType | null;
   brand: string | null;
   build_year: number | null;
+  refit_year: number | null;
+  base_harbour: string | null;
+  cruise_knots: number | null;
+  max_knots: number | null;
+  engines: string | null;
+  stabilizers: string | null;
+  consumption: string | null;
   price_from: number | null;
+  price_high: number | null;
   currency: string | null;
   what_included: string[] | null;
   specs: Array<{ label: string; value: string }> | null;
   gallery: Array<{ src: string; alt: string }> | null;
+  highlights: Array<{ icon: string; label: string; value: string }> | null;
   hero_image: string | null;
   pdf_url: string | null;
   featured: boolean;
@@ -93,20 +105,32 @@ function mapBoat(row: BoatRow): Boat {
     id: row.id,
     slug: row.slug,
     name: row.name,
+    modelName: row.model_name ?? undefined,
     tagline: row.tagline ?? "",
     description: row.description ?? "",
     longDescription: row.long_description ?? "",
     lengthM: Number(row.length_m ?? 0),
+    beamM: row.beam_m == null ? undefined : Number(row.beam_m),
     guests: row.guests ?? 0,
+    guestsNight: row.guests_night ?? undefined,
     cabins: row.cabins,
     type: (row.type ?? "motor_yacht") as BoatType,
     brand: row.brand ?? "",
     buildYear: row.build_year ?? 0,
+    refitYear: row.refit_year ?? undefined,
+    baseHarbour: row.base_harbour ?? undefined,
+    cruiseKnots: row.cruise_knots ?? undefined,
+    maxKnots: row.max_knots ?? undefined,
+    engines: row.engines ?? undefined,
+    stabilizers: row.stabilizers ?? undefined,
+    consumption: row.consumption ?? undefined,
     priceFrom: row.price_from ?? 0,
+    priceHigh: row.price_high ?? undefined,
     currency: (row.currency ?? "EUR") as "EUR",
     whatIncluded: row.what_included ?? [],
     specs: row.specs ?? [],
     gallery: row.gallery ?? [],
+    highlights: (row.highlights ?? []) as Boat["highlights"],
     heroImage: row.hero_image ?? "",
     pdfUrl: row.pdf_url,
     featured: row.featured,

@@ -16,12 +16,21 @@ import type { HighlightIcon } from "@/lib/data/types";
 import { isLocale, locales, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
+// ISR — rebuild each boat page hourly; allow ANY slug to render dynamically
+// on first hit (then cache it). With dynamicParams=false we 404'd new boats
+// in production any time the build was older than the Supabase dataset.
 export const revalidate = 3600;
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const boats = await getBoats();
-  return locales.flatMap((locale) => boats.map((b) => ({ locale, slug: b.slug })));
+  try {
+    const boats = await getBoats();
+    return locales.flatMap((locale) => boats.map((b) => ({ locale, slug: b.slug })));
+  } catch {
+    // If the build can't reach Supabase, return [] — every slug will be
+    // rendered dynamically on first request instead of failing the build.
+    return [];
+  }
 }
 
 export async function generateMetadata({

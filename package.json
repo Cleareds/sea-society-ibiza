@@ -29,6 +29,7 @@
     "react-markdown": "^10.1.0",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/node": "22.10.5",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
+    "@types/three": "^0.184.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "dotenv": "^17.4.2",
     "eslint": "9.17.0",

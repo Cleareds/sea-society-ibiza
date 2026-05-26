@@ -21,13 +21,26 @@ export default function MaintenancePage() {
   return (
     <main className="grid min-h-screen place-items-center bg-[var(--color-primary)] px-5 text-white">
       <div className="flex flex-col items-center text-center">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static brand vector */}
-        <img
-          src="/brand/seasociety-logo.svg"
-          alt="Sea Society Ibiza"
-          className="block w-[min(92vw,1100px)] h-auto"
-          decoding="async"
-          fetchPriority="high"
+        {/*
+          We use the SVG as a CSS mask on a solid white element. Loading the
+          SVG via <img> renders it in an isolated context where `fill="currentColor"`
+          falls back to black — masking solves that without inlining the markup.
+          Aspect ratio mirrors the SVG viewBox (2739.13 / 706.19 ≈ 3.88).
+        */}
+        <div
+          role="img"
+          aria-label="Sea Society Ibiza"
+          className="bg-white w-[min(92vw,1100px)] aspect-[3.88/1]"
+          style={{
+            WebkitMaskImage: "url(/brand/seasociety-logo.svg)",
+            maskImage: "url(/brand/seasociety-logo.svg)",
+            WebkitMaskRepeat: "no-repeat",
+            maskRepeat: "no-repeat",
+            WebkitMaskSize: "contain",
+            maskSize: "contain",
+            WebkitMaskPosition: "center",
+            maskPosition: "center",
+          }}
         />
         <p className="mt-12 font-serif text-base tracking-[0.18em] uppercase opacity-70 md:text-lg">
           Coming soon

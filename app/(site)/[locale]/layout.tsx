@@ -36,7 +36,7 @@ export default async function SiteLayout({
     destinations: t("nav.destinations"),
     about: t("nav.about"),
     contact: t("nav.contact"),
-    enquireNow: t("nav.enquireNow"),
+    bookWhatsApp: t("cta.bookWhatsApp"),
     menu: t("nav.menu"),
     openMenu: t("nav.openMenu"),
   };
@@ -60,7 +60,12 @@ export default async function SiteLayout({
     <>
       <HtmlLang locale={lc} />
       <JsonLd data={organizationLd(settings)} />
-      <Header transparentOnHero locale={lc} labels={headerLabels} />
+      <Header
+        transparentOnHero
+        locale={lc}
+        labels={headerLabels}
+        whatsappNumber={settings.whatsappNumber}
+      />
       <main id="main" className="pt-0">
         {children}
       </main>

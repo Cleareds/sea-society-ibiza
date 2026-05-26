@@ -54,3 +54,10 @@ proposal.html
 # Source brochure PDFs — used to seed boat data, kept out of git (131 MB)
 /boats/
 
+
+
+# Source design assets (PNG/JPG, ~50MB) — referenced for the immersive hero
+# but their tuned WebP/PNG copies live under public/sea-society/
+/sea-society/
+/supabase/.temp/
+
