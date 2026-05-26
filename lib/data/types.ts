@@ -12,22 +12,50 @@ export interface BoatGalleryImage {
   height?: number;
 }
 
+export type HighlightIcon =
+  | "length"
+  | "guests"
+  | "cabins"
+  | "speed"
+  | "year"
+  | "engine"
+  | "bathrooms"
+  | "anchor";
+
+export interface BoatHighlight {
+  icon: HighlightIcon;
+  label: string;
+  value: string;
+}
+
 export interface Boat {
   id: string;
   slug: string;
   name: string;
+  modelName?: string;
   tagline: string;
   description: string;
   longDescription: string;
   lengthM: number;
+  beamM?: number;
   guests: number;
+  guestsNight?: number;
   cabins: number | null;
   type: BoatType;
   brand: string;
   buildYear: number;
+  refitYear?: number;
+  baseHarbour?: string;
+  cruiseKnots?: number;
+  maxKnots?: number;
+  engines?: string;
+  stabilizers?: string;
+  consumption?: string;
   priceFrom: number;
+  priceHigh?: number;
   currency: "EUR";
   whatIncluded: string[];
+  highlights?: BoatHighlight[];
   specs: BoatSpec[];
   gallery: BoatGalleryImage[];
   heroImage: string;

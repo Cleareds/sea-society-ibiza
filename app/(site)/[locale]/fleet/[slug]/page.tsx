@@ -2,17 +2,17 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Ruler, Users, BedDouble, Gauge, Calendar, Cog, Bath, Anchor } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
-import { Gallery } from "@/components/site/Gallery";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
 import { WhatsAppCTA } from "@/components/site/WhatsAppCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { boatProductLd, breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getBoatBySlug, getBoats, getSettings } from "@/lib/data";
+import type { HighlightIcon } from "@/lib/data/types";
 import { isLocale, locales, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -41,6 +41,19 @@ export async function generateMetadata({
   });
 }
 
+const HIGHLIGHT_ICONS: Record<HighlightIcon, React.ComponentType<{ className?: string }>> = {
+  length: Ruler,
+  guests: Users,
+  cabins: BedDouble,
+  speed: Gauge,
+  year: Calendar,
+  engine: Cog,
+  bathrooms: Bath,
+  anchor: Anchor,
+};
+
+const eurFmt = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });
+
 export default async function BoatDetailPage({
   params,
 }: {
@@ -59,7 +72,8 @@ export default async function BoatDetailPage({
   ]);
   if (!boat) notFound();
 
-  const related = all.filter((b) => b.id !== boat.id && b.type === boat.type).slice(0, 3);
+  const related = all.filter((b) => b.id !== boat.id).slice(0, 3);
+  const highlights = boat.highlights ?? [];
 
   return (
     <>
@@ -74,95 +88,152 @@ export default async function BoatDetailPage({
         ]}
       />
 
-      <section className="relative isolate min-h-[60vh] w-full overflow-hidden bg-[var(--color-primary)] pt-24 pb-16 md:pt-32 md:pb-24">
+      {/* Hero — full-bleed boat photo + name + model + tagline */}
+      <section className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[var(--color-primary)]">
         <Image
           src={boat.heroImage}
-          alt={`${boat.name} on the water near Ibiza`}
+          alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}
           fill
           priority
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/55" />
-        <div className="relative z-10 mx-auto max-w-(--spacing-container-max) px-5 md:px-10">
-          <Breadcrumb
-            items={[
-              { name: t("breadcrumb.home"), href: lp("/") },
-              { name: t("breadcrumb.fleet"), href: lp("/fleet") },
-              { name: boat.name },
-            ]}
-          />
-          <h1 className="mt-6 font-serif text-5xl text-white md:text-7xl">{boat.name}</h1>
-          <p className="mt-3 max-w-xl font-serif text-xl italic text-white/90 md:text-2xl">
-            {boat.tagline}
-          </p>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
+        <div className="relative z-10 flex min-h-[80vh] flex-col px-5 pt-24 pb-16 md:px-10 md:pt-32 md:pb-24">
+          <div className="mx-auto w-full max-w-(--spacing-container-max)">
+            <Breadcrumb
+              items={[
+                { name: t("breadcrumb.home"), href: lp("/") },
+                { name: t("breadcrumb.fleet"), href: lp("/fleet") },
+                { name: boat.name },
+              ]}
+            />
+          </div>
+          <div className="mx-auto mt-auto w-full max-w-(--spacing-container-max) text-white">
+            {boat.modelName && (
+              <p className="text-xs uppercase tracking-[0.3em] text-white/70 md:text-sm">
+                M/Y · {boat.modelName}
+              </p>
+            )}
+            <h1 className="mt-3 font-serif text-5xl leading-[1.05] md:text-7xl">{boat.name}</h1>
+            <p className="mt-4 max-w-2xl font-serif text-xl italic text-white/90 md:text-2xl">
+              {boat.tagline}
+            </p>
+          </div>
         </div>
       </section>
+
+      {/* Highlights — top 5 stats, prominent right under the hero */}
+      {highlights.length > 0 && (
+        <section className="border-b border-[var(--color-outline-variant)]/50 bg-[var(--color-surface)]">
+          <div className="mx-auto grid w-full max-w-(--spacing-container-max) grid-cols-2 gap-px bg-[var(--color-outline-variant)]/50 md:grid-cols-5">
+            {highlights.slice(0, 5).map((h) => {
+              const Icon = HIGHLIGHT_ICONS[h.icon] ?? Ruler;
+              return (
+                <div
+                  key={h.label + h.value}
+                  className="flex flex-col items-center justify-center gap-2 bg-[var(--color-surface)] px-4 py-6 text-center md:py-8"
+                >
+                  <Icon className="h-6 w-6 text-[var(--color-primary)]" aria-hidden />
+                  <p className="text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                    {h.label}
+                  </p>
+                  <p className="font-serif text-lg leading-tight text-[var(--color-on-surface)] md:text-xl">
+                    {h.value}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <Section>
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-8">
-            <Gallery images={boat.gallery} boatName={boat.name} />
+            <p className="font-serif text-2xl leading-relaxed text-[var(--color-on-surface)] md:text-3xl">
+              {boat.description}
+            </p>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-[var(--color-on-surface-variant)]">
+              {boat.longDescription}
+            </p>
 
-            <ul className="mt-8 flex flex-wrap gap-2">
-              {[
-                `${boat.lengthM} m`,
-                `${boat.guests} guests`,
-                boat.type.replace("_", " "),
-                `${boat.brand} · ${boat.buildYear}`,
-                t("fleet.fromPrice", { amount: boat.priceFrom.toLocaleString("en-GB") }),
-              ].map((p) => (
-                <li
-                  key={p}
-                  className="rounded-full bg-[var(--color-surface-container)] px-4 py-1.5 text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface)]"
-                >
-                  {p}
-                </li>
-              ))}
-            </ul>
+            {/* Full specifications — icon grid styled like the PDF brochure */}
+            <section aria-labelledby="specs-h" className="mt-14">
+              <h2
+                id="specs-h"
+                className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]"
+              >
+                {t("boat.specifications")}
+              </h2>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {boat.specs.map((s) => (
+                  <div
+                    key={s.label}
+                    className="rounded-2xl bg-[var(--color-surface-container-low)] p-5"
+                  >
+                    <p className="text-[0.7rem] uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]">
+                      {s.label}
+                    </p>
+                    <p className="mt-2 text-base font-medium text-[var(--color-on-surface)]">
+                      {s.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-            <div className="mt-10 max-w-2xl text-base leading-relaxed text-[var(--color-on-surface)]">
-              <p className="font-serif text-2xl text-[var(--color-on-surface)]">
-                {boat.description}
-              </p>
-              <p className="mt-6 text-[var(--color-on-surface-variant)]">{boat.longDescription}</p>
-            </div>
-
-            <div className="mt-12 grid gap-10 md:grid-cols-2">
-              <section aria-labelledby="included-h">
+            {/* Pricing — low / high season, mirroring the brochure */}
+            {boat.priceHigh && (
+              <section aria-labelledby="price-h" className="mt-14">
                 <h2
-                  id="included-h"
-                  className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]"
+                  id="price-h"
+                  className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]"
                 >
-                  {t("boat.whatsIncluded")}
+                  Day charter
                 </h2>
-                <ul className="mt-4 grid gap-2">
-                  {boat.whatIncluded.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-[var(--color-primary)]" aria-hidden />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6">
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                      Low season
+                    </p>
+                    <p className="mt-3 font-serif text-3xl text-[var(--color-on-surface)]">
+                      €{eurFmt.format(boat.priceFrom)}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--color-on-surface-variant)]">Day + VAT</p>
+                  </div>
+                  <div className="rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] p-6">
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                      High season
+                    </p>
+                    <p className="mt-3 font-serif text-3xl text-[var(--color-on-surface)]">
+                      €{eurFmt.format(boat.priceHigh)}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--color-on-surface-variant)]">Day + VAT</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-[var(--color-on-surface-variant)]">
+                  Overnight stays&rsquo; prices on demand. Fuel, tips and extras not included.
+                </p>
               </section>
+            )}
 
-              <section aria-labelledby="specs-h">
-                <h2
-                  id="specs-h"
-                  className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]"
-                >
-                  {t("boat.specifications")}
-                </h2>
-                <dl className="mt-4 divide-y divide-[var(--color-outline-variant)]">
-                  {boat.specs.map((s) => (
-                    <div key={s.label} className="flex items-center justify-between py-2 text-sm">
-                      <dt className="text-[var(--color-on-surface-variant)]">{s.label}</dt>
-                      <dd className="font-medium text-[var(--color-on-surface)]">{s.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </section>
-            </div>
+            <section aria-labelledby="included-h" className="mt-14">
+              <h2
+                id="included-h"
+                className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]"
+              >
+                {t("boat.whatsIncluded")}
+              </h2>
+              <ul className="mt-6 grid gap-2 sm:grid-cols-2">
+                {boat.whatIncluded.map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-[var(--color-primary)]" aria-hidden />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
           </div>
 
           <aside className="lg:col-span-4">
@@ -175,7 +246,8 @@ export default async function BoatDetailPage({
                   {t("boat.tellDates")}
                 </p>
                 <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
-                  {t("boat.confirmWithin", { name: boat.name })}
+                  From €{eurFmt.format(boat.priceFrom)} / day + VAT
+                  {boat.baseHarbour ? ` · ${boat.baseHarbour}` : ""}
                 </p>
                 <div className="mt-6">
                   <EnquiryForm
