@@ -99,12 +99,16 @@ function ImmersiveCursor() {
   return <div ref={ref} className="immersive-cursor" aria-hidden />;
 }
 
+type DeviceMode = "webgl" | "mobile" | "reduced";
+
 /**
- * Decides whether the WebGL hero runs at all.
- * - prefers-reduced-motion → off, static fallback
- * - coarse pointer / small viewport → off (mobile, lean image)
+ * Picks the right hero variant for the device:
+ *   "webgl"   → full immersive scroll with depth-mapped shader
+ *   "mobile"  → two stacked viewport-tall sections, each with its yacht
+ *               as the centerpiece (no WebGL — fast on small screens)
+ *   "reduced" → static slide 2 image, no motion at all
  */
-function useEnabled(): boolean {
+function useDeviceMode(): DeviceMode {
   return React.useSyncExternalStore(
     (cb) => {
       if (typeof window === "undefined") return () => {};
@@ -120,11 +124,13 @@ function useEnabled(): boolean {
     },
     () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return "reduced";
       const coarse = window.matchMedia("(pointer: coarse)").matches;
       const small = window.matchMedia("(max-width: 768px)").matches;
-      return !reduced && !coarse && !small;
+      if (coarse || small) return "mobile";
+      return "webgl";
     },
-    () => false,
+    () => "reduced", // SSR render
   );
 }
 
@@ -250,7 +256,117 @@ export function ImmersiveHero({
   debugDepthView = 0,
   debugWaterMask = 0,
 }: ImmersiveHeroProps) {
-  const enabled = useEnabled();
+  const device = useDeviceMode();
+
+  // Slide copy is the same shape for all device variants — centralise it
+  // so the WebGL and mobile paths can't drift apart.
+  const slide1Copy: SlideCopy = {
+    eyebrow: "PRIVATE COASTAL ESCAPES",
+    headline: "Quiet Waters, Private Moments",
+    sub: "Step into curated yacht experiences shaped by still water, refined comfort, and effortless escape.",
+    ctaLabel: "Discover More",
+    ctaHref: ctaHref1,
+  };
+  const slide2Copy: SlideCopy = {
+    eyebrow: "PRIVATE MEDITERRANEAN ESCAPES",
+    headline: "Sea Society",
+    sub: "Curated yacht experiences shaped around privacy, beauty, and effortless escape.",
+    ctaLabel: "Explore the Experience",
+    ctaHref: ctaHref2,
+  };
+
+  if (device === "mobile") {
+    return (
+      <MobileImmersiveHero
+        slide1ImageSrc={slide1ImageSrc}
+        slide2ImageSrc={slide2ImageSrc}
+        slide1={slide1Copy}
+        slide2={slide2Copy}
+      />
+    );
+  }
+  if (device === "reduced") {
+    return (
+      <ReducedImmersiveHero
+        imageSrc={slide2ImageSrc}
+        slide={slide2Copy}
+      />
+    );
+  }
+
+  return (
+    <WebGLImmersiveHero
+      slide1ImageSrc={slide1ImageSrc}
+      slide1DepthSrc={slide1DepthSrc}
+      slide2ImageSrc={slide2ImageSrc}
+      slide2DepthSrc={slide2DepthSrc}
+      slide1Copy={slide1Copy}
+      slide2Copy={slide2Copy}
+      parallaxStrength={parallaxStrength}
+      waterDistortionStrength={waterDistortionStrength}
+      cursorRippleStrength={cursorRippleStrength}
+      shimmerStrength={shimmerStrength}
+      driftStrength={driftStrength}
+      slide1Rotation={slide1Rotation}
+      slide1Zoom={slide1Zoom}
+      slide1OffsetY={slide1OffsetY}
+      invertDepthSlide1={invertDepthSlide1}
+      invertDepthSlide2={invertDepthSlide2}
+      debugDepthView={debugDepthView}
+      debugWaterMask={debugWaterMask}
+    />
+  );
+}
+
+interface SlideCopy {
+  eyebrow: string;
+  headline: string;
+  sub: string;
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+interface WebGLImmersiveHeroProps {
+  slide1ImageSrc: string;
+  slide1DepthSrc: string;
+  slide2ImageSrc: string;
+  slide2DepthSrc: string;
+  slide1Copy: SlideCopy;
+  slide2Copy: SlideCopy;
+  parallaxStrength: number;
+  waterDistortionStrength: number;
+  cursorRippleStrength: number;
+  shimmerStrength: number;
+  driftStrength: number;
+  slide1Rotation: number;
+  slide1Zoom: number;
+  slide1OffsetY: number;
+  invertDepthSlide1: boolean;
+  invertDepthSlide2: boolean;
+  debugDepthView: number;
+  debugWaterMask: number;
+}
+
+function WebGLImmersiveHero({
+  slide1ImageSrc,
+  slide1DepthSrc,
+  slide2ImageSrc,
+  slide2DepthSrc,
+  slide1Copy,
+  slide2Copy,
+  parallaxStrength,
+  waterDistortionStrength,
+  cursorRippleStrength,
+  shimmerStrength,
+  driftStrength,
+  slide1Rotation,
+  slide1Zoom,
+  slide1OffsetY,
+  invertDepthSlide1,
+  invertDepthSlide2,
+  debugDepthView,
+  debugWaterMask,
+}: WebGLImmersiveHeroProps) {
   const sectionRef = React.useRef<HTMLElement>(null);
   // Shared progress ref. The canvas reads progressRef.current in its render
   // loop; copy / cue / bar are mutated directly by the RAF in useImmersiveScroll.
@@ -279,41 +395,28 @@ export function ImmersiveHero({
       style={{ height: "200svh" }}
     >
       <div className="sticky top-0 isolate flex h-screen w-full items-center overflow-hidden">
-        {enabled ? <ImmersiveCursor /> : null}
+        <ImmersiveCursor />
 
-        {/* Background — two-slide WebGL on capable devices, static fallback otherwise. */}
         <div className="absolute inset-0 -z-10">
-          {enabled ? (
-            <ImmersiveCanvas
-              slide1ImageSrc={slide1ImageSrc}
-              slide1DepthSrc={slide1DepthSrc}
-              slide2ImageSrc={slide2ImageSrc}
-              slide2DepthSrc={slide2DepthSrc}
-              progressRef={progressRef}
-              parallaxStrength={parallaxStrength}
-              waterDistortionStrength={waterDistortionStrength}
-              cursorRippleStrength={cursorRippleStrength}
-              shimmerStrength={shimmerStrength}
-              driftStrength={driftStrength}
-              slide1Rotation={slide1Rotation}
-              slide1Zoom={slide1Zoom}
-              slide1OffsetY={slide1OffsetY}
-              invertDepthSlide1={invertDepthSlide1}
-              invertDepthSlide2={invertDepthSlide2}
-              debugDepthView={debugDepthView}
-              debugWaterMask={debugWaterMask}
-            />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element -- static fallback
-            <img
-              src={slide2ImageSrc}
-              alt=""
-              aria-hidden
-              className="h-full w-full object-cover"
-              decoding="async"
-              fetchPriority="high"
-            />
-          )}
+          <ImmersiveCanvas
+            slide1ImageSrc={slide1ImageSrc}
+            slide1DepthSrc={slide1DepthSrc}
+            slide2ImageSrc={slide2ImageSrc}
+            slide2DepthSrc={slide2DepthSrc}
+            progressRef={progressRef}
+            parallaxStrength={parallaxStrength}
+            waterDistortionStrength={waterDistortionStrength}
+            cursorRippleStrength={cursorRippleStrength}
+            shimmerStrength={shimmerStrength}
+            driftStrength={driftStrength}
+            slide1Rotation={slide1Rotation}
+            slide1Zoom={slide1Zoom}
+            slide1OffsetY={slide1OffsetY}
+            invertDepthSlide1={invertDepthSlide1}
+            invertDepthSlide2={invertDepthSlide2}
+            debugDepthView={debugDepthView}
+            debugWaterMask={debugWaterMask}
+          />
         </div>
 
         {/* Legibility gradient — top + bottom darken, centre stays clear. */}
@@ -322,33 +425,14 @@ export function ImmersiveHero({
           className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_40%,rgba(0,0,0,0.5)_100%),linear-gradient(180deg,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0)_25%,rgba(0,0,0,0)_55%,rgba(0,0,0,0.7)_100%)]"
         />
 
-        {/* Slide 1 copy */}
-        <HeroCopy
-          containerRef={copy1Ref}
-          eyebrow="PRIVATE COASTAL ESCAPES"
-          headline="Quiet Waters, Private Moments"
-          sub="Step into curated yacht experiences shaped by still water, refined comfort, and effortless escape."
-          ctaLabel="Discover More"
-          ctaHref={ctaHref1}
-        />
-        {/* Slide 2 copy */}
-        <HeroCopy
-          containerRef={copy2Ref}
-          eyebrow="PRIVATE MEDITERRANEAN ESCAPES"
-          headline="Sea Society"
-          sub="Curated yacht experiences shaped around privacy, beauty, and effortless escape."
-          ctaLabel="Explore the Experience"
-          ctaHref={ctaHref2}
-          initialOpacity={0}
-        />
+        <HeroCopy containerRef={copy1Ref} {...slide1Copy} />
+        <HeroCopy containerRef={copy2Ref} {...slide2Copy} initialOpacity={0} />
 
-        {/* Subtle scroll cue — fades the moment user scrolls. */}
         <div ref={cueRef} aria-hidden className="immersive-scroll-cue">
           <span>Scroll</span>
           <span className="cue-line" />
         </div>
 
-        {/* Progress bar at the right side. */}
         <div aria-hidden className="immersive-progress">
           <div ref={barRef} className="immersive-progress-fill" />
         </div>
@@ -402,5 +486,122 @@ function HeroCopy({
         </a>
       </div>
     </div>
+  );
+}
+
+// =============================================================================
+// Mobile variant — two stacked 100svh sections, each with its yacht as the
+// visual centerpiece. No WebGL: native scrolling, CSS Ken-Burns zoom on
+// imagery, a tiny scroll cue on the first slide. The yachts get the full
+// canvas of the small screen and the page stays fast.
+// =============================================================================
+
+interface MobileImmersiveHeroProps {
+  slide1ImageSrc: string;
+  slide2ImageSrc: string;
+  slide1: SlideCopy;
+  slide2: SlideCopy;
+}
+
+function MobileImmersiveHero({
+  slide1ImageSrc,
+  slide2ImageSrc,
+  slide1,
+  slide2,
+}: MobileImmersiveHeroProps) {
+  return (
+    <section
+      className="immersive-mobile w-full bg-[#06141a] text-white"
+      aria-label="Sea Society — private Mediterranean escapes"
+    >
+      <MobileSlide src={slide1ImageSrc} copy={slide1} showCue />
+      <MobileSlide src={slide2ImageSrc} copy={slide2} />
+    </section>
+  );
+}
+
+function MobileSlide({
+  src,
+  copy,
+  showCue = false,
+}: {
+  src: string;
+  copy: SlideCopy;
+  showCue?: boolean;
+}) {
+  return (
+    <div className="immersive-mobile-slide">
+      {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        className="immersive-mobile-bg"
+        decoding="async"
+        fetchPriority="high"
+      />
+      <div className="immersive-mobile-vignette" />
+      <div className="immersive-mobile-copy">
+        <p className="immersive-sub immersive-mobile-eyebrow">{copy.eyebrow}</p>
+        <h2 className="immersive-headline immersive-mobile-headline">
+          {copy.headline}
+        </h2>
+        <p className="immersive-sub immersive-mobile-sub">{copy.sub}</p>
+        <a href={copy.ctaHref} className="immersive-mobile-cta">
+          {copy.ctaLabel}
+          <span aria-hidden>→</span>
+        </a>
+      </div>
+      {showCue ? (
+        <div aria-hidden className="immersive-mobile-cue">
+          <span>Scroll</span>
+          <span className="cue-line" />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// =============================================================================
+// Reduced-motion variant — static slide 2, no animation. Renders an <img>
+// background plus the headline copy so the page still says something.
+// =============================================================================
+
+function ReducedImmersiveHero({
+  imageSrc,
+  slide,
+}: {
+  imageSrc: string;
+  slide: SlideCopy;
+}) {
+  return (
+    <section
+      className="immersive-mobile w-full bg-[#06141a] text-white"
+      aria-label="Sea Society"
+    >
+      <div className="immersive-mobile-slide" data-reduced="true">
+        {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+        <img
+          src={imageSrc}
+          alt=""
+          aria-hidden
+          className="immersive-mobile-bg"
+          decoding="async"
+          fetchPriority="high"
+        />
+        <div className="immersive-mobile-vignette" />
+        <div className="immersive-mobile-copy">
+          <p className="immersive-sub immersive-mobile-eyebrow">{slide.eyebrow}</p>
+          <h1 className="immersive-headline immersive-mobile-headline">
+            {slide.headline}
+          </h1>
+          <p className="immersive-sub immersive-mobile-sub">{slide.sub}</p>
+          <a href={slide.ctaHref} className="immersive-mobile-cta">
+            {slide.ctaLabel}
+            <span aria-hidden>→</span>
+          </a>
+        </div>
+      </div>
+    </section>
   );
 }
