@@ -76,12 +76,15 @@ function defaultMaskFor(slot: "s1" | "s2"): Required<MaskParams> {
     // halo so cursor/caustic effects can't reach the hull.
     return {
       anchorShiftY: 0,
-      dilateUp: 0.022,
-      dilateDown: 0.022,
-      dilateLeft: 0.022,
-      dilateRight: 0.022,
-      thresholdLow: 0.55,
-      thresholdHigh: 0.72,
+      dilateUp: 0.030,
+      dilateDown: 0.030,
+      dilateLeft: 0.028,
+      // Yacht's bow points right in the source image — the depth gradient
+      // tapers sharply that way so the mask needs extra reach there to
+      // cover the bow tip without leaving a thin "underwater" sliver.
+      dilateRight: 0.055,
+      thresholdLow: 0.42,
+      thresholdHigh: 0.62,
     };
   }
   // Slide 2 — the close-up portrait yacht we tuned before.
@@ -264,13 +267,19 @@ const FRAG = /* glsl */ `
     // the corner clamping that appears when a 4:3 image is rotated inside a
     // wider viewport, and reads as a slow cinematic drone push-in.
     //
-    // Phase windows:
-    //   p 0.00 → 0.04   slide 1 holds native (lets first scroll register)
-    //   p 0.04 → 0.50   rotate 0 → uSlide1Rot, zoom 1.0 → uSlide1Zoom
-    //   p 0.50 → 0.95   depth-aware dissolve into slide 2
-    //   p 0.95 → 1.00   slide 2 holds native
-    float rotPhase = smoothstep(0.04, 0.50, p);
-    float zoom1    = mix(1.0, uSlide1Zoom, smoothstep(0.0, 0.50, p));
+    // Phase windows — compressed so each scroll unit produces visible
+    // motion (the previous 0→0.50 window made the rotation barely
+    // perceptible until late scroll).
+    //   p 0.00 → 0.02   slide 1 holds native (single scroll-tick beat)
+    //   p 0.02 → 0.42   rotate 0 → uSlide1Rot, zoom 1.0 → uSlide1Zoom
+    //   p 0.45 → 0.92   depth-aware dissolve into slide 2
+    //   p 0.92 → 1.00   slide 2 holds native
+    float rotPhase = smoothstep(0.02, 0.42, p);
+    // Zoom starts immediately (no smoothstep front-loading at 0.02) and
+    // peaks slightly before rotation completes so the user sees a clear
+    // push-in from the first scroll tick.
+    float zoomEase = smoothstep(0.0, 0.40, p);
+    float zoom1    = mix(1.0, uSlide1Zoom, zoomEase);
     float rot1     = uSlide1Rot * rotPhase;
 
     // Aspect-corrected rotation around viewport centre: stretch x by uAspect
@@ -294,8 +303,10 @@ const FRAG = /* glsl */ `
     vec2 uv1mask = (v1 - uCenter1) * uCover1 + 0.5;
     float boatMask1 = yachtMaskGeneric(uDepth1, uv1mask, uInvert1, uMask1A, uMask1B);
 
-    // Remap progress so the dissolve doesn't begin until p≥0.50.
-    float dissolveP = smoothstep(0.50, 0.95, p);
+    // Remap progress so the dissolve doesn't begin until p≥0.45 (just
+    // after rotation completes), and finishes by p≈0.92 leaving an
+    // 8% "settled slide 2" window at the end of scroll.
+    float dissolveP = smoothstep(0.45, 0.92, p);
 
     // Per-pixel threshold curve — water leads (low pT fires early), yacht
     // waits (high pT fires late). With slide-2 entering at slide-1's peak
@@ -310,9 +321,7 @@ const FRAG = /* glsl */ `
     // Slide 2 entrance: zoom curve mirrors slide-1's peak zoom so the two
     // yachts visually match in size at the dissolve start, then slide 2
     // gently pushes in to its native framing as the transition resolves.
-    // (At scale > 1.0 the shader samples a wider area → image appears
-    // smaller; lerping to 1.0 = native cover = full size.)
-    float scale2 = mix(uSlide1Zoom, 1.0, smoothstep(0.50, 0.95, p));
+    float scale2 = mix(uSlide1Zoom, 1.0, smoothstep(0.45, 0.92, p));
 
     vec3 col1 = vec3(0.0);
     vec3 col2 = vec3(0.0);
@@ -389,7 +398,7 @@ export default function ImmersiveCanvas({
   outgoingScale = 1.06,
   incomingScale = 0.96,
   slide1Rotation = -1.5707963, // -π/2 = 90° CCW
-  slide1Zoom = 1.42,
+  slide1Zoom = 1.60,
   slide1Mask,
   slide2Mask,
   invertDepthSlide1 = false,

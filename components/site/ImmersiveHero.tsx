@@ -165,7 +165,7 @@ export function ImmersiveHero({
   shimmerStrength = 2.0,
   driftStrength = 0.18,
   slide1Rotation = -1.5707963,
-  slide1Zoom = 1.42,
+  slide1Zoom = 1.60,
   invertDepthSlide1 = false,
   invertDepthSlide2 = false,
   debugDepthView = 0,
@@ -173,20 +173,17 @@ export function ImmersiveHero({
 }: ImmersiveHeroProps) {
   const enabled = useEnabled();
   const sectionRef = React.useRef<HTMLElement>(null);
-  const rawProgress = useScrollProgress(sectionRef);
-  // smoothstep-ease the raw 0→1 so the start and end hold a beat — the
-  // transition reads as a deliberate gesture rather than tracking 1:1
-  // with the scroll wheel.
-  const progress = smoothstep(0, 1, rawProgress);
+  // Linear scroll progress. The previous smoothstep(0,1,raw) call killed
+  // ~70% of scroll input near the start (smoothstep(0,1,0.1)≈0.028) which
+  // read as severe lag. Easing now lives entirely in the shader windows.
+  const progress = useScrollProgress(sectionRef);
 
-  // Copy timing aligned with the new rotation+dissolve shader:
-  //   slide-1 copy fully visible until p≈0.05, gone by p≈0.20 (just as
-  //   rotation accelerates — copy doesn't get caught spinning).
-  //   slide-2 copy fades in after the dissolve has revealed slide 2's
-  //   yacht, around p≈0.85 → 1.0.
-  const slide1Opacity = clamp(1 - (progress - 0.05) / 0.15, 0, 1);
-  const slide2Opacity = clamp((progress - 0.85) / 0.10, 0, 1);
-  const cueOpacity = clamp(1 - progress / 0.06, 0, 1);
+  // Copy timing aligned with the tightened rotation+dissolve shader:
+  //   slide-1 copy gone by p≈0.15 (just as rotation kicks in).
+  //   slide-2 copy fades in p≈0.82 → 0.95 once dissolve is mostly done.
+  const slide1Opacity = clamp(1 - (progress - 0.02) / 0.12, 0, 1);
+  const slide2Opacity = clamp((progress - 0.82) / 0.10, 0, 1);
+  const cueOpacity = clamp(1 - progress / 0.05, 0, 1);
 
   return (
     <section
