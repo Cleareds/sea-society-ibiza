@@ -38,6 +38,10 @@ export interface ImmersiveHeroProps {
   driftStrength?: number;
   slide1Rotation?: number;
   slide1Zoom?: number;
+  /** Vertical screen offset applied to slide 1 at the end of its rotation
+   *  phase, expressed as a fraction of viewport height. Positive values
+   *  shift the rotated yacht DOWN on screen. Default 0.10 ≈ 10% down. */
+  slide1OffsetY?: number;
   invertDepthSlide1?: boolean;
   invertDepthSlide2?: boolean;
   debugDepthView?: number;
@@ -114,42 +118,97 @@ function useEnabled(): boolean {
 function clamp(v: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, v));
 }
-function smoothstep(edge0: number, edge1: number, x: number) {
-  const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
-  return t * t * (3 - 2 * t);
+
+/**
+ * Ref-based scroll progress + per-element DOM mutation. The host component
+ * NEVER re-renders on scroll — a single rAF loop reads scroll position once
+ * per frame and writes:
+ *   - progressRef.current     (read by the WebGL canvas in its render loop)
+ *   - copy element opacities  (direct .style.opacity mutation)
+ *   - scroll-cue opacity      (direct .style.opacity mutation)
+ *   - progress-bar height     (direct .style.height mutation)
+ *
+ * This eliminates React reconciliation from the per-scroll-tick critical
+ * path — the previous useState approach forced ImmersiveHero + all its
+ * children (HeroCopy x 2, ImmersiveCursor, gradient, cue, progress) to
+ * re-render dozens of times per second during momentum scrolls.
+ */
+interface ScrollRefs {
+  section: React.RefObject<HTMLElement | null>;
+  progress: React.RefObject<number>;
+  copy1: React.RefObject<HTMLDivElement | null>;
+  copy2: React.RefObject<HTMLDivElement | null>;
+  cue: React.RefObject<HTMLDivElement | null>;
+  bar: React.RefObject<HTMLDivElement | null>;
 }
 
-/** Tracks scroll position over `sectionRef` and emits 0 → 1 progress. */
-function useScrollProgress(sectionRef: React.RefObject<HTMLElement | null>): number {
-  const [progress, setProgress] = React.useState(0);
+function useImmersiveScroll(refs: ScrollRefs) {
+  // Aliases pulled out of the destructure so the React compiler doesn't
+  // flag direct writes to `refs.progress.current` as prop mutation.
+  const sectionRef = refs.section;
+  const progressRef = refs.progress;
+  const copy1Ref = refs.copy1;
+  const copy2Ref = refs.copy2;
+  const cueRef = refs.cue;
+  const barRef = refs.bar;
+
   React.useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
     let raf = 0;
-    const compute = () => {
+    let lastP = -1;
+
+    const tick = () => {
       raf = 0;
       const rect = el.getBoundingClientRect();
-      // Section is 2× viewport tall; the canvas sticks for 1× of scrolling.
-      // We want progress 0 at top of section, 1 after one viewport of scroll.
       const scrolled = Math.max(0, -rect.top);
       const total = el.offsetHeight - window.innerHeight;
       const p = total > 0 ? Math.min(1, scrolled / total) : 0;
-      setProgress(p);
+      if (p === lastP) return;
+      lastP = p;
+      progressRef.current = p;
+
+      // Copy fades — wide windows so slide-1 and slide-2 text overlap.
+      // Slide-2 starts appearing at p=0.45 while slide-1 still has some
+      // opacity until p=0.55. Both texts visible during handoff.
+      const c1 = copy1Ref.current;
+      if (c1) {
+        const op = clamp(1 - (p - 0.32) / 0.23, 0, 1);
+        c1.style.opacity = String(op);
+        c1.style.pointerEvents = op > 0.5 ? "auto" : "none";
+      }
+      const c2 = copy2Ref.current;
+      if (c2) {
+        const op = clamp((p - 0.45) / 0.20, 0, 1);
+        c2.style.opacity = String(op);
+        c2.style.pointerEvents = op > 0.5 ? "auto" : "none";
+      }
+      const cue = cueRef.current;
+      if (cue) {
+        cue.style.opacity = String(clamp(1 - p / 0.05, 0, 1));
+      }
+      const bar = barRef.current;
+      if (bar) {
+        bar.style.height = `${(p * 100).toFixed(2)}%`;
+      }
     };
-    compute();
+
     const onScroll = () => {
       if (raf) return;
-      raf = requestAnimationFrame(compute);
+      raf = requestAnimationFrame(tick);
     };
+    tick();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", compute);
+    window.addEventListener("resize", tick);
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", compute);
+      window.removeEventListener("resize", tick);
     };
-  }, [sectionRef]);
-  return progress;
+    // Refs are stable across renders, so this effect only needs to run on
+    // mount. eslint isn't aware that React.RefObject identities are stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }
 
 export function ImmersiveHero({
@@ -166,6 +225,7 @@ export function ImmersiveHero({
   driftStrength = 0.18,
   slide1Rotation = -1.5707963,
   slide1Zoom = 1.60,
+  slide1OffsetY = 0.10,
   invertDepthSlide1 = false,
   invertDepthSlide2 = false,
   debugDepthView = 0,
@@ -173,17 +233,22 @@ export function ImmersiveHero({
 }: ImmersiveHeroProps) {
   const enabled = useEnabled();
   const sectionRef = React.useRef<HTMLElement>(null);
-  // Linear scroll progress. The previous smoothstep(0,1,raw) call killed
-  // ~70% of scroll input near the start (smoothstep(0,1,0.1)≈0.028) which
-  // read as severe lag. Easing now lives entirely in the shader windows.
-  const progress = useScrollProgress(sectionRef);
-
-  // Copy timing aligned with the tightened rotation+dissolve shader:
-  //   slide-1 copy gone by p≈0.15 (just as rotation kicks in).
-  //   slide-2 copy fades in p≈0.82 → 0.95 once dissolve is mostly done.
-  const slide1Opacity = clamp(1 - (progress - 0.02) / 0.12, 0, 1);
-  const slide2Opacity = clamp((progress - 0.82) / 0.10, 0, 1);
-  const cueOpacity = clamp(1 - progress / 0.05, 0, 1);
+  // Shared progress ref. The canvas reads progressRef.current in its render
+  // loop; copy / cue / bar are mutated directly by the RAF in useImmersiveScroll.
+  // No useState → no React renders on scroll.
+  const progressRef = React.useRef(0);
+  const copy1Ref = React.useRef<HTMLDivElement>(null);
+  const copy2Ref = React.useRef<HTMLDivElement>(null);
+  const cueRef = React.useRef<HTMLDivElement>(null);
+  const barRef = React.useRef<HTMLDivElement>(null);
+  useImmersiveScroll({
+    section: sectionRef,
+    progress: progressRef,
+    copy1: copy1Ref,
+    copy2: copy2Ref,
+    cue: cueRef,
+    bar: barRef,
+  });
 
   return (
     <section
@@ -205,7 +270,7 @@ export function ImmersiveHero({
               slide1DepthSrc={slide1DepthSrc}
               slide2ImageSrc={slide2ImageSrc}
               slide2DepthSrc={slide2DepthSrc}
-              transitionProgress={progress}
+              progressRef={progressRef}
               parallaxStrength={parallaxStrength}
               waterDistortionStrength={waterDistortionStrength}
               cursorRippleStrength={cursorRippleStrength}
@@ -213,6 +278,7 @@ export function ImmersiveHero({
               driftStrength={driftStrength}
               slide1Rotation={slide1Rotation}
               slide1Zoom={slide1Zoom}
+              slide1OffsetY={slide1OffsetY}
               invertDepthSlide1={invertDepthSlide1}
               invertDepthSlide2={invertDepthSlide2}
               debugDepthView={debugDepthView}
@@ -239,40 +305,33 @@ export function ImmersiveHero({
 
         {/* Slide 1 copy */}
         <HeroCopy
+          containerRef={copy1Ref}
           eyebrow="PRIVATE COASTAL ESCAPES"
           headline="Quiet Waters, Private Moments"
           sub="Step into curated yacht experiences shaped by still water, refined comfort, and effortless escape."
           ctaLabel="Discover More"
           ctaHref={ctaHref1}
-          opacity={slide1Opacity}
         />
         {/* Slide 2 copy */}
         <HeroCopy
+          containerRef={copy2Ref}
           eyebrow="PRIVATE MEDITERRANEAN ESCAPES"
           headline="Sea Society"
           sub="Curated yacht experiences shaped around privacy, beauty, and effortless escape."
           ctaLabel="Explore the Experience"
           ctaHref={ctaHref2}
-          opacity={slide2Opacity}
+          initialOpacity={0}
         />
 
-        {/* Subtle scroll cue — only on slide 1, fades the moment user scrolls. */}
-        <div
-          aria-hidden
-          className="immersive-scroll-cue"
-          style={{ opacity: cueOpacity }}
-        >
+        {/* Subtle scroll cue — fades the moment user scrolls. */}
+        <div ref={cueRef} aria-hidden className="immersive-scroll-cue">
           <span>Scroll</span>
           <span className="cue-line" />
         </div>
 
-        {/* Progress bar at the right side — tells the user this section
-            holds while the transition plays. */}
+        {/* Progress bar at the right side. */}
         <div aria-hidden className="immersive-progress">
-          <div
-            className="immersive-progress-fill"
-            style={{ height: `${Math.round(progress * 100)}%` }}
-          />
+          <div ref={barRef} className="immersive-progress-fill" />
         </div>
       </div>
     </section>
@@ -280,25 +339,30 @@ export function ImmersiveHero({
 }
 
 interface CopyProps {
+  containerRef: React.RefObject<HTMLDivElement | null>;
   eyebrow: string;
   headline: string;
   sub: string;
   ctaLabel: string;
   ctaHref: string;
-  /** 0 → 1, set per scroll position. */
-  opacity: number;
+  /** Starting opacity (rAF will overwrite this on first scroll tick). */
+  initialOpacity?: number;
 }
 
-function HeroCopy({ eyebrow, headline, sub, ctaLabel, ctaHref, opacity }: CopyProps) {
+function HeroCopy({
+  containerRef,
+  eyebrow,
+  headline,
+  sub,
+  ctaLabel,
+  ctaHref,
+  initialOpacity = 1,
+}: CopyProps) {
   return (
     <div
-      className="relative z-10 mx-auto w-full max-w-(--spacing-container-max) px-5 pb-24 pt-32 md:px-10 md:pb-32 md:pt-40 transition-[transform] duration-500"
-      style={{
-        opacity,
-        pointerEvents: opacity > 0.5 ? "auto" : "none",
-        position: "absolute",
-        inset: 0,
-      }}
+      ref={containerRef}
+      className="absolute inset-0 z-10 mx-auto w-full max-w-(--spacing-container-max) px-5 pb-24 pt-32 md:px-10 md:pb-32 md:pt-40"
+      style={{ opacity: initialOpacity }}
     >
       <div className="mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-center px-5 md:px-10">
         <p className="immersive-sub text-[0.7rem] uppercase tracking-[0.4em] text-white/80 md:text-xs">

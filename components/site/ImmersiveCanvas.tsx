@@ -17,8 +17,10 @@ export interface ImmersiveCanvasProps {
   slide2ImageSrc: string;
   /** Slide 2 grayscale depth PNG */
   slide2DepthSrc: string;
-  /** 0 → 1, scroll-driven. */
-  transitionProgress: number;
+  /** Ref holding the current 0→1 scroll progress. The canvas RAF reads
+   *  `.current` once per frame — bypasses React entirely so progress
+   *  changes never trigger a re-render of the host component. */
+  progressRef: React.RefObject<number>;
 
   parallaxStrength?: number;
   waterDistortionStrength?: number;
@@ -36,10 +38,12 @@ export interface ImmersiveCanvasProps {
    *  visually aligned with slide 2's portrait yacht. */
   slide1Rotation?: number;
   /** Peak zoom applied to slide 1 at the end of its rotation phase.
-   *  Default 1.42 — large enough to hide the corner clamping that
-   *  appears when a 4:3 image is rotated 90° inside a 16:9 viewport,
-   *  and adds a cinematic "drone tilt" feel as you scroll. */
+   *  Default 1.60. */
   slide1Zoom?: number;
+  /** Vertical screen offset applied to the slide-1 pivot at end of
+   *  rotation phase, expressed as a fraction of viewport height (vUv-space).
+   *  Positive values shift the rotated yacht DOWN on screen. Default 0.10. */
+  slide1OffsetY?: number;
 
   /** Per-slide yacht-mask tuning. */
   slide1Mask?: MaskParams;
@@ -145,6 +149,7 @@ const FRAG = /* glsl */ `
   uniform float uIncomingScale;
   uniform float uSlide1Rot;     // peak rotation for slide 1 (radians)
   uniform float uSlide1Zoom;    // peak zoom for slide 1 at full rotation
+  uniform float uSlide1OffsetY; // peak vertical screen offset (vUv units)
 
   uniform float uInvert1;
   uniform float uInvert2;
@@ -163,14 +168,11 @@ const FRAG = /* glsl */ `
       u.y
     );
   }
+  // 2-octave fbm. Cut from 4 octaves for performance — caustics still
+  // read as organic light-on-water but at half the noise sample cost.
   float fbm(vec2 p) {
-    float v = 0.0;
-    float a = 0.5;
-    for (int i = 0; i < 4; i++) {
-      v += a * noise(p);
-      p *= 2.03;
-      a *= 0.55;
-    }
+    float v = noise(p) * 0.6;
+    v += noise(p * 2.05) * 0.4;
     return v;
   }
 
@@ -239,10 +241,13 @@ const FRAG = /* glsl */ `
     vec2 sampleUv = uv + shift + refractOffset + distortion;
     vec3 col = texture2D(colorTex, sampleUv).rgb;
 
+    // Caustics — 1 fbm + 1 plain noise + 1 plain noise.
+    // Was 3 × fbm(4 octaves) = 12 noise samples; now 4 noise samples
+    // (3× cost reduction) with similar visual richness.
     float n1 = fbm(uv * 3.5 + vec2(uTime * 0.05, uTime * 0.03));
-    float n2 = fbm(uv * 8.0 - vec2(uTime * 0.03, uTime * 0.055));
-    float n3 = fbm(uv * 16.0 + vec2(uTime * 0.02, uTime * 0.04));
-    float caustic = pow(max(0.0, n1 * 0.55 + n2 * 0.35 + n3 * 0.15 - 0.42), 1.5)
+    float n2 = noise(uv * 8.0 - vec2(uTime * 0.03, uTime * 0.055));
+    float n3 = noise(uv * 16.0 + vec2(uTime * 0.02, uTime * 0.04));
+    float caustic = pow(max(0.0, n1 * 0.55 + n2 * 0.30 + n3 * 0.15 - 0.42), 1.5)
                     * uShimmer * waterMask;
     col += vec3(caustic * 0.45, caustic * 0.95, caustic * 1.0);
 
@@ -267,25 +272,27 @@ const FRAG = /* glsl */ `
     // the corner clamping that appears when a 4:3 image is rotated inside a
     // wider viewport, and reads as a slow cinematic drone push-in.
     //
-    // Phase windows — compressed so each scroll unit produces visible
-    // motion (the previous 0→0.50 window made the rotation barely
-    // perceptible until late scroll).
+    // Phase windows — slide 2 starts emerging EARLIER (p=0.35) so the
+    // user sees the new scene appearing without having to scroll far.
     //   p 0.00 → 0.02   slide 1 holds native (single scroll-tick beat)
-    //   p 0.02 → 0.42   rotate 0 → uSlide1Rot, zoom 1.0 → uSlide1Zoom
-    //   p 0.45 → 0.92   depth-aware dissolve into slide 2
-    //   p 0.92 → 1.00   slide 2 holds native
-    float rotPhase = smoothstep(0.02, 0.42, p);
-    // Zoom starts immediately (no smoothstep front-loading at 0.02) and
-    // peaks slightly before rotation completes so the user sees a clear
-    // push-in from the first scroll tick.
+    //   p 0.02 → 0.38   rotate 0 → uSlide1Rot, zoom 1.0 → uSlide1Zoom
+    //   p 0.35 → 0.80   depth-aware dissolve into slide 2
+    //   p 0.80 → 1.00   slide 2 holds native
+    float rotPhase = smoothstep(0.02, 0.38, p);
     float zoomEase = smoothstep(0.0, 0.40, p);
     float zoom1    = mix(1.0, uSlide1Zoom, zoomEase);
     float rot1     = uSlide1Rot * rotPhase;
 
-    // Aspect-corrected rotation around viewport centre: stretch x by uAspect
-    // so the rotation reads as visually circular, rotate, restore. Then divide
-    // by zoom1 so a larger zoom *narrows* the sampled region around centre.
-    vec2 v1 = vUv - 0.5;
+    // Vertical pivot shift: at rotPhase=1, the rotation centre moves DOWN
+    // by uSlide1OffsetY (vUv units). Since the yacht (image centre) is
+    // sampled at the pivot, this places the rotated yacht *below* viewport
+    // centre — exactly what the user asked for.
+    // (vUv.y=0 is screen bottom in three.js PlaneGeometry, so subtracting
+    // moves the pivot DOWN visually.)
+    vec2 pivot = vec2(0.5, 0.5 - uSlide1OffsetY * rotPhase);
+
+    // Aspect-corrected rotation around the (possibly shifted) pivot.
+    vec2 v1 = vUv - pivot;
     v1.x *= uAspect;
     float cs = cos(rot1);
     float sn = sin(rot1);
@@ -303,10 +310,11 @@ const FRAG = /* glsl */ `
     vec2 uv1mask = (v1 - uCenter1) * uCover1 + 0.5;
     float boatMask1 = yachtMaskGeneric(uDepth1, uv1mask, uInvert1, uMask1A, uMask1B);
 
-    // Remap progress so the dissolve doesn't begin until p≥0.45 (just
-    // after rotation completes), and finishes by p≈0.92 leaving an
-    // 8% "settled slide 2" window at the end of scroll.
-    float dissolveP = smoothstep(0.45, 0.92, p);
+    // Dissolve now starts EARLIER (p=0.35, slightly before rotation
+    // fully completes at p=0.38) so slide 2 begins materialising while
+    // the camera is still settling into the rotated frame. Finishes by
+    // p=0.80, giving a 20% "settled" tail at the end of scroll.
+    float dissolveP = smoothstep(0.35, 0.80, p);
 
     // Per-pixel threshold curve — water leads (low pT fires early), yacht
     // waits (high pT fires late). With slide-2 entering at slide-1's peak
@@ -321,7 +329,7 @@ const FRAG = /* glsl */ `
     // Slide 2 entrance: zoom curve mirrors slide-1's peak zoom so the two
     // yachts visually match in size at the dissolve start, then slide 2
     // gently pushes in to its native framing as the transition resolves.
-    float scale2 = mix(uSlide1Zoom, 1.0, smoothstep(0.45, 0.92, p));
+    float scale2 = mix(uSlide1Zoom, 1.0, smoothstep(0.35, 0.80, p));
 
     vec3 col1 = vec3(0.0);
     vec3 col2 = vec3(0.0);
@@ -389,7 +397,7 @@ export default function ImmersiveCanvas({
   slide1DepthSrc,
   slide2ImageSrc,
   slide2DepthSrc,
-  transitionProgress,
+  progressRef,
   parallaxStrength = 0.018,
   waterDistortionStrength = 0.006,
   cursorRippleStrength = 0.005,
@@ -399,6 +407,7 @@ export default function ImmersiveCanvas({
   incomingScale = 0.96,
   slide1Rotation = -1.5707963, // -π/2 = 90° CCW
   slide1Zoom = 1.60,
+  slide1OffsetY = 0.10,
   slide1Mask,
   slide2Mask,
   invertDepthSlide1 = false,
@@ -408,11 +417,12 @@ export default function ImmersiveCanvas({
 }: ImmersiveCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  const liveProgress = React.useRef(transitionProgress);
+  // Live refs that the canvas RAF reads each frame. Progress comes via the
+  // external progressRef (managed by the host's scroll RAF) — bypassing
+  // React entirely. Others are updated via useEffect when their props change.
   const liveDrift = React.useRef(driftStrength);
   const liveDebugDepth = React.useRef(debugDepthView);
   const liveDebugMask = React.useRef(debugWaterMask);
-  React.useEffect(() => { liveProgress.current = transitionProgress; }, [transitionProgress]);
   React.useEffect(() => { liveDrift.current = driftStrength; }, [driftStrength]);
   React.useEffect(() => { liveDebugDepth.current = debugDepthView; }, [debugDepthView]);
   React.useEffect(() => { liveDebugMask.current = debugWaterMask; }, [debugWaterMask]);
@@ -433,7 +443,11 @@ export default function ImmersiveCanvas({
       powerPreference: "high-performance",
       preserveDrawingBuffer: false,
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    // Cap DPR at 1.5 (was 1.75) — at 1.75x on retina the fragment count is
+    // 3x a 1.0 baseline, which can cause stutter on integrated GPUs during
+    // momentum scrolls. 1.5 still looks crisp on retina but cuts the work
+    // by ~25%.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x06141a, 1);
     container.appendChild(renderer.domElement);
     Object.assign(renderer.domElement.style, {
@@ -504,7 +518,7 @@ export default function ImmersiveCanvas({
       uCursor: { value: new THREE.Vector2(0.5, 0.5) },
       uTime: { value: 0 },
       uAspect: { value: 1.6 },
-      uTransition: { value: transitionProgress },
+      uTransition: { value: 0 },
       uParallax: { value: parallaxStrength },
       uWaterDist: { value: waterDistortionStrength },
       uRipple: { value: cursorRippleStrength },
@@ -513,6 +527,7 @@ export default function ImmersiveCanvas({
       uIncomingScale: { value: incomingScale },
       uSlide1Rot: { value: slide1Rotation },
       uSlide1Zoom: { value: slide1Zoom },
+      uSlide1OffsetY: { value: slide1OffsetY },
       uInvert1: { value: invertDepthSlide1 ? 1.0 : 0.0 },
       uInvert2: { value: invertDepthSlide2 ? 1.0 : 0.0 },
       uDebugDepth: { value: debugDepthView },
@@ -583,7 +598,7 @@ export default function ImmersiveCanvas({
       uniforms.uDrift.value.set(Math.sin(t * 0.13) * ds, Math.cos(t * 0.097) * ds * 0.8);
       uniforms.uTime.value = t;
       uniforms.uCursor.value.set(smoothedCursor[0], smoothedCursor[1]);
-      uniforms.uTransition.value = liveProgress.current;
+      uniforms.uTransition.value = progressRef.current;
       uniforms.uDebugDepth.value = liveDebugDepth.current;
       uniforms.uDebugMask.value = liveDebugMask.current;
 
@@ -626,7 +641,7 @@ export default function ImmersiveCanvas({
     slide2ImageSrc, slide2DepthSrc,
     parallaxStrength, waterDistortionStrength, cursorRippleStrength,
     shimmerStrength, outgoingScale, incomingScale,
-    slide1Rotation, slide1Zoom,
+    slide1Rotation, slide1Zoom, slide1OffsetY,
     mask1Key, mask2Key,
     invertDepthSlide1, invertDepthSlide2,
   ]);
