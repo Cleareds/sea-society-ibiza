@@ -53,7 +53,9 @@ const ImmersiveCanvas = dynamic(() => import("./ImmersiveCanvas"), {
   loading: () => null,
 });
 
-/** Aspect-1 ring-dot cursor; turquoise; scales on interactive elements. */
+/** Aspect-1 ring-dot cursor; turquoise; scales on interactive elements.
+ *  RAF only runs while the cursor is in motion or hasn't settled — saves
+ *  a per-frame transform write when the user is idle. */
 function ImmersiveCursor() {
   const ref = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -64,22 +66,33 @@ function ImmersiveCursor() {
     let ty = window.innerHeight / 2;
     let cx = tx;
     let cy = ty;
+
+    const tick = () => {
+      cx += (tx - cx) * 0.22;
+      cy += (ty - cy) * 0.22;
+      el.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`;
+      // Stop the RAF loop once we're visually settled. Re-scheduled on
+      // the next pointermove. Threshold of 0.3 px is sub-pixel so the
+      // cursor never looks "stuck".
+      if (Math.abs(tx - cx) < 0.3 && Math.abs(ty - cy) < 0.3) {
+        raf = 0;
+      } else {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+
     const onMove = (e: PointerEvent) => {
       tx = e.clientX;
       ty = e.clientY;
       const overInteractive = (e.target as HTMLElement | null)?.closest("a, button");
       el.dataset.hover = overInteractive ? "true" : "false";
+      if (!raf) raf = requestAnimationFrame(tick);
     };
-    const tick = () => {
-      cx += (tx - cx) * 0.22;
-      cy += (ty - cy) * 0.22;
-      el.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`;
-      raf = requestAnimationFrame(tick);
-    };
+
     raf = requestAnimationFrame(tick);
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onMove);
     };
   }, []);

@@ -80,15 +80,15 @@ function defaultMaskFor(slot: "s1" | "s2"): Required<MaskParams> {
     // halo so cursor/caustic effects can't reach the hull.
     return {
       anchorShiftY: 0,
-      dilateUp: 0.030,
-      dilateDown: 0.030,
-      dilateLeft: 0.028,
+      dilateUp: 0,
+      dilateDown: 0,
+      dilateLeft: 0,
       // Yacht's bow points right in the source image — the depth gradient
       // tapers sharply that way so the mask needs extra reach there to
       // cover the bow tip without leaving a thin "underwater" sliver.
-      dilateRight: 0.055,
-      thresholdLow: 0.42,
-      thresholdHigh: 0.62,
+      dilateRight: 0,
+      thresholdLow: 0.22,
+      thresholdHigh: 0.32,
     };
   }
   // Slide 2 — the close-up portrait yacht we tuned before.
@@ -549,6 +549,8 @@ export default function ImmersiveCanvas({
     const smoothedPointer: [number, number] = [0, 0];
     const targetCursor: [number, number] = [0.5, 0.5];
     const smoothedCursor: [number, number] = [0.5, 0.5];
+    // Damped scroll progress — feeds the shader's uTransition.
+    const smoothedProgress: [number] = [0];
     const onPointer = (e: PointerEvent) => {
       const x = e.clientX / window.innerWidth;
       const y = e.clientY / window.innerHeight;
@@ -598,7 +600,16 @@ export default function ImmersiveCanvas({
       uniforms.uDrift.value.set(Math.sin(t * 0.13) * ds, Math.cos(t * 0.097) * ds * 0.8);
       uniforms.uTime.value = t;
       uniforms.uCursor.value.set(smoothedCursor[0], smoothedCursor[1]);
-      uniforms.uTransition.value = progressRef.current;
+
+      // Damp progress toward the scroll-driven target. Critically damped so
+      // a flick of the wheel resolves in ~0.4s rather than tracking the
+      // scroll wheel 1:1. Reads as deliberate / cinematic instead of
+      // hyperactive, and also smooths any micro-stutters in the scroll
+      // event delivery.
+      const targetP = progressRef.current;
+      const dampLerp = 1 - Math.pow(0.001, dt * 2.0); // ~2× faster than pointer
+      smoothedProgress[0] += (targetP - smoothedProgress[0]) * dampLerp;
+      uniforms.uTransition.value = smoothedProgress[0];
       uniforms.uDebugDepth.value = liveDebugDepth.current;
       uniforms.uDebugMask.value = liveDebugMask.current;
 
@@ -629,6 +640,18 @@ export default function ImmersiveCanvas({
       color2.dispose();
       depth2.dispose();
       renderer.dispose();
+      // Force WebGL context loss so the GPU resources are released
+      // immediately rather than waiting for the canvas element to be
+      // garbage-collected. Critical in Next dev: HMR re-mounts otherwise
+      // accumulate live WebGL contexts (browsers cap at 16) and the
+      // newest context starts stuttering once you're near the limit.
+      try {
+        const gl = renderer.getContext();
+        const lose = gl.getExtension("WEBGL_lose_context");
+        if (lose) lose.loseContext();
+      } catch {
+        /* renderer already disposed — nothing to release */
+      }
       if (renderer.domElement.parentNode === container) {
         container.removeChild(renderer.domElement);
       }
