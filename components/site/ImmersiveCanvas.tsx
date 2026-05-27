@@ -241,14 +241,12 @@ const FRAG = /* glsl */ `
     vec2 sampleUv = uv + shift + refractOffset + distortion;
     vec3 col = texture2D(colorTex, sampleUv).rgb;
 
-    // Caustics — 1 fbm + 1 plain noise + 1 plain noise.
-    // Was 3 × fbm(4 octaves) = 12 noise samples; now 4 noise samples
-    // (3× cost reduction) with similar visual richness.
-    float n1 = fbm(uv * 3.5 + vec2(uTime * 0.05, uTime * 0.03));
-    float n2 = noise(uv * 8.0 - vec2(uTime * 0.03, uTime * 0.055));
-    float n3 = noise(uv * 16.0 + vec2(uTime * 0.02, uTime * 0.04));
-    float caustic = pow(max(0.0, n1 * 0.55 + n2 * 0.30 + n3 * 0.15 - 0.42), 1.5)
-                    * uShimmer * waterMask;
+    // Caustics — single 2-octave fbm. Cut from 3 fbm + 2 noise (originally)
+    // to just fbm: a single noise+noise sample is enough to read as light
+    // dancing on water at the subtle shimmerStrength we use. Saves
+    // ~40 ops per fragment per slide — meaningful at full mid-dissolve.
+    float n1 = fbm(uv * 5.0 + vec2(uTime * 0.05, uTime * 0.03));
+    float caustic = pow(max(0.0, n1 - 0.42), 1.5) * uShimmer * waterMask;
     col += vec3(caustic * 0.45, caustic * 0.95, caustic * 1.0);
 
     float spot = exp(-cursorDist * 4.0) * 0.07 * waterMask;
@@ -581,9 +579,31 @@ export default function ImmersiveCanvas({
     renderer.domElement.addEventListener("webglcontextlost", onLost, false);
     renderer.domElement.addEventListener("webglcontextrestored", onRestored, false);
 
+    // Pause the render loop when the section is offscreen. Re-arms on
+    // intersection. Saves 100% of GPU work when the user has scrolled
+    // past the hero — previously we kept rendering at 60fps forever.
+    let inView = true;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const next = entries[0]?.isIntersecting ?? true;
+        if (next && !inView && !raf) {
+          // Returning into view — kick the loop back to life.
+          lastT = performance.now();
+          raf = requestAnimationFrame(tick);
+        }
+        inView = next;
+      },
+      { rootMargin: "100px" },
+    );
+    io.observe(container);
+
     let lastT = performance.now();
     const tick = () => {
       if (disposed) return;
+      if (!inView) {
+        raf = 0; // bail; IO will re-arm us on next intersection
+        return;
+      }
       const now = performance.now();
       const dt = Math.min((now - lastT) / 1000, 0.05);
       lastT = now;
@@ -631,6 +651,7 @@ export default function ImmersiveCanvas({
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointer);
       ro.disconnect();
+      io.disconnect();
       renderer.domElement.removeEventListener("webglcontextlost", onLost);
       renderer.domElement.removeEventListener("webglcontextrestored", onRestored);
       geometry.dispose();

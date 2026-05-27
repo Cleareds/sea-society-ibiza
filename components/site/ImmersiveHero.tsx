@@ -184,17 +184,23 @@ function useImmersiveScroll(refs: ScrollRefs) {
       // Copy fades — wide windows so slide-1 and slide-2 text overlap.
       // Slide-2 starts appearing at p=0.45 while slide-1 still has some
       // opacity until p=0.55. Both texts visible during handoff.
+      //
+      // We only flip pointer-events when the bucket changes — style
+      // recalculation isn't free and writing the same value still
+      // invalidates downstream layout in some browsers.
       const c1 = copy1Ref.current;
       if (c1) {
         const op = clamp(1 - (p - 0.32) / 0.23, 0, 1);
         c1.style.opacity = String(op);
-        c1.style.pointerEvents = op > 0.5 ? "auto" : "none";
+        const newPE = op > 0.5 ? "auto" : "none";
+        if (c1.style.pointerEvents !== newPE) c1.style.pointerEvents = newPE;
       }
       const c2 = copy2Ref.current;
       if (c2) {
         const op = clamp((p - 0.45) / 0.20, 0, 1);
         c2.style.opacity = String(op);
-        c2.style.pointerEvents = op > 0.5 ? "auto" : "none";
+        const newPE = op > 0.5 ? "auto" : "none";
+        if (c2.style.pointerEvents !== newPE) c2.style.pointerEvents = newPE;
       }
       const cue = cueRef.current;
       if (cue) {
