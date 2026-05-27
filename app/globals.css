@@ -128,6 +128,61 @@ h1, h2, h3, h4 {
   border-radius: 2px;
 }
 
+/* ---------------------------------------------------------------------------
+   Brand typography — promoted from the immersive hero so banners, page
+   heroes and any text-over-image surface share the same legibility
+   treatment. Pair `.brand-eyebrow` + `.brand-headline` + `.brand-sub` with
+   `.brand-image-overlay` (a darkening gradient) for consistent contrast
+   regardless of the underlying photo's exposure.
+--------------------------------------------------------------------------- */
+.brand-eyebrow {
+  font-size: 0.7rem;          /* 11.2 px */
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.brand-headline {
+  font-family: var(--font-serif);
+  letter-spacing: -0.005em;
+  line-height: 1.02;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.brand-sub {
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.5;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.brand-breadcrumb {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.35);
+}
+/* Three-layer gradient for image overlays:
+   - radial vignette darkening at edges for cinematic framing
+   - vertical foot-darken so text justified to the bottom always reads
+   - top wash so breadcrumbs at the very top stay legible over bright
+     skies (the about/contact heroes had wash-out otherwise).
+   Tuned for medium-bright daylight photos; dark photos get a near-
+   transparent floor so they don't crush. */
+.brand-image-overlay {
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.55) 100%),
+    linear-gradient(180deg,
+      rgba(0, 0, 0, 0.45) 0%,
+      rgba(0, 0, 0, 0.10) 22%,
+      rgba(0, 0, 0, 0.10) 45%,
+      rgba(0, 0, 0, 0.60) 80%,
+      rgba(0, 0, 0, 0.82) 100%);
+}
+
 /* Respect reduced motion across the app. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

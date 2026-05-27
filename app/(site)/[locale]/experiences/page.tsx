@@ -11,7 +11,7 @@ import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getExperiences } from "@/lib/data";
 import { addOns } from "@/lib/data/dummy";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -57,7 +57,7 @@ export default async function ExperiencesPage({
         eyebrow="What you can do at sea"
         title={t("nav.experiences")}
         sub="From a three-hour sunset cruise to a week across the Balearics — every charter is yours."
-        imageSrc={photo.sunsetSailing}
+        imageSrc="/sea-society/site/experiences-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("nav.experiences") },

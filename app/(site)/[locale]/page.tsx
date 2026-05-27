@@ -21,12 +21,13 @@ import {
   getFeaturedBoats,
   getSettings,
 } from "@/lib/data";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { imageVariant } from "@/lib/image-url";
 
-const HOME_HERO = "/images/hero/el-verde.webp";
+const HOME_HERO = "/sea-society/site/home-hero.webp";
+const HOME_AERIAL = "/sea-society/site/home-aerial.webp";
 
 export const revalidate = 3600;
 
@@ -107,8 +108,8 @@ export default async function HomePage({
             </div>
             <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
               <Image
-                src={imageVariant(photo.yachtAerial, 1200)}
-                alt="Aerial view of a luxury yacht circling in shallow turquoise water near Ibiza."
+                src={HOME_AERIAL}
+                alt="Top-down view of a luxury yacht with a sun-deck setup at anchor in clear Ibiza water."
                 fill
                 sizes="(min-width: 768px) 40vw, 90vw"
                 className="object-cover"

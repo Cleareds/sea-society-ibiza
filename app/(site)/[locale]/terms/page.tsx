@@ -5,7 +5,7 @@ import { Section } from "@/components/site/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -50,7 +50,7 @@ export default async function TermsPage({
       <PageHero
         eyebrow="Legal"
         title="Terms & cookie policy"
-        imageSrc={photo.yachtBow}
+        imageSrc="/sea-society/site/fleet-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("footer.terms") },

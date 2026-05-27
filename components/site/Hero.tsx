@@ -40,8 +40,8 @@ export function Hero({
     <section
       className={
         pinned
-          ? "sticky top-0 z-0 isolate h-[100svh] w-full overflow-hidden bg-[var(--color-primary)]"
-          : "relative isolate min-h-[100svh] w-full overflow-hidden bg-[var(--color-primary)]"
+          ? "sticky top-0 z-0 isolate h-[100svh] w-full overflow-hidden bg-[#06141a]"
+          : "relative isolate min-h-[100svh] w-full overflow-hidden bg-[#06141a]"
       }
     >
       <Image
@@ -53,17 +53,17 @@ export function Hero({
         quality={85}
         className="object-cover motion-safe:animate-hero-zoom"
       />
-      {/* Subtle vignette — dark at the foot for legibility of the CTAs, light at the top */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/0 to-black/55" />
+      {/* Two-layer brand overlay: radial vignette + foot darken for CTA contrast. */}
+      <div className="absolute inset-0 brand-image-overlay" />
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-5 pb-24 pt-28 text-center text-white md:pt-40">
-        <p className="motion-safe:animate-hero-rise text-xs uppercase tracking-[0.35em] text-white/85 [animation-delay:120ms]">
+        <p className="brand-eyebrow motion-safe:animate-hero-rise [animation-delay:120ms]">
           {eyebrow}
         </p>
-        <h1 className="motion-safe:animate-hero-rise mt-6 max-w-4xl font-serif text-[11vw] leading-[1.02] tracking-tight [animation-delay:240ms] md:text-7xl lg:text-[88px]">
+        <h1 className="brand-headline motion-safe:animate-hero-rise mt-6 max-w-4xl text-[11vw] [animation-delay:240ms] md:text-7xl lg:text-[88px]">
           {headline}
         </h1>
-        <p className="motion-safe:animate-hero-rise mt-6 max-w-xl text-base text-white/90 [animation-delay:380ms] md:text-lg">
+        <p className="brand-sub motion-safe:animate-hero-rise mt-6 max-w-xl text-base [animation-delay:380ms] md:text-lg">
           {sub}
         </p>
         <div className="motion-safe:animate-hero-rise mt-10 flex flex-col gap-3 [animation-delay:520ms] sm:flex-row">

@@ -16,7 +16,7 @@ import { breadcrumbLd, faqPageLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getFaqs, getSettings } from "@/lib/data";
 import { MarkdownBody } from "@/components/site/MarkdownBody";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { mergeI18n } from "@/lib/i18n/merge";
@@ -68,7 +68,7 @@ export default async function ContactPage({
         eyebrow={contact.heroEyebrow || t("contact.orMessageDirect")}
         title={contact.heroTitle || t("home.enquiry.title")}
         sub={contact.heroSub}
-        imageSrc={photo.ibizaSea}
+        imageSrc="/sea-society/site/contact-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("nav.contact") },

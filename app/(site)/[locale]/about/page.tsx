@@ -9,7 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getSettings } from "@/lib/data";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { mergeI18n } from "@/lib/i18n/merge";
@@ -58,7 +58,7 @@ export default async function AboutPage({
         eyebrow={about.heroEyebrow || "The story"}
         title={about.heroTitle || "A platform built on twenty years at the dock."}
         sub={about.heroSub}
-        imageSrc={photo.marina}
+        imageSrc="/sea-society/site/about-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("nav.about") },

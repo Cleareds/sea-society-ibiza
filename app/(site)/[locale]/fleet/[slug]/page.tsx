@@ -98,7 +98,7 @@ export default async function BoatDetailPage({
       />
 
       {/* Hero — full-bleed boat photo + name + model + tagline */}
-      <section className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[var(--color-primary)]">
+      <section className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[#06141a]">
         <Image
           src={boat.heroImage}
           alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}
@@ -107,25 +107,24 @@ export default async function BoatDetailPage({
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
+        <div className="absolute inset-0 brand-image-overlay" />
         <div className="relative z-10 flex min-h-[80vh] flex-col px-5 pt-24 pb-16 md:px-10 md:pt-32 md:pb-24">
-          <div className="mx-auto w-full max-w-(--spacing-container-max)">
+          <div className="mx-auto w-full max-w-(--spacing-container-max) brand-breadcrumb">
             <Breadcrumb
               items={[
                 { name: t("breadcrumb.home"), href: lp("/") },
                 { name: t("breadcrumb.fleet"), href: lp("/fleet") },
                 { name: boat.name },
               ]}
+              onImage
             />
           </div>
           <div className="mx-auto mt-auto w-full max-w-(--spacing-container-max) text-white">
             {boat.modelName && (
-              <p className="text-xs uppercase tracking-[0.3em] text-white/70 md:text-sm">
-                M/Y · {boat.modelName}
-              </p>
+              <p className="brand-eyebrow md:text-sm">M/Y · {boat.modelName}</p>
             )}
-            <h1 className="mt-3 font-serif text-5xl leading-[1.05] md:text-7xl">{boat.name}</h1>
-            <p className="mt-4 max-w-2xl font-serif text-xl italic text-white/90 md:text-2xl">
+            <h1 className="brand-headline mt-4 text-5xl md:text-7xl">{boat.name}</h1>
+            <p className="brand-sub mt-4 max-w-2xl font-serif text-xl italic md:text-2xl">
               {boat.tagline}
             </p>
           </div>

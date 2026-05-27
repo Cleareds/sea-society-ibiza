@@ -11,7 +11,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, fleetItemListLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getBoats } from "@/lib/data";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import type { Boat, BoatType } from "@/lib/data/types";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -83,28 +83,31 @@ export default async function FleetPage({
         ]}
       />
 
-      <section className="relative isolate h-[55vh] min-h-[420px] w-full overflow-hidden bg-[var(--color-primary)]">
+      <section className="relative isolate h-[55vh] min-h-[420px] w-full overflow-hidden bg-[#06141a]">
         <Image
-          src={photo.yachtAerial}
+          src="/sea-society/site/fleet-hero.webp"
           alt=""
           fill
           priority
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/55" />
+        <div className="absolute inset-0 brand-image-overlay" />
         <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-14 text-white md:px-10 md:pb-20">
           <div className="mx-auto w-full max-w-(--spacing-container-max)">
-            <Breadcrumb
-              items={[
-                { name: t("breadcrumb.home"), href: lp("/") },
-                { name: t("breadcrumb.fleet") },
-              ]}
-            />
-            <h1 className="mt-4 max-w-3xl font-serif text-5xl leading-tight md:text-7xl">
+            <div className="brand-breadcrumb">
+              <Breadcrumb
+                items={[
+                  { name: t("breadcrumb.home"), href: lp("/") },
+                  { name: t("breadcrumb.fleet") },
+                ]}
+                onImage
+              />
+            </div>
+            <h1 className="brand-headline mt-5 max-w-3xl text-5xl md:text-7xl">
               {t("fleet.title")}
             </h1>
-            <p className="mt-3 max-w-xl text-base text-white/80 md:text-lg">{t("fleet.subtitle")}</p>
+            <p className="brand-sub mt-4 max-w-xl text-base md:text-lg">{t("fleet.subtitle")}</p>
           </div>
         </div>
       </section>

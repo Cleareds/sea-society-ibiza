@@ -10,7 +10,7 @@ import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getDestinations } from "@/lib/data";
 import { MarkdownBody } from "@/components/site/MarkdownBody";
-import { photo } from "@/lib/data/dummy/images";
+// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -56,7 +56,7 @@ export default async function DestinationsPage({
         eyebrow="Where the fleet will take you"
         title={t("nav.destinations")}
         sub="Ibiza is the start. Formentera is the easy second day. Mallorca is the multi-day."
-        imageSrc={photo.formenteraBeach}
+        imageSrc="/sea-society/site/destinations-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("nav.destinations") },
