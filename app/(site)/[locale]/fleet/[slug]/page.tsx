@@ -246,11 +246,11 @@ export default async function BoatDetailPage({
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-28">
               <div className="rounded-3xl bg-[var(--color-surface-container-low)] p-6 md:p-8">
-                <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                  {t("boat.checkAvailability")}
+                <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
+                  Book this yacht
                 </p>
                 <p className="mt-3 font-serif text-2xl text-[var(--color-on-surface)]">
-                  {t("boat.tellDates")}
+                  Tell us your dates.
                 </p>
                 <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
                   From €{eurFmt.format(boat.priceFrom)} / day + VAT
@@ -266,7 +266,7 @@ export default async function BoatDetailPage({
                     boatName={boat.name}
                     tone="dark"
                     size="lg"
-                    label={t("boat.orWhatsApp")}
+                    label="Book via WhatsApp"
                     className="w-full"
                   />
                 </div>
