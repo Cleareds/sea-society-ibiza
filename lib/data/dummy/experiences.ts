@@ -1,5 +1,6 @@
 import type { Experience } from "../types";
-import { photo } from "./images";
+
+const img = (name: string) => `/sea-society/site/${name}.webp`;
 
 export const experiences: Experience[] = [
   {
@@ -8,7 +9,7 @@ export const experiences: Experience[] = [
     title: "Day trips",
     intro: "Eight hours, your group, your route. The classic Ibiza charter.",
     body: "Most of our charters are full-day trips — typically 9 or 10 hours from Botafoc Marina, anchored somewhere quiet by mid-morning, lunch on board, swim, and back into port by sunset. Routes are written with your captain on the morning, based on wind and what kind of day you want.",
-    heroImage: photo.ibizaSea,
+    heroImage: img("exp-day-trips"),
     sortOrder: 1,
     isPublished: true,
   },
@@ -18,7 +19,7 @@ export const experiences: Experience[] = [
     title: "Sunset cruises",
     intro: "A short, deliberate three-hour run along the west coast.",
     body: "Sunset cruises leave Botafoc around 18:00 and turn for home as the last light catches Es Vedra. The best photographs of your trip almost always come from this window. Available on most boats in the fleet.",
-    heroImage: photo.sunsetSailing,
+    heroImage: img("exp-sunset"),
     sortOrder: 2,
     isPublished: true,
   },
@@ -28,7 +29,7 @@ export const experiences: Experience[] = [
     title: "Multi-day Balearic",
     intro: "Two to seven nights — Ibiza, Formentera, Mallorca, Cabrera.",
     body: "Longer charters open up the rest of the Balearics. Three nights is the sweet spot for an Ibiza → Formentera → Mallorca loop. Seven nights gets you Cabrera, the most untouched anchorages in the Mediterranean, and proper time at sea.",
-    heroImage: photo.formentera,
+    heroImage: img("exp-multi-day"),
     sortOrder: 3,
     isPublished: true,
   },
@@ -38,7 +39,7 @@ export const experiences: Experience[] = [
     title: "Special occasions",
     intro: "Birthdays, proposals, anniversaries, corporate days.",
     body: "We organise milestone birthdays (often with a chef and stewardess), proposals (we'll cue the champagne so you don't have to think about it), and corporate days for teams of up to twenty across two boats. Tell us what the day needs to be and we'll handle the rest.",
-    heroImage: photo.champagne,
+    heroImage: img("exp-special"),
     sortOrder: 4,
     isPublished: true,
   },

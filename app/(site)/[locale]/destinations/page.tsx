@@ -57,6 +57,7 @@ export default async function DestinationsPage({
         title={t("nav.destinations")}
         sub="Ibiza is the start. Formentera is the easy second day. Mallorca is the multi-day."
         imageSrc="/sea-society/site/destinations-hero.webp"
+        imageObjectPosition="center top"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("nav.destinations") },

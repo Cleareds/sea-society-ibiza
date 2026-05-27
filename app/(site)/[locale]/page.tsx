@@ -252,10 +252,12 @@ export default async function HomePage({
           </Reveal>
         </Section>
 
-        {/* Instagram placeholder grid */}
-        <Section spacing="tight">
+        {/* Follow the journey — full-bleed photo wall (no Section wrapper,
+            InstagramGrid renders its own contained title row + edge-to-edge
+            image grid). */}
+        <div className="py-12 md:py-20">
           <InstagramGrid handle={settings.instagramHandle} href={settings.instagramUrl} />
-        </Section>
+        </div>
 
         {/* Enquiry CTA */}
         <Section bleed className="bg-[var(--color-primary)] text-[var(--color-on-primary)]">
