@@ -679,7 +679,7 @@ function useMobileTransition(refs: MobileScrollRefs) {
         const rotRad = (Math.abs(rot) * Math.PI) / 180;
         const Vw = Math.max(1, window.innerWidth);
         const Vh = window.innerHeight;
-        const ty = ease * 10;
+        const ty = ease * 1;
         const tyPx = (ty * Vh) / 100;
         // Just-enough scale for full coverage at every rotation +
         // translation step. 5% safety margin against sub-pixel sampling.
