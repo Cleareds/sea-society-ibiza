@@ -25,10 +25,21 @@ export interface ImmersiveCanvasProps {
   cursorRippleStrength?: number;
   shimmerStrength?: number;
   driftStrength?: number;
-  /** Subtle scale-out applied to the *outgoing* slide while it crossfades. */
+  /** Subtle scale-out applied to the *outgoing* slide while it crossfades.
+   *  Deprecated: slide 1 now rotates + zooms instead of plain scale. Kept
+   *  in the props for API stability but not used by the shader. */
   outgoingScale?: number;
   /** Subtle scale-in applied to the *incoming* slide while it fades in. */
   incomingScale?: number;
+  /** Slide-1 rotation at the end of its phase, in radians.
+   *  Default -π/2 (-1.5708) so the horizontal yacht ends up vertical,
+   *  visually aligned with slide 2's portrait yacht. */
+  slide1Rotation?: number;
+  /** Peak zoom applied to slide 1 at the end of its rotation phase.
+   *  Default 1.42 — large enough to hide the corner clamping that
+   *  appears when a 4:3 image is rotated 90° inside a 16:9 viewport,
+   *  and adds a cinematic "drone tilt" feel as you scroll. */
+  slide1Zoom?: number;
 
   /** Per-slide yacht-mask tuning. */
   slide1Mask?: MaskParams;
@@ -57,17 +68,20 @@ export interface MaskParams {
 
 function defaultMaskFor(slot: "s1" | "s2"): Required<MaskParams> {
   if (slot === "s1") {
-    // Slide 1 yacht is small, horizontal, near image centre. The boat
-    // depth peaks bright (~1.0); water sits around 0.5–0.6. We use a
-    // *higher* threshold so only the bright hull is captured.
+    // Slide 1 yacht: small horizontal boat at image centre, surrounded by
+    // bright water highlights. The depth gradient at the hull is gentle
+    // (~0.6 at edges → ~1.0 at the brightest centre). The earlier tight
+    // threshold left the hull edges treated as water → "underwater" feel.
+    // Wider band + larger dilation captures the whole boat plus a small
+    // halo so cursor/caustic effects can't reach the hull.
     return {
       anchorShiftY: 0,
-      dilateUp: 0.008,
-      dilateDown: 0.008,
-      dilateLeft: 0.010,
-      dilateRight: 0.010,
-      thresholdLow: 0.78,
-      thresholdHigh: 0.88,
+      dilateUp: 0.022,
+      dilateDown: 0.022,
+      dilateLeft: 0.022,
+      dilateRight: 0.022,
+      thresholdLow: 0.55,
+      thresholdHigh: 0.72,
     };
   }
   // Slide 2 — the close-up portrait yacht we tuned before.
@@ -126,6 +140,8 @@ const FRAG = /* glsl */ `
 
   uniform float uOutgoingScale;
   uniform float uIncomingScale;
+  uniform float uSlide1Rot;     // peak rotation for slide 1 (radians)
+  uniform float uSlide1Zoom;    // peak zoom for slide 1 at full rotation
 
   uniform float uInvert1;
   uniform float uInvert2;
@@ -239,28 +255,72 @@ const FRAG = /* glsl */ `
   void main() {
     float p = uTransition;
 
-    float scale1 = mix(1.0, uOutgoingScale, smoothstep(0.05, 1.0, p));
-    float scale2 = mix(uIncomingScale, 1.0, smoothstep(0.0, 0.95, p));
+    // ===== Slide 1 transform: rotate + zoom-in over the first half of scroll =====
+    //
+    // Slide 1's yacht is horizontal; slide 2's is vertical. Rotating slide 1
+    // by -90° during scroll re-orients its yacht so by the time the dissolve
+    // fires, both yachts visually occupy the same vertical orientation at
+    // viewport centre. The zoom progresses alongside the rotation: it hides
+    // the corner clamping that appears when a 4:3 image is rotated inside a
+    // wider viewport, and reads as a slow cinematic drone push-in.
+    //
+    // Phase windows:
+    //   p 0.00 → 0.04   slide 1 holds native (lets first scroll register)
+    //   p 0.04 → 0.50   rotate 0 → uSlide1Rot, zoom 1.0 → uSlide1Zoom
+    //   p 0.50 → 0.95   depth-aware dissolve into slide 2
+    //   p 0.95 → 1.00   slide 2 holds native
+    float rotPhase = smoothstep(0.04, 0.50, p);
+    float zoom1    = mix(1.0, uSlide1Zoom, smoothstep(0.0, 0.50, p));
+    float rot1     = uSlide1Rot * rotPhase;
 
-    // Depth-aware dissolve. For each pixel we sample slide 1's yacht mask
-    // and use it to time the cross-fade: water pixels (mask ≈ 0) swap to
-    // slide 2 early (around p=0.30) so the world around the yacht morphs
-    // first. Pixels inside slide 1's yacht (mask ≈ 1) hold slide 1 right
-    // up to p=0.78, then dissolve quickly — slide 2's yacht emerges from
-    // underneath in a clean reveal rather than a ghosted overlay.
-    vec2 uv1 = (vUv - uCenter1) * uCover1 + 0.5;
-    float boatMask1 = yachtMaskGeneric(uDepth1, uv1, uInvert1, uMask1A, uMask1B);
+    // Aspect-corrected rotation around viewport centre: stretch x by uAspect
+    // so the rotation reads as visually circular, rotate, restore. Then divide
+    // by zoom1 so a larger zoom *narrows* the sampled region around centre.
+    vec2 v1 = vUv - 0.5;
+    v1.x *= uAspect;
+    float cs = cos(rot1);
+    float sn = sin(rot1);
+    v1 = vec2(cs * v1.x - sn * v1.y, sn * v1.x + cs * v1.y);
+    v1.x /= uAspect;
+    v1 = v1 / zoom1 + 0.5;
 
-    // per-pixel threshold curve — yacht waits, water leads
+    // ===== Depth-aware dissolve, gated to fire only after rotation completes =====
+    //
+    // Sample slide-1's yacht mask at the *rotated* UV so the depth-aware
+    // dissolve timing follows where the yacht visually sits on screen
+    // (viewport centre, vertical, post-rotation). Pair that with a
+    // slide-2 mask sampled at the entrance-scaled UV — pre-applied below
+    // so the dissolve fires at the right moment in slide-2's frame too.
+    vec2 uv1mask = (v1 - uCenter1) * uCover1 + 0.5;
+    float boatMask1 = yachtMaskGeneric(uDepth1, uv1mask, uInvert1, uMask1A, uMask1B);
+
+    // Remap progress so the dissolve doesn't begin until p≥0.50.
+    float dissolveP = smoothstep(0.50, 0.95, p);
+
+    // Per-pixel threshold curve — water leads (low pT fires early), yacht
+    // waits (high pT fires late). With slide-2 entering at slide-1's peak
+    // zoom level, the two yachts visually match at the dissolve start, so
+    // the slide-1-only mask doesn't produce a "Frankenstein" boundary —
+    // the smaller-than-native slide-2 yacht emerges right inside slide-1's
+    // yacht silhouette as both share the same screen position.
     float pT  = mix(0.28, 0.70, boatMask1);
-    float w2  = smoothstep(pT - 0.08, pT + 0.08, p);
+    float w2  = smoothstep(pT - 0.08, pT + 0.08, dissolveP);
     float w1  = 1.0 - w2;
+
+    // Slide 2 entrance: zoom curve mirrors slide-1's peak zoom so the two
+    // yachts visually match in size at the dissolve start, then slide 2
+    // gently pushes in to its native framing as the transition resolves.
+    // (At scale > 1.0 the shader samples a wider area → image appears
+    // smaller; lerping to 1.0 = native cover = full size.)
+    float scale2 = mix(uSlide1Zoom, 1.0, smoothstep(0.50, 0.95, p));
 
     vec3 col1 = vec3(0.0);
     vec3 col2 = vec3(0.0);
     if (w1 > 0.002) {
+      // Pre-rotated v1 + scale=1.0 because the rotation+zoom already does
+      // slide 1's transformation; evaluateSlide handles cover mapping only.
       col1 = evaluateSlide(
-        vUv, scale1, uColor1, uDepth1, uCover1, uCenter1, uInvert1,
+        v1, 1.0, uColor1, uDepth1, uCover1, uCenter1, uInvert1,
         uMask1A, uMask1B
       );
     }
@@ -328,6 +388,8 @@ export default function ImmersiveCanvas({
   driftStrength = 0.18,
   outgoingScale = 1.06,
   incomingScale = 0.96,
+  slide1Rotation = -1.5707963, // -π/2 = 90° CCW
+  slide1Zoom = 1.42,
   slide1Mask,
   slide2Mask,
   invertDepthSlide1 = false,
@@ -440,6 +502,8 @@ export default function ImmersiveCanvas({
       uShimmer: { value: shimmerStrength },
       uOutgoingScale: { value: outgoingScale },
       uIncomingScale: { value: incomingScale },
+      uSlide1Rot: { value: slide1Rotation },
+      uSlide1Zoom: { value: slide1Zoom },
       uInvert1: { value: invertDepthSlide1 ? 1.0 : 0.0 },
       uInvert2: { value: invertDepthSlide2 ? 1.0 : 0.0 },
       uDebugDepth: { value: debugDepthView },
@@ -553,6 +617,7 @@ export default function ImmersiveCanvas({
     slide2ImageSrc, slide2DepthSrc,
     parallaxStrength, waterDistortionStrength, cursorRippleStrength,
     shimmerStrength, outgoingScale, incomingScale,
+    slide1Rotation, slide1Zoom,
     mask1Key, mask2Key,
     invertDepthSlide1, invertDepthSlide2,
   ]);

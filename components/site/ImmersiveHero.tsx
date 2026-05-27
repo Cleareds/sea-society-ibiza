@@ -36,6 +36,8 @@ export interface ImmersiveHeroProps {
   cursorRippleStrength?: number;
   shimmerStrength?: number;
   driftStrength?: number;
+  slide1Rotation?: number;
+  slide1Zoom?: number;
   invertDepthSlide1?: boolean;
   invertDepthSlide2?: boolean;
   debugDepthView?: number;
@@ -162,6 +164,8 @@ export function ImmersiveHero({
   cursorRippleStrength = 0.005,
   shimmerStrength = 2.0,
   driftStrength = 0.18,
+  slide1Rotation = -1.5707963,
+  slide1Zoom = 1.42,
   invertDepthSlide1 = false,
   invertDepthSlide2 = false,
   debugDepthView = 0,
@@ -175,13 +179,14 @@ export function ImmersiveHero({
   // with the scroll wheel.
   const progress = smoothstep(0, 1, rawProgress);
 
-  // Copy fade windows — tighter than the shader's so the eye never sees
-  // mid-fade copy stranded over a fully-resolved background.
-  const slide1Opacity = clamp(1 - (progress - 0.05) / 0.20, 0, 1);
-  const slide2Opacity = clamp((progress - 0.62) / 0.18, 0, 1);
-  // Scroll cue (slide 1 only) fades in just after page load, fades out as
-  // soon as the user starts scrolling.
-  const cueOpacity = clamp(1 - progress / 0.10, 0, 1);
+  // Copy timing aligned with the new rotation+dissolve shader:
+  //   slide-1 copy fully visible until p≈0.05, gone by p≈0.20 (just as
+  //   rotation accelerates — copy doesn't get caught spinning).
+  //   slide-2 copy fades in after the dissolve has revealed slide 2's
+  //   yacht, around p≈0.85 → 1.0.
+  const slide1Opacity = clamp(1 - (progress - 0.05) / 0.15, 0, 1);
+  const slide2Opacity = clamp((progress - 0.85) / 0.10, 0, 1);
+  const cueOpacity = clamp(1 - progress / 0.06, 0, 1);
 
   return (
     <section
@@ -209,6 +214,8 @@ export function ImmersiveHero({
               cursorRippleStrength={cursorRippleStrength}
               shimmerStrength={shimmerStrength}
               driftStrength={driftStrength}
+              slide1Rotation={slide1Rotation}
+              slide1Zoom={slide1Zoom}
               invertDepthSlide1={invertDepthSlide1}
               invertDepthSlide2={invertDepthSlide2}
               debugDepthView={debugDepthView}
