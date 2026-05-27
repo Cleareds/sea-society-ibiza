@@ -509,57 +509,210 @@ function MobileImmersiveHero({
   slide1,
   slide2,
 }: MobileImmersiveHeroProps) {
+  const sectionRef = React.useRef<HTMLElement>(null);
+  const img1Ref = React.useRef<HTMLImageElement>(null);
+  const img2Ref = React.useRef<HTMLImageElement>(null);
+  const copy1Ref = React.useRef<HTMLDivElement>(null);
+  const copy2Ref = React.useRef<HTMLDivElement>(null);
+  const cueRef = React.useRef<HTMLDivElement>(null);
+
+  useMobileTransition({
+    section: sectionRef,
+    img1: img1Ref,
+    img2: img2Ref,
+    copy1: copy1Ref,
+    copy2: copy2Ref,
+    cue: cueRef,
+  });
+
   return (
     <section
+      ref={sectionRef}
       className="immersive-mobile w-full bg-[#06141a] text-white"
       aria-label="Sea Society — private Mediterranean escapes"
+      // 2× viewport tall so the sticky stage has 1× viewport of scroll
+      // available to play the transition. Mirrors the desktop setup.
+      style={{ height: "200svh" }}
     >
-      <MobileSlide src={slide1ImageSrc} copy={slide1} showCue />
-      <MobileSlide src={slide2ImageSrc} copy={slide2} />
+      <div className="immersive-mobile-stage">
+        {/* Slide 1 — sits underneath, slowly tilts + zooms out under
+            the scroll, fades as slide 2 takes over. */}
+        <div className="immersive-mobile-layer" data-slide="1">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+          <img
+            ref={img1Ref}
+            src={slide1ImageSrc}
+            alt=""
+            aria-hidden
+            className="immersive-mobile-bg"
+            decoding="async"
+            fetchPriority="high"
+          />
+          <div className="immersive-mobile-vignette" />
+          <div ref={copy1Ref} className="immersive-mobile-copy">
+            <p className="immersive-sub immersive-mobile-eyebrow">{slide1.eyebrow}</p>
+            <h1 className="immersive-headline immersive-mobile-headline">
+              {slide1.headline}
+            </h1>
+            <p className="immersive-sub immersive-mobile-sub">{slide1.sub}</p>
+            <a href={slide1.ctaHref} className="immersive-mobile-cta">
+              {slide1.ctaLabel}
+              <span aria-hidden>→</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Slide 2 — starts hidden + zoomed, settles to native by the
+            end of scroll. Initial opacity 0 on the img/copy (NOT the
+            wrapper) so the scroll handler can ramp them in without the
+            wrapper masking them. */}
+        <div className="immersive-mobile-layer" data-slide="2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+          <img
+            ref={img2Ref}
+            src={slide2ImageSrc}
+            alt=""
+            aria-hidden
+            className="immersive-mobile-bg"
+            decoding="async"
+            style={{ opacity: 0 }}
+          />
+          <div className="immersive-mobile-vignette" />
+          <div
+            ref={copy2Ref}
+            className="immersive-mobile-copy"
+            style={{ opacity: 0 }}
+          >
+            <p className="immersive-sub immersive-mobile-eyebrow">{slide2.eyebrow}</p>
+            <h2 className="immersive-headline immersive-mobile-headline">
+              {slide2.headline}
+            </h2>
+            <p className="immersive-sub immersive-mobile-sub">{slide2.sub}</p>
+            <a href={slide2.ctaHref} className="immersive-mobile-cta">
+              {slide2.ctaLabel}
+              <span aria-hidden>→</span>
+            </a>
+          </div>
+        </div>
+
+        <div ref={cueRef} aria-hidden className="immersive-mobile-cue">
+          <span>Scroll</span>
+          <span className="cue-line" />
+        </div>
+      </div>
     </section>
   );
 }
 
-function MobileSlide({
-  src,
-  copy,
-  showCue = false,
-}: {
-  src: string;
-  copy: SlideCopy;
-  showCue?: boolean;
-}) {
-  return (
-    <div className="immersive-mobile-slide">
-      {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
-      <img
-        src={src}
-        alt=""
-        aria-hidden
-        className="immersive-mobile-bg"
-        decoding="async"
-        fetchPriority="high"
-      />
-      <div className="immersive-mobile-vignette" />
-      <div className="immersive-mobile-copy">
-        <p className="immersive-sub immersive-mobile-eyebrow">{copy.eyebrow}</p>
-        <h2 className="immersive-headline immersive-mobile-headline">
-          {copy.headline}
-        </h2>
-        <p className="immersive-sub immersive-mobile-sub">{copy.sub}</p>
-        <a href={copy.ctaHref} className="immersive-mobile-cta">
-          {copy.ctaLabel}
-          <span aria-hidden>→</span>
-        </a>
-      </div>
-      {showCue ? (
-        <div aria-hidden className="immersive-mobile-cue">
-          <span>Scroll</span>
-          <span className="cue-line" />
-        </div>
-      ) : null}
-    </div>
-  );
+interface MobileScrollRefs {
+  section: React.RefObject<HTMLElement | null>;
+  img1: React.RefObject<HTMLImageElement | null>;
+  img2: React.RefObject<HTMLImageElement | null>;
+  copy1: React.RefObject<HTMLDivElement | null>;
+  copy2: React.RefObject<HTMLDivElement | null>;
+  cue: React.RefObject<HTMLDivElement | null>;
+}
+
+function useMobileTransition(refs: MobileScrollRefs) {
+  // Pull refs out so the React compiler doesn't flag `refs.x.current = ...`
+  // as prop mutation (same pattern as the desktop hook).
+  const sectionRef = refs.section;
+  const img1Ref = refs.img1;
+  const img2Ref = refs.img2;
+  const copy1Ref = refs.copy1;
+  const copy2Ref = refs.copy2;
+  const cueRef = refs.cue;
+
+  React.useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    let raf = 0;
+    let lastP = -1;
+
+    // Damped progress for buttery scrolling on touch devices.
+    let smoothedP = 0;
+    let lastFrameT = performance.now();
+
+    const tick = () => {
+      raf = 0;
+      const rect = el.getBoundingClientRect();
+      const scrolled = Math.max(0, -rect.top);
+      const total = el.offsetHeight - window.innerHeight;
+      const targetP = total > 0 ? Math.min(1, scrolled / total) : 0;
+
+      // Critically-damped easing (~0.3s settle) so a flick of the
+      // finger doesn't tracker-jump the transition.
+      const now = performance.now();
+      const dt = Math.min((now - lastFrameT) / 1000, 0.05);
+      lastFrameT = now;
+      const lerp = 1 - Math.pow(0.001, dt * 2.2);
+      smoothedP += (targetP - smoothedP) * lerp;
+      const p = smoothedP;
+
+      // Settled at target — skip identical DOM writes.
+      if (Math.abs(p - lastP) < 0.0005 && p === targetP) {
+        // Only re-schedule if there's still scroll to chase.
+        return;
+      }
+      lastP = p;
+
+      // Slide 1: zooms in (camera approach), drifts up slightly, gently
+      // tilts. Fades out from p=0.42.
+      const img1 = img1Ref.current;
+      if (img1) {
+        const scale = 1 + p * 0.45;
+        const ty = -p * 6; // vh
+        const rot = -p * 10; // deg, subtle "camera tilt"
+        img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
+        img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
+      }
+
+      // Slide 2: starts zoomed-in, settles to native scale; opacity
+      // ramps in across the overlap window.
+      const img2 = img2Ref.current;
+      if (img2) {
+        const scale = 1.22 - p * 0.22;
+        img2.style.transform = `translate3d(0, 0, 0) scale(${scale})`;
+        img2.style.opacity = String(clamp((p - 0.38) / 0.25, 0, 1));
+      }
+
+      // Copy crossfade with overlap: slide-1 copy fades p 0.28 → 0.52,
+      // slide-2 copy fades in p 0.46 → 0.70. Overlap p 0.46 → 0.52 —
+      // both texts visible simultaneously during the handoff.
+      const c1 = copy1Ref.current;
+      if (c1) {
+        c1.style.opacity = String(clamp(1 - (p - 0.28) / 0.24, 0, 1));
+      }
+      const c2 = copy2Ref.current;
+      if (c2) {
+        c2.style.opacity = String(clamp((p - 0.46) / 0.24, 0, 1));
+      }
+      const cue = cueRef.current;
+      if (cue) {
+        cue.style.opacity = String(clamp(1 - p / 0.05, 0, 1));
+      }
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(tick);
+    };
+    // Run continuously so the damping animates even between scroll events.
+    const loop = () => {
+      tick();
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", tick);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", tick);
+    };
+    // Refs are stable; only mount once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }
 
 // =============================================================================
@@ -579,27 +732,32 @@ function ReducedImmersiveHero({
       className="immersive-mobile w-full bg-[#06141a] text-white"
       aria-label="Sea Society"
     >
-      <div className="immersive-mobile-slide" data-reduced="true">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
-        <img
-          src={imageSrc}
-          alt=""
-          aria-hidden
-          className="immersive-mobile-bg"
-          decoding="async"
-          fetchPriority="high"
-        />
-        <div className="immersive-mobile-vignette" />
-        <div className="immersive-mobile-copy">
-          <p className="immersive-sub immersive-mobile-eyebrow">{slide.eyebrow}</p>
-          <h1 className="immersive-headline immersive-mobile-headline">
-            {slide.headline}
-          </h1>
-          <p className="immersive-sub immersive-mobile-sub">{slide.sub}</p>
-          <a href={slide.ctaHref} className="immersive-mobile-cta">
-            {slide.ctaLabel}
-            <span aria-hidden>→</span>
-          </a>
+      <div
+        className="immersive-mobile-stage"
+        style={{ position: "relative" /* override sticky */ }}
+      >
+        <div className="immersive-mobile-layer">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
+          <img
+            src={imageSrc}
+            alt=""
+            aria-hidden
+            className="immersive-mobile-bg"
+            decoding="async"
+            fetchPriority="high"
+          />
+          <div className="immersive-mobile-vignette" />
+          <div className="immersive-mobile-copy">
+            <p className="immersive-sub immersive-mobile-eyebrow">{slide.eyebrow}</p>
+            <h1 className="immersive-headline immersive-mobile-headline">
+              {slide.headline}
+            </h1>
+            <p className="immersive-sub immersive-mobile-sub">{slide.sub}</p>
+            <a href={slide.ctaHref} className="immersive-mobile-cta">
+              {slide.ctaLabel}
+              <span aria-hidden>→</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>

@@ -171,19 +171,31 @@
 }
 
 /* ============================================================================
-   Mobile / coarse-pointer variant — two stacked viewport-tall sections,
-   each with its yacht photo as the centerpiece. Pure CSS — no WebGL.
+   Mobile / coarse-pointer variant — sticky stage with two layered slides
+   driven by scroll. JS writes transform/opacity directly to the image and
+   copy refs; CSS provides the base positioning. Mirrors the desktop story:
+   slide-1 zooms+tilts+fades, slide-2 zooms-in to native, copies crossfade.
 ============================================================================ */
 .immersive-mobile { display: block; }
 
-.immersive-mobile-slide {
-  position: relative;
+.immersive-mobile-stage {
+  position: sticky;
+  top: 0;
   width: 100%;
   height: 100svh;
   min-height: 600px;
   overflow: hidden;
   isolation: isolate;
 }
+
+.immersive-mobile-layer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Slide-2 elements start hidden via inline opacity:0 on the JSX so the
+   wrapper stays opacity:1 — otherwise the wrapper would override the
+   inner img/copy opacities set by the scroll handler. */
 
 .immersive-mobile-bg {
   position: absolute;
@@ -192,16 +204,14 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  /* Subtle Ken Burns — 14s slow zoom on each yacht. Pauses on
-     reduced-motion via the rule lower down. */
-  animation: mobile-ken-burns 14s ease-in-out infinite alternate;
   z-index: 0;
   user-select: none;
   -webkit-user-drag: none;
-}
-@keyframes mobile-ken-burns {
-  0%   { transform: scale(1.04) translate(0, 0); }
-  100% { transform: scale(1.10) translate(-1.5%, -1.5%); }
+  /* Hint compositor — these get JS-set transforms on scroll. */
+  will-change: transform, opacity;
+  transform-origin: 50% 45%;
+  /* Initial state — JS overwrites on first scroll tick. */
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .immersive-mobile-vignette {
@@ -313,7 +323,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .immersive-mobile-bg { animation: none; transform: none; }
+  /* Reduced-motion users get a static slide via ReducedImmersiveHero,
+     but if the scroll-driven variant runs we still want it calm. The
+     transition uses transform/opacity set via JS — those bypass the
+     prefers-reduced-motion CSS rules. The JS hook honours the
+     ReducedImmersiveHero branch instead. */
   .immersive-mobile-cue { display: none; }
 }
 
