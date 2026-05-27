@@ -679,15 +679,10 @@ function useMobileTransition(refs: MobileScrollRefs) {
         const rotRad = (Math.abs(rot) * Math.PI) / 180;
         const Vw = Math.max(1, window.innerWidth);
         const Vh = window.innerHeight;
-        // Vertical drift: slide-1 yacht sits at image centre; slide-2's
-        // yacht sits ~33vh below viewport centre. Ramp slide-1 down with
-        // the rotation ease so the two yachts align at the dissolve.
-        const ty = ease * 33; // vh, positive = downward
+        const ty = ease * 10;
         const tyPx = (ty * Vh) / 100;
-        // Per-frame coverage scale: enough to keep the rotated +
-        // translated rectangle covering the viewport at every angle.
-        // Derived from constraining the top-right corner to stay inside
-        // the local rect bounds after de-rotation.
+        // Just-enough scale for full coverage at every rotation +
+        // translation step. 5% safety margin against sub-pixel sampling.
         const cover =
           Math.cos(rotRad) + ((Vh + 2 * tyPx) / Vw) * Math.sin(rotRad);
         const scale = Math.max(1.0, cover * 1.05);
