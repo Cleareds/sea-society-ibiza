@@ -659,33 +659,41 @@ function useMobileTransition(refs: MobileScrollRefs) {
       // Slide 1 camera-approach: front-loaded so the rotation + zoom
       // finish BEFORE slide 2 starts fading in.
       //
-      // Target pose at p=0.36: -90° tilt, ~2.4x zoom.
+      // The transform pipeline is:
+      //   translate(-50%, -50%)  → centre the over-sized image on the
+      //                            viewport (CSS sizes it past viewport
+      //                            bounds so we keep the desktop's full
+      //                            horizontal composition on portrait
+      //                            mobile — see .immersive-mobile-bg).
+      //   translateY(scroll)      → small drift up during the rotation.
+      //   scale(...)              → camera push-in to ~1.7×.
+      //   rotate(-90°)            → full quarter-turn, matches desktop.
       //
-      // The 2.4x zoom is *required* by the geometry. The img element is
-      // sized to the portrait viewport (W × H, with H > W). Rotated 90°
-      // its bounding box becomes H × W — its height in screen-space is
-      // now the original W. To cover the viewport vertically we need
-      // scale ≥ H / W ≈ 2.16 for a typical 9:19.5 phone. 2.4 leaves
-      // headroom so no edge-clamping shows during the smoothstep.
+      // Smoothstep-eased so the rotation + zoom complete by p=0.36, then
+      // hold their pose until slide 2 fades in at p=0.40.
       const img1 = img1Ref.current;
       if (img1) {
         const t = clamp(p / 0.36, 0, 1);
         const ease = t * t * (3 - 2 * t); // smoothstep
-        const scale = 1 + ease * 1.4; // 1.0 → 2.4
-        const ty = -ease * 6; // vh — gentler drift; the giant rotation
-                               // already moves the focal point.
-        const rot = -ease * 90; // deg — full quarter-turn, matches desktop
-        img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
+        const scale = 1 + ease * 0.7; // 1.0 → 1.7 (image already extends
+                                       // past viewport via CSS, so we don't
+                                       // need a 2.4× zoom to cover at -90°)
+        const ty = -ease * 6; // vh
+        const rot = -ease * 90; // deg
+        img1.style.transform =
+          `translate3d(-50%, calc(-50% + ${ty}vh), 0) scale(${scale}) rotate(${rot}deg)`;
         img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
       }
 
       // Slide 2: starts zoomed-in, settles to native scale; opacity
       // ramps in across the overlap window. Begins at p=0.40 (just
-      // after slide-1 has settled into its tilted pose).
+      // after slide-1 has settled into its tilted pose). Same -50% / -50%
+      // centring as slide 1 because the CSS sizes the image past the
+      // viewport for desktop-matching composition.
       const img2 = img2Ref.current;
       if (img2) {
         const scale = 1.22 - p * 0.22;
-        img2.style.transform = `translate3d(0, 0, 0) scale(${scale})`;
+        img2.style.transform = `translate3d(-50%, -50%, 0) scale(${scale})`;
         img2.style.opacity = String(clamp((p - 0.40) / 0.25, 0, 1));
       }
 

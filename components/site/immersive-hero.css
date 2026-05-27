@@ -199,19 +199,27 @@
 
 .immersive-mobile-bg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  /* Match desktop's composition on portrait phones.
+     Desktop shows the FULL horizontal landscape composition with slight
+     vertical crop. To mirror that on a portrait viewport, we fit the
+     image to viewport width — preserving the rocky reefs flanking the
+     yacht — and let the image be shorter than the viewport (the dark
+     bands above/below sit on the section's dark background).
+     The image is slightly oversized so it extends a touch past the
+     viewport sides and edges aren't pristine straight lines after the
+     rotation transform. */
+  left: 50%;
+  top: 50%;
+  width: 115vw;
+  height: auto;
+  max-width: none;
   z-index: 0;
   user-select: none;
   -webkit-user-drag: none;
-  /* Hint compositor — these get JS-set transforms on scroll. */
   will-change: transform, opacity;
-  transform-origin: 50% 45%;
-  /* Initial state — JS overwrites on first scroll tick. */
-  transform: translate3d(0, 0, 0) scale(1);
+  transform-origin: 50% 50%;
+  /* Initial centred position — JS overwrites on first scroll tick. */
+  transform: translate3d(-50%, -50%, 0) scale(1);
 }
 
 .immersive-mobile-vignette {
