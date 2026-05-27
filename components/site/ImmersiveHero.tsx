@@ -656,18 +656,21 @@ function useMobileTransition(refs: MobileScrollRefs) {
       }
       lastP = p;
 
-      // Slide 1 camera-approach: front-loaded so the zoom + tilt finish
-      // BEFORE slide 2 starts fading in. Was linear across the whole
-      // scroll which left the rotation only ~38% done at the handover.
-      // Now: smoothstep-eased to complete by p=0.36; from there the
-      // image holds its tilted/zoomed pose until slide 2 dissolves on top.
+      // Slide 1 camera-approach: front-loaded so the rotation + zoom
+      // finish BEFORE slide 2 starts fading in.
+      //
+      // Target pose at p=0.36: -45° tilt, ~1.9x zoom. The zoom isn't
+      // optional — at a 45° rotation a 4:3 landscape image fitted into
+      // a portrait viewport via object-fit:cover would otherwise expose
+      // its corners. sqrt(2) ≈ 1.41 is the minimum to keep a square
+      // covered; we go a bit further because the aspect ratios differ.
       const img1 = img1Ref.current;
       if (img1) {
         const t = clamp(p / 0.36, 0, 1);
         const ease = t * t * (3 - 2 * t); // smoothstep
-        const scale = 1 + ease * 0.55;
-        const ty = -ease * 8; // vh — more pronounced drift-up
-        const rot = -ease * 18; // deg — more pronounced "camera tilt"
+        const scale = 1 + ease * 0.9; // 1.0 → 1.9
+        const ty = -ease * 10; // vh
+        const rot = -ease * 45; // deg — full camera tilt
         img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
         img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
       }
