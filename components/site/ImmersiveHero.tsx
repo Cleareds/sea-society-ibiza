@@ -53,9 +53,13 @@ const ImmersiveCanvas = dynamic(() => import("./ImmersiveCanvas"), {
   loading: () => null,
 });
 
-/** Aspect-1 ring-dot cursor; turquoise; scales on interactive elements.
- *  RAF only runs while the cursor is in motion or hasn't settled — saves
- *  a per-frame transform write when the user is idle. */
+/**
+ * Elastic ring cursor inspired by mont-fort.com/maritime. Follows pointer
+ * with damped lag, stretches and rotates along velocity vector while
+ * moving (squash/stretch reads as a soft trailing wake), settles to a
+ * stable ring + centre dot. RAF only runs while in motion or not yet
+ * settled.
+ */
 function ImmersiveCursor() {
   const ref = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -66,15 +70,39 @@ function ImmersiveCursor() {
     let ty = window.innerHeight / 2;
     let cx = tx;
     let cy = ty;
+    // Smoothed velocity components — drive the stretch.
+    let vx = 0;
+    let vy = 0;
+    let pcx = cx;
+    let pcy = cy;
 
     const tick = () => {
-      cx += (tx - cx) * 0.22;
-      cy += (ty - cy) * 0.22;
-      el.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`;
-      // Stop the RAF loop once we're visually settled. Re-scheduled on
-      // the next pointermove. Threshold of 0.3 px is sub-pixel so the
-      // cursor never looks "stuck".
-      if (Math.abs(tx - cx) < 0.3 && Math.abs(ty - cy) < 0.3) {
+      cx += (tx - cx) * 0.18;
+      cy += (ty - cy) * 0.18;
+      // Per-frame delta becomes instantaneous velocity. Then we LP-filter
+      // it so the stretch eases in/out instead of snapping.
+      const dx = cx - pcx;
+      const dy = cy - pcy;
+      pcx = cx;
+      pcy = cy;
+      vx += (dx - vx) * 0.35;
+      vy += (dy - vy) * 0.35;
+      const speed = Math.hypot(vx, vy);
+      const angle = Math.atan2(vy, vx) * (180 / Math.PI);
+      // Stretch maps speed to a small scaleX/scaleY anisotropy. Capped
+      // so fast flicks don't turn the ring into a needle.
+      const stretch = Math.min(0.4, speed * 0.025);
+      const sx = 1 + stretch;
+      const sy = 1 - stretch * 0.65;
+      el.style.transform =
+        `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%) ` +
+        `rotate(${angle}deg) scale(${sx}, ${sy})`;
+
+      const settled =
+        Math.abs(tx - cx) < 0.3 &&
+        Math.abs(ty - cy) < 0.3 &&
+        speed < 0.05;
+      if (settled) {
         raf = 0;
       } else {
         raf = requestAnimationFrame(tick);
@@ -99,36 +127,28 @@ function ImmersiveCursor() {
   return <div ref={ref} className="immersive-cursor" aria-hidden />;
 }
 
-type DeviceMode = "webgl" | "mobile" | "reduced";
+type DeviceMode = "webgl" | "reduced";
 
 /**
  * Picks the right hero variant for the device:
- *   "webgl"   → full immersive scroll with depth-mapped shader
- *   "mobile"  → two stacked viewport-tall sections, each with its yacht
- *               as the centerpiece (no WebGL — fast on small screens)
+ *   "webgl"   → full immersive scroll with depth-mapped shader. Used on
+ *               both desktop and mobile — the shader handles rotation,
+ *               coverage and yacht alignment in UV space, which avoids
+ *               the CSS-rotate-coverage tangle the previous mobile
+ *               variant ran into.
  *   "reduced" → static slide 2 image, no motion at all
  */
 function useDeviceMode(): DeviceMode {
   return React.useSyncExternalStore(
     (cb) => {
       if (typeof window === "undefined") return () => {};
-      const queries = [
-        window.matchMedia("(prefers-reduced-motion: reduce)"),
-        window.matchMedia("(pointer: coarse)"),
-        window.matchMedia("(max-width: 768px)"),
-      ];
-      for (const q of queries) q.addEventListener("change", cb);
-      return () => {
-        for (const q of queries) q.removeEventListener("change", cb);
-      };
+      const q = window.matchMedia("(prefers-reduced-motion: reduce)");
+      q.addEventListener("change", cb);
+      return () => q.removeEventListener("change", cb);
     },
     () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return "reduced";
-      const coarse = window.matchMedia("(pointer: coarse)").matches;
-      const small = window.matchMedia("(max-width: 768px)").matches;
-      if (coarse || small) return "mobile";
-      return "webgl";
+      return reduced ? "reduced" : "webgl";
     },
     () => "reduced", // SSR render
   );
@@ -275,16 +295,6 @@ export function ImmersiveHero({
     ctaHref: ctaHref2,
   };
 
-  if (device === "mobile") {
-    return (
-      <MobileImmersiveHero
-        slide1ImageSrc={slide1ImageSrc}
-        slide2ImageSrc={slide2ImageSrc}
-        slide1={slide1Copy}
-        slide2={slide2Copy}
-      />
-    );
-  }
   if (device === "reduced") {
     return (
       <ReducedImmersiveHero
@@ -489,254 +499,6 @@ function HeroCopy({
   );
 }
 
-// =============================================================================
-// Mobile variant — two stacked 100svh sections, each with its yacht as the
-// visual centerpiece. No WebGL: native scrolling, CSS Ken-Burns zoom on
-// imagery, a tiny scroll cue on the first slide. The yachts get the full
-// canvas of the small screen and the page stays fast.
-// =============================================================================
-
-interface MobileImmersiveHeroProps {
-  slide1ImageSrc: string;
-  slide2ImageSrc: string;
-  slide1: SlideCopy;
-  slide2: SlideCopy;
-}
-
-function MobileImmersiveHero({
-  slide1ImageSrc,
-  slide2ImageSrc,
-  slide1,
-  slide2,
-}: MobileImmersiveHeroProps) {
-  const sectionRef = React.useRef<HTMLElement>(null);
-  const img1Ref = React.useRef<HTMLImageElement>(null);
-  const img2Ref = React.useRef<HTMLImageElement>(null);
-  const copy1Ref = React.useRef<HTMLDivElement>(null);
-  const copy2Ref = React.useRef<HTMLDivElement>(null);
-  const cueRef = React.useRef<HTMLDivElement>(null);
-
-  useMobileTransition({
-    section: sectionRef,
-    img1: img1Ref,
-    img2: img2Ref,
-    copy1: copy1Ref,
-    copy2: copy2Ref,
-    cue: cueRef,
-  });
-
-  return (
-    <section
-      ref={sectionRef}
-      className="immersive-mobile w-full bg-[#06141a] text-white"
-      aria-label="Sea Society — private Mediterranean escapes"
-      // 2× viewport tall so the sticky stage has 1× viewport of scroll
-      // available to play the transition. Mirrors the desktop setup.
-      style={{ height: "200svh" }}
-    >
-      <div className="immersive-mobile-stage">
-        {/* Slide 1 — sits underneath, slowly tilts + zooms out under
-            the scroll, fades as slide 2 takes over. */}
-        <div className="immersive-mobile-layer" data-slide="1">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
-          <img
-            ref={img1Ref}
-            src={slide1ImageSrc}
-            alt=""
-            aria-hidden
-            className="immersive-mobile-bg"
-            decoding="async"
-            fetchPriority="high"
-          />
-          <div className="immersive-mobile-vignette" />
-          <div ref={copy1Ref} className="immersive-mobile-copy">
-            <p className="immersive-sub immersive-mobile-eyebrow">{slide1.eyebrow}</p>
-            <h1 className="immersive-headline immersive-mobile-headline">
-              {slide1.headline}
-            </h1>
-            <p className="immersive-sub immersive-mobile-sub">{slide1.sub}</p>
-            <a href={slide1.ctaHref} className="immersive-mobile-cta">
-              {slide1.ctaLabel}
-              <span aria-hidden>→</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Slide 2 — starts hidden + zoomed, settles to native by the
-            end of scroll. Initial opacity 0 on the img/copy (NOT the
-            wrapper) so the scroll handler can ramp them in without the
-            wrapper masking them. */}
-        <div className="immersive-mobile-layer" data-slide="2">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static brand asset */}
-          <img
-            ref={img2Ref}
-            src={slide2ImageSrc}
-            alt=""
-            aria-hidden
-            className="immersive-mobile-bg"
-            decoding="async"
-            style={{ opacity: 0 }}
-          />
-          <div className="immersive-mobile-vignette" />
-          <div
-            ref={copy2Ref}
-            className="immersive-mobile-copy"
-            style={{ opacity: 0 }}
-          >
-            <p className="immersive-sub immersive-mobile-eyebrow">{slide2.eyebrow}</p>
-            <h2 className="immersive-headline immersive-mobile-headline">
-              {slide2.headline}
-            </h2>
-            <p className="immersive-sub immersive-mobile-sub">{slide2.sub}</p>
-            <a href={slide2.ctaHref} className="immersive-mobile-cta">
-              {slide2.ctaLabel}
-              <span aria-hidden>→</span>
-            </a>
-          </div>
-        </div>
-
-        <div ref={cueRef} aria-hidden className="immersive-mobile-cue">
-          <span>Scroll</span>
-          <span className="cue-line" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-interface MobileScrollRefs {
-  section: React.RefObject<HTMLElement | null>;
-  img1: React.RefObject<HTMLImageElement | null>;
-  img2: React.RefObject<HTMLImageElement | null>;
-  copy1: React.RefObject<HTMLDivElement | null>;
-  copy2: React.RefObject<HTMLDivElement | null>;
-  cue: React.RefObject<HTMLDivElement | null>;
-}
-
-function useMobileTransition(refs: MobileScrollRefs) {
-  // Pull refs out so the React compiler doesn't flag `refs.x.current = ...`
-  // as prop mutation (same pattern as the desktop hook).
-  const sectionRef = refs.section;
-  const img1Ref = refs.img1;
-  const img2Ref = refs.img2;
-  const copy1Ref = refs.copy1;
-  const copy2Ref = refs.copy2;
-  const cueRef = refs.cue;
-
-  React.useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    let raf = 0;
-    let lastP = -1;
-
-    // Damped progress for buttery scrolling on touch devices.
-    let smoothedP = 0;
-    let lastFrameT = performance.now();
-
-    const tick = () => {
-      raf = 0;
-      const rect = el.getBoundingClientRect();
-      const scrolled = Math.max(0, -rect.top);
-      const total = el.offsetHeight - window.innerHeight;
-      const targetP = total > 0 ? Math.min(1, scrolled / total) : 0;
-
-      // Critically-damped easing (~0.3s settle) so a flick of the
-      // finger doesn't tracker-jump the transition.
-      const now = performance.now();
-      const dt = Math.min((now - lastFrameT) / 1000, 0.05);
-      lastFrameT = now;
-      const lerp = 1 - Math.pow(0.001, dt * 2.2);
-      smoothedP += (targetP - smoothedP) * lerp;
-      const p = smoothedP;
-
-      // Settled at target — skip identical DOM writes.
-      if (Math.abs(p - lastP) < 0.0005 && p === targetP) {
-        // Only re-schedule if there's still scroll to chase.
-        return;
-      }
-      lastP = p;
-
-      // Slide 1 camera-approach. The scale is derived from the rotation
-      // angle (not a free ease ramp) so coverage is GUARANTEED at every
-      // intermediate angle, not just at peak rotation.
-      //
-      // Why: a viewport-sized rectangle rotated by θ has a bounding box
-      // of (W|cosθ| + H|sinθ|) × (W|sinθ| + H|cosθ|). For the viewport's
-      // worst-case corner to stay inside the rotated rectangle, scale
-      // must be ≥ |cosθ| + (Vh/Vw)·|sinθ|. On a 9:19.5 phone the peak
-      // requirement is ~2.38 around θ=65°. A linear 1→2.4 scale ramp
-      // matched to a linear 0→90° rotation undershoots this at the
-      // midpoint (scale 1.7 at θ=45° vs required 2.23) — that's where
-      // the black corners came from.
-      //
-      // Also: no vertical drift. The translateY misaligned the rotated
-      // slide-1 yacht against slide-2's (which sits at viewport centre).
-      const img1 = img1Ref.current;
-      if (img1) {
-        const t = clamp(p / 0.36, 0, 1);
-        const ease = t * t * (3 - 2 * t);
-        const rot = -ease * 90;
-        const rotRad = (Math.abs(rot) * Math.PI) / 180;
-        const Vw = Math.max(1, window.innerWidth);
-        const Vh = window.innerHeight;
-        const ty = ease * 1;
-        const tyPx = (ty * Vh) / 100;
-        // Just-enough scale for full coverage at every rotation +
-        // translation step. 5% safety margin against sub-pixel sampling.
-        const cover =
-          Math.cos(rotRad) + ((Vh + 2 * tyPx) / Vw) * Math.sin(rotRad);
-        const scale = Math.max(1.0, cover * 1.05);
-        img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
-        img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
-      }
-
-      // Slide 2: starts zoomed-in, settles to native scale; opacity
-      // ramps in across the overlap window. Begins at p=0.40.
-      const img2 = img2Ref.current;
-      if (img2) {
-        const scale = 1.22 - p * 0.22;
-        img2.style.transform = `translate3d(0, 0, 0) scale(${scale})`;
-        img2.style.opacity = String(clamp((p - 0.40) / 0.25, 0, 1));
-      }
-
-      // Copy crossfade with overlap: slide-1 copy fades p 0.28 → 0.52,
-      // slide-2 copy fades in p 0.46 → 0.70. Overlap p 0.46 → 0.52 —
-      // both texts visible simultaneously during the handoff.
-      const c1 = copy1Ref.current;
-      if (c1) {
-        c1.style.opacity = String(clamp(1 - (p - 0.28) / 0.24, 0, 1));
-      }
-      const c2 = copy2Ref.current;
-      if (c2) {
-        c2.style.opacity = String(clamp((p - 0.46) / 0.24, 0, 1));
-      }
-      const cue = cueRef.current;
-      if (cue) {
-        cue.style.opacity = String(clamp(1 - p / 0.05, 0, 1));
-      }
-    };
-
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(tick);
-    };
-    // Run continuously so the damping animates even between scroll events.
-    const loop = () => {
-      tick();
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", tick);
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", tick);
-    };
-    // Refs are stable; only mount once.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-}
 
 // =============================================================================
 // Reduced-motion variant — static slide 2, no animation. Renders an <img>
