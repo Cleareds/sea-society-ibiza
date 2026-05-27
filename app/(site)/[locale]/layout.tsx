@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { getSettings } from "@/lib/data";
 import { Header, type HeaderLabels } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { WhatsAppCTA } from "@/components/site/WhatsAppCTA";
+import { SiteCursor } from "@/components/site/SiteCursor";
+import { StickyCTAGate } from "@/components/site/StickyCTAGate";
 import { CookieBanner, type CookieLabels } from "@/components/site/CookieBanner";
 import { Analytics } from "@/components/site/Analytics";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -36,7 +37,6 @@ export default async function SiteLayout({
     destinations: t("nav.destinations"),
     about: t("nav.about"),
     contact: t("nav.contact"),
-    bookWhatsApp: t("cta.bookWhatsApp"),
     menu: t("nav.menu"),
     openMenu: t("nav.openMenu"),
   };
@@ -60,17 +60,16 @@ export default async function SiteLayout({
     <>
       <HtmlLang locale={lc} />
       <JsonLd data={organizationLd(settings)} />
-      <Header
-        transparentOnHero
-        locale={lc}
-        labels={headerLabels}
-        whatsappNumber={settings.whatsappNumber}
-      />
+      <Header transparentOnHero locale={lc} labels={headerLabels} />
       <main id="main" className="pt-0">
         {children}
       </main>
       <Footer settings={settings} locale={lc} t={t} />
-      <WhatsAppCTA number={settings.whatsappNumber} label={t("cta.bookWhatsApp")} />
+      {/* Sticky "Book here" appears on mobile after the user has
+          scrolled past the hero. Gated to exclude parallax/immersive
+          routes. */}
+      <StickyCTAGate number={settings.whatsappNumber} />
+      <SiteCursor />
       <CookieBanner labels={cookieLabels} />
       <Analytics />
     </>

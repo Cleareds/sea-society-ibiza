@@ -6,8 +6,7 @@ import { Check, Ruler, Users, BedDouble, Gauge, Calendar, Cog, Bath, Anchor } fr
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
-import { EnquiryForm } from "@/components/site/EnquiryForm";
-import { WhatsAppCTA } from "@/components/site/WhatsAppCTA";
+import { BookHereCTA } from "@/components/site/BookHereCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { boatProductLd, breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -257,19 +256,16 @@ export default async function BoatDetailPage({
                   From €{eurFmt.format(boat.priceFrom)} / day + VAT
                   {boat.baseHarbour ? ` · ${boat.baseHarbour}` : ""}
                 </p>
+                <p className="mt-6 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
+                  Send us a WhatsApp with your dates and group size — we
+                  respond within a few hours from Botafoc Marina.
+                </p>
                 <div className="mt-6">
-                  <EnquiryForm
-                    defaultBoatName={boat.name}
-                    defaultBoatId={boat.id}
-                    sourcePage={`/fleet/${boat.slug}`}
-                    variant="stacked"
-                  />
-                </div>
-                <div className="mt-6 border-t border-[var(--color-outline-variant)]/40 pt-4">
-                  <WhatsAppCTA
+                  <BookHereCTA
                     number={settings.whatsappNumber}
                     boatName={boat.name}
-                    variant="inline"
+                    tone="dark"
+                    size="lg"
                     label={t("boat.orWhatsApp")}
                     className="w-full"
                   />

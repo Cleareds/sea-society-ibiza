@@ -8,7 +8,8 @@ interface Crumb {
 
 interface Props {
   eyebrow?: string;
-  title: string;
+  /** Headline. Pass a ReactNode to embed brand-accent highlights. */
+  title: React.ReactNode;
   sub?: string;
   imageSrc: string;
   imageAlt?: string;

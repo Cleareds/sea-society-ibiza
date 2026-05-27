@@ -135,6 +135,14 @@ h1, h2, h3, h4 {
    `.brand-image-overlay` (a darkening gradient) for consistent contrast
    regardless of the underlying photo's exposure.
 --------------------------------------------------------------------------- */
+/* Coloured highlight used to mark the load-bearing word in editorial
+   headlines — Sea Society's brand red. Lives at headline weight so
+   we can use it inside <span> on h1/h2/h3 without resetting any styles. */
+.brand-accent {
+  /* Sea Society brand red — pulled from --color-secondary. */
+  color: #bc0100;
+}
+
 .brand-eyebrow {
   font-size: 0.7rem;          /* 11.2 px */
   letter-spacing: 0.35em;

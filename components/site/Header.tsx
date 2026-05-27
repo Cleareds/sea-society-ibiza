@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -12,9 +11,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import { MessageCircle } from "lucide-react";
 import { Logo } from "@/components/site/Logo";
-import { whatsappLink } from "@/lib/whatsapp";
 import { localePath, type Locale } from "@/lib/i18n/config";
 
 export interface HeaderLabels {
@@ -23,7 +20,6 @@ export interface HeaderLabels {
   destinations: string;
   about: string;
   contact: string;
-  bookWhatsApp: string;
   menu: string;
   openMenu: string;
 }
@@ -32,11 +28,9 @@ interface HeaderProps {
   transparentOnHero?: boolean;
   locale: Locale;
   labels: HeaderLabels;
-  whatsappNumber: string;
 }
 
-export function Header({ transparentOnHero = false, locale, labels, whatsappNumber }: HeaderProps) {
-  const waHref = whatsappLink({ number: whatsappNumber });
+export function Header({ transparentOnHero = false, locale, labels }: HeaderProps) {
   // Initialise from `transparentOnHero` so we never need a sync setState
   // inside the effect for the static-header case (React 19.2 forbids it).
   const [scrolled, setScrolled] = React.useState(!transparentOnHero);
@@ -103,21 +97,6 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
           ))}
         </ul>
 
-        <div className="hidden items-center gap-4 md:flex">
-          <a
-            href={waHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 text-sm font-medium text-white transition-colors hover:bg-[#1FAD52]",
-              !isSolid && "shadow-lg",
-            )}
-          >
-            <MessageCircle aria-hidden className="h-4 w-4" />
-            {labels.bookWhatsApp}
-          </a>
-        </div>
-
         <Sheet>
           <SheetTrigger asChild>
             <button
@@ -151,14 +130,6 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 </SheetClose>
               </li>
             </ul>
-            <SheetClose asChild>
-              <Button asChild size="lg" className="mt-auto bg-[#25D366] text-white hover:bg-[#1FAD52]">
-                <a href={waHref} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle aria-hidden className="mr-2 h-5 w-5" />
-                  {labels.bookWhatsApp}
-                </a>
-              </Button>
-            </SheetClose>
           </SheetContent>
         </Sheet>
       </nav>

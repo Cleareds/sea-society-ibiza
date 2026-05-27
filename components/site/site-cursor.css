@@ -1,0 +1,84 @@
+/* Site-wide custom cursor. Same visual language as the immersive hero
+   ring-dot: turquoise glass with a centred dot, expands & brightens
+   over interactive elements. Hidden on touch / reduced-motion. */
+
+@media (hover: hover) and (pointer: fine) {
+  /* Only hide the OS pointer on fine-pointer devices that have a real
+     hover capability — otherwise touch users would lose tap feedback. */
+  html, body {
+    cursor: none;
+  }
+  a, button, [role="button"], input, textarea, select, label {
+    cursor: none;
+  }
+}
+
+.site-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 100;
+  transform: translate3d(-50%, -50%, 0);
+  border: 1.5px solid rgba(126, 234, 226, 0.85);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(126, 234, 226, 0.16) 0%,
+    rgba(126, 234, 226, 0.05) 45%,
+    rgba(126, 234, 226, 0) 70%
+  );
+  box-shadow:
+    0 0 22px rgba(126, 234, 226, 0.30),
+    inset 0 0 10px rgba(126, 234, 226, 0.20);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: width 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              height 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 250ms ease,
+              background 250ms ease,
+              box-shadow 250ms ease,
+              opacity 200ms ease;
+}
+.site-cursor[data-visible="true"] {
+  opacity: 1;
+}
+.site-cursor::after {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px;
+  background: rgba(186, 244, 240, 1);
+  border-radius: 9999px;
+  box-shadow: 0 0 6px rgba(126, 234, 226, 0.9);
+}
+.site-cursor[data-hover="true"] {
+  width: 72px;
+  height: 72px;
+  border-color: rgba(186, 244, 240, 1);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(126, 234, 226, 0.26) 0%,
+    rgba(126, 234, 226, 0.10) 50%,
+    rgba(126, 234, 226, 0) 75%
+  );
+  box-shadow:
+    0 0 32px rgba(126, 234, 226, 0.50),
+    inset 0 0 16px rgba(126, 234, 226, 0.30);
+}
+
+/* Touch devices / coarse pointer — never show the custom cursor and
+   keep the system pointer. */
+@media (pointer: coarse), (hover: none) {
+  .site-cursor { display: none; }
+}
+
+/* Reduced-motion users get the system pointer + a static dot. */
+@media (prefers-reduced-motion: reduce) {
+  .site-cursor { transition: none; }
+}
