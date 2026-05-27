@@ -656,22 +656,33 @@ function useMobileTransition(refs: MobileScrollRefs) {
       }
       lastP = p;
 
-      // Slide 1 camera-approach: front-loaded so the rotation + zoom
-      // finish BEFORE slide 2 starts fading in. CSS uses cover-fit so
-      // the image already fills the viewport at rest; rotation pivots
-      // around centre, and the zoom is large enough to keep coverage
-      // throughout the -90° tilt (rotating a 9:19.5 portrait box ends
-      // up 844 wide × 390 tall — we need scale ≥ H/W ≈ 2.16 to cover
-      // the viewport vertically again).
+      // Slide 1 camera-approach. The scale is derived from the rotation
+      // angle (not a free ease ramp) so coverage is GUARANTEED at every
+      // intermediate angle, not just at peak rotation.
+      //
+      // Why: a viewport-sized rectangle rotated by θ has a bounding box
+      // of (W|cosθ| + H|sinθ|) × (W|sinθ| + H|cosθ|). For the viewport's
+      // worst-case corner to stay inside the rotated rectangle, scale
+      // must be ≥ |cosθ| + (Vh/Vw)·|sinθ|. On a 9:19.5 phone the peak
+      // requirement is ~2.38 around θ=65°. A linear 1→2.4 scale ramp
+      // matched to a linear 0→90° rotation undershoots this at the
+      // midpoint (scale 1.7 at θ=45° vs required 2.23) — that's where
+      // the black corners came from.
+      //
+      // Also: no vertical drift. The translateY misaligned the rotated
+      // slide-1 yacht against slide-2's (which sits at viewport centre).
       const img1 = img1Ref.current;
       if (img1) {
         const t = clamp(p / 0.36, 0, 1);
-        const ease = t * t * (3 - 2 * t); // smoothstep
-        const scale = 1 + ease * 1.4; // 1.0 → 2.4
-        const ty = -ease * 6; // vh
-        const rot = -ease * 90; // deg
-        img1.style.transform =
-          `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
+        const ease = t * t * (3 - 2 * t);
+        const rot = -ease * 90;
+        const rotRad = (Math.abs(rot) * Math.PI) / 180;
+        const aspect = window.innerHeight / Math.max(1, window.innerWidth);
+        // Required scale to fully cover the viewport at this angle, plus
+        // a 5% safety margin against sub-pixel sampling.
+        const minScale = Math.cos(rotRad) + aspect * Math.sin(rotRad);
+        const scale = Math.max(1.0, minScale * 1.05);
+        img1.style.transform = `translate3d(0, 0, 0) scale(${scale}) rotate(${rot}deg)`;
         img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
       }
 
