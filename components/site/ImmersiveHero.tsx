@@ -656,24 +656,30 @@ function useMobileTransition(refs: MobileScrollRefs) {
       }
       lastP = p;
 
-      // Slide 1: zooms in (camera approach), drifts up slightly, gently
-      // tilts. Fades out from p=0.42.
+      // Slide 1 camera-approach: front-loaded so the zoom + tilt finish
+      // BEFORE slide 2 starts fading in. Was linear across the whole
+      // scroll which left the rotation only ~38% done at the handover.
+      // Now: smoothstep-eased to complete by p=0.36; from there the
+      // image holds its tilted/zoomed pose until slide 2 dissolves on top.
       const img1 = img1Ref.current;
       if (img1) {
-        const scale = 1 + p * 0.45;
-        const ty = -p * 6; // vh
-        const rot = -p * 10; // deg, subtle "camera tilt"
+        const t = clamp(p / 0.36, 0, 1);
+        const ease = t * t * (3 - 2 * t); // smoothstep
+        const scale = 1 + ease * 0.55;
+        const ty = -ease * 8; // vh — more pronounced drift-up
+        const rot = -ease * 18; // deg — more pronounced "camera tilt"
         img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
         img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
       }
 
       // Slide 2: starts zoomed-in, settles to native scale; opacity
-      // ramps in across the overlap window.
+      // ramps in across the overlap window. Begins at p=0.40 (just
+      // after slide-1 has settled into its tilted pose).
       const img2 = img2Ref.current;
       if (img2) {
         const scale = 1.22 - p * 0.22;
         img2.style.transform = `translate3d(0, 0, 0) scale(${scale})`;
-        img2.style.opacity = String(clamp((p - 0.38) / 0.25, 0, 1));
+        img2.style.opacity = String(clamp((p - 0.40) / 0.25, 0, 1));
       }
 
       // Copy crossfade with overlap: slide-1 copy fades p 0.28 → 0.52,
