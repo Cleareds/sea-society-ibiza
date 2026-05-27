@@ -261,17 +261,17 @@ export function ImmersiveHero({
   // Slide copy is the same shape for all device variants — centralise it
   // so the WebGL and mobile paths can't drift apart.
   const slide1Copy: SlideCopy = {
-    eyebrow: "PRIVATE COASTAL ESCAPES",
-    headline: "Quiet Waters, Private Moments",
-    sub: "Step into curated yacht experiences shaped by still water, refined comfort, and effortless escape.",
-    ctaLabel: "Discover More",
-    ctaHref: ctaHref1,
-  };
-  const slide2Copy: SlideCopy = {
     eyebrow: "PRIVATE MEDITERRANEAN ESCAPES",
     headline: "Sea Society",
     sub: "Curated yacht experiences shaped around privacy, beauty, and effortless escape.",
     ctaLabel: "Explore the Experience",
+    ctaHref: ctaHref1,
+  };
+  const slide2Copy: SlideCopy = {
+    eyebrow: "PRIVATE COASTAL ESCAPES",
+    headline: "Quiet Waters, Private Moments",
+    sub: "Step into curated yacht experiences shaped by still water, refined comfort, and effortless escape.",
+    ctaLabel: "Discover More",
     ctaHref: ctaHref2,
   };
 
@@ -677,12 +677,21 @@ function useMobileTransition(refs: MobileScrollRefs) {
         const ease = t * t * (3 - 2 * t);
         const rot = -ease * 90;
         const rotRad = (Math.abs(rot) * Math.PI) / 180;
-        const aspect = window.innerHeight / Math.max(1, window.innerWidth);
-        // Required scale to fully cover the viewport at this angle, plus
-        // a 5% safety margin against sub-pixel sampling.
-        const minScale = Math.cos(rotRad) + aspect * Math.sin(rotRad);
-        const scale = Math.max(1.0, minScale * 1.05);
-        img1.style.transform = `translate3d(0, 0, 0) scale(${scale}) rotate(${rot}deg)`;
+        const Vw = Math.max(1, window.innerWidth);
+        const Vh = window.innerHeight;
+        // Vertical drift: slide-1 yacht sits at image centre; slide-2's
+        // yacht sits ~33vh below viewport centre. Ramp slide-1 down with
+        // the rotation ease so the two yachts align at the dissolve.
+        const ty = ease * 33; // vh, positive = downward
+        const tyPx = (ty * Vh) / 100;
+        // Per-frame coverage scale: enough to keep the rotated +
+        // translated rectangle covering the viewport at every angle.
+        // Derived from constraining the top-right corner to stay inside
+        // the local rect bounds after de-rotation.
+        const cover =
+          Math.cos(rotRad) + ((Vh + 2 * tyPx) / Vw) * Math.sin(rotRad);
+        const scale = Math.max(1.0, cover * 1.05);
+        img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
         img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
       }
 
