@@ -659,18 +659,22 @@ function useMobileTransition(refs: MobileScrollRefs) {
       // Slide 1 camera-approach: front-loaded so the rotation + zoom
       // finish BEFORE slide 2 starts fading in.
       //
-      // Target pose at p=0.36: -45° tilt, ~1.9x zoom. The zoom isn't
-      // optional — at a 45° rotation a 4:3 landscape image fitted into
-      // a portrait viewport via object-fit:cover would otherwise expose
-      // its corners. sqrt(2) ≈ 1.41 is the minimum to keep a square
-      // covered; we go a bit further because the aspect ratios differ.
+      // Target pose at p=0.36: -90° tilt, ~2.4x zoom.
+      //
+      // The 2.4x zoom is *required* by the geometry. The img element is
+      // sized to the portrait viewport (W × H, with H > W). Rotated 90°
+      // its bounding box becomes H × W — its height in screen-space is
+      // now the original W. To cover the viewport vertically we need
+      // scale ≥ H / W ≈ 2.16 for a typical 9:19.5 phone. 2.4 leaves
+      // headroom so no edge-clamping shows during the smoothstep.
       const img1 = img1Ref.current;
       if (img1) {
         const t = clamp(p / 0.36, 0, 1);
         const ease = t * t * (3 - 2 * t); // smoothstep
-        const scale = 1 + ease * 0.9; // 1.0 → 1.9
-        const ty = -ease * 10; // vh
-        const rot = -ease * 45; // deg — full camera tilt
+        const scale = 1 + ease * 1.4; // 1.0 → 2.4
+        const ty = -ease * 6; // vh — gentler drift; the giant rotation
+                               // already moves the focal point.
+        const rot = -ease * 90; // deg — full quarter-turn, matches desktop
         img1.style.transform = `translate3d(0, ${ty}vh, 0) scale(${scale}) rotate(${rot}deg)`;
         img1.style.opacity = String(clamp(1 - (p - 0.42) / 0.22, 0, 1));
       }
