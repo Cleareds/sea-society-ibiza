@@ -118,14 +118,23 @@ export default async function BoatDetailPage({
               onImage
             />
           </div>
-          <div className="mx-auto mt-auto w-full max-w-(--spacing-container-max) text-white">
-            {boat.modelName && (
-              <p className="brand-eyebrow md:text-sm">M/Y · {boat.modelName}</p>
-            )}
-            <h1 className="brand-headline mt-4 text-5xl md:text-7xl">{boat.name}</h1>
-            <p className="brand-sub mt-4 max-w-2xl font-serif text-xl italic md:text-2xl">
-              {boat.tagline}
-            </p>
+          <div className="mx-auto mt-auto flex w-full max-w-(--spacing-container-max) flex-col gap-8 text-white md:flex-row md:items-end md:justify-between md:gap-10">
+            <div className="min-w-0">
+              {boat.modelName && (
+                <p className="brand-eyebrow md:text-sm">M/Y · {boat.modelName}</p>
+              )}
+              <h1 className="brand-headline mt-4 text-5xl md:text-7xl">{boat.name}</h1>
+              <p className="brand-sub mt-4 max-w-2xl font-serif text-xl italic md:text-2xl">
+                {boat.tagline}
+              </p>
+            </div>
+            <div className="shrink-0 md:pb-2">
+              <BookHereCTA
+                number={settings.whatsappNumber}
+                boatName={boat.name}
+                size="lg"
+              />
+            </div>
           </div>
         </div>
       </section>

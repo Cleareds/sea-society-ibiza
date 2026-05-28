@@ -212,11 +212,14 @@ const FRAGMENT = /* glsl */ `
     ) * water;
     vec2 sampleUV = uvZoomed + displacement + parallax;
 
-    // 7. Sample the color image. Slight brightness boost (×1.10) so
-    //    the WebGL render reads at the same exposure as the static
-    //    <Image> on the live homepage — three.js's color path was
-    //    landing a half-stop dark.
-    vec3 color = texture2D(uColor, sampleUV).rgb * 1.10;
+    // 7. Sample the color image. Linear-space brightness lift (×1.25)
+    //    so the WebGL render reads at the same exposure as the static
+    //    <Image> on the live homepage. The 1.10 lift previously here
+    //    was ~6% perceived in sRGB after the encode round-trip —
+    //    leaving the canvas visibly dimmer than the raw photo. 1.25
+    //    in linear is closer to the perceived brightness of the
+    //    untouched browser-decoded WebP.
+    vec3 color = texture2D(uColor, sampleUV).rgb * 1.25;
 
     // 8. Caustic shimmer (water only) + cursor LIGHT (global, soft).
     //    Shimmer amplitude bumped 0.06 → 0.10 so the sun-glint sparkle
