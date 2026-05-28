@@ -159,21 +159,23 @@ const FRAGMENT = /* glsl */ `
     float cursorDist = length(toCursor);
 
     // 5. Animated ripple — purely time-driven, runs whether the cursor
-    //    moves or not so the sea is always alive. Tiny amplitude.
+    //    moves or not so the sea is always alive. Speed AND amplitude
+    //    bumped ~50% over the previous calm pass — sea now reads as a
+    //    body of water with visible motion, not a still mirror.
     float wave =
-        sin(uvZoomed.x *  8.0 + uTime * 0.42) * 0.55 +
-        sin(uvZoomed.y * 11.0 - uTime * 0.31) * 0.45;
+        sin(uvZoomed.x *  8.0 + uTime * 0.63) * 0.55 +
+        sin(uvZoomed.y * 11.0 - uTime * 0.47) * 0.45;
 
     // Caustic shimmer — band-limited value noise. Brightens + darkens
     // the sea so it shimmers naturally.
     float caustic =
-        vnoise(uvZoomed * 5.0 + vec2(uTime * 0.08, -uTime * 0.05)) +
-        vnoise(uvZoomed * 9.0 - vec2(uTime * 0.11, uTime * 0.04)) * 0.5;
+        vnoise(uvZoomed * 5.0 + vec2(uTime * 0.12, -uTime * 0.08)) +
+        vnoise(uvZoomed * 9.0 - vec2(uTime * 0.17, uTime * 0.06)) * 0.5;
     caustic = (caustic - 0.75) * 0.45;
 
     // 6. Displacement — only the time-driven wave, gated by water.
-    //    Cursor no longer displaces UVs.
-    vec2 displacement = vec2(wave) * 0.0018 * water;
+    //    Cursor no longer displaces UVs. Amplitude up ~50% (0.0018 → 0.0027).
+    vec2 displacement = vec2(wave) * 0.0027 * water;
     vec2 sampleUV = uvZoomed + displacement;
 
     // 7. Sample the color image. Slight brightness boost (×1.10) so
