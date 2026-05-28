@@ -108,8 +108,8 @@ export default async function AboutPage({
           </div>
           <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
             <Image
-              src="/sea-society/site/dest-ibiza.webp"
-              alt="Looking out at Es Vedra rock from a quiet anchorage off Ibiza."
+              src="/sea-society/site/dest-formentera.webp"
+              alt="Yacht anchored off a Formentera sandbank in clear turquoise water."
               fill
               sizes="(min-width: 768px) 40vw, 90vw"
               className="object-cover"

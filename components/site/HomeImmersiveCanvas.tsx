@@ -150,47 +150,47 @@ const FRAGMENT = /* glsl */ `
     // "halfway" zone that looks like a blind spot mid-sea.
     float water = smoothstep(0.30, 0.55, waterMask) * (1.0 - staticMask);
 
-    // 4. Cursor refraction — sea only.
+    // 4. Cursor — used ONLY as a light source. No UV displacement
+    //    (that distorted the sea too much). Lives everywhere on the
+    //    canvas, not just over water, so static areas (foreground
+    //    rocks, lady silhouette edge) also brighten softly when the
+    //    cursor passes over them.
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);
-    float cursorFalloff = exp(-cursorDist * 7.0);
-    vec2 cursorDir = normalize(toCursor + 1e-4);
 
-    // 5. Animated ripple — smaller amplitude + lower spatial frequency so
-    //    the sea reads as a calm body of water rather than a corrugated
-    //    pond. Two phases combined for natural-looking motion.
+    // 5. Animated ripple — purely time-driven, runs whether the cursor
+    //    moves or not so the sea is always alive. Tiny amplitude.
     float wave =
         sin(uvZoomed.x *  8.0 + uTime * 0.42) * 0.55 +
         sin(uvZoomed.y * 11.0 - uTime * 0.31) * 0.45;
 
-    // Soft caustic shimmer — band-limited value noise, gentler than
-    // before. Re-centred so it darkens AND brightens (water shimmer).
+    // Caustic shimmer — band-limited value noise. Brightens + darkens
+    // the sea so it shimmers naturally.
     float caustic =
         vnoise(uvZoomed * 5.0 + vec2(uTime * 0.08, -uTime * 0.05)) +
         vnoise(uvZoomed * 9.0 - vec2(uTime * 0.11, uTime * 0.04)) * 0.5;
     caustic = (caustic - 0.75) * 0.45;
 
-    // 6. Displacement — gated entirely by water. Sky + rock + lady
-    //    get ZERO movement (no parallax either — they're set in stone).
-    vec2 displacement = (
-      vec2(wave) * 0.0018 +
-      cursorDir * cursorFalloff * uRippleStrength
-    ) * water;
-
+    // 6. Displacement — only the time-driven wave, gated by water.
+    //    Cursor no longer displaces UVs.
+    vec2 displacement = vec2(wave) * 0.0018 * water;
     vec2 sampleUV = uvZoomed + displacement;
 
-    // 7. Sample the color image
-    vec3 color = texture2D(uColor, sampleUV).rgb;
+    // 7. Sample the color image. Slight brightness boost (×1.10) so
+    //    the WebGL render reads at the same exposure as the static
+    //    <Image> on the live homepage — three.js's color path was
+    //    landing a half-stop dark.
+    vec3 color = texture2D(uColor, sampleUV).rgb * 1.10;
 
-    // 8. Add caustic + cursor spot — both gated by water.
+    // 8. Caustic shimmer (water only) + cursor LIGHT (global, soft).
+    //    Cursor adds additive brightness across the whole frame — sea,
+    //    rocks, lady silhouette — so the user feels their pointer is
+    //    illuminating wherever it hovers.
     float shimmer = caustic * 0.06 * water;
-    float spot = exp(-cursorDist * 3.5) * 0.04 * water;
-    color += shimmer + spot;
+    float cursorLight = exp(-cursorDist * 3.2) * 0.18;
+    color += shimmer + cursorLight;
 
-    // 9. Edge vignette tied to zoom — darken corners more as we zoom in
-    //    so the sea framing feels cinematic at uZoom ≈ 1.
-    float vig = ss(0.95, 0.45, length(vuv - vec2(0.5)));
-    color *= mix(1.0, 0.88, (1.0 - vig) * uZoom);
+    // 9. (No vignette — the user wants no dark overlay on the hero.)
 
     gl_FragColor = vec4(color, 1.0);
   }
