@@ -127,13 +127,13 @@ const PRESETS: DepthVariant["preset"][] = [
   { encoder: "vitl", maxSide: 518 },
 ];
 
-// Per-source default water-depth range. Sea sits in the middle of the
-// normalised depth distribution. These can be tuned per variant once
-// we see the depth videos.
+// Per-source default water-depth range. Tuned against the depth
+// distribution of the actual generated depth videos: yacht peaks above
+// 0.85, sky drops below 0.15, sea fills the broad middle band.
 const DEPTH_RANGE: Record<DepthVariant["source"], [number, number]> = {
-  "shorten": [0.30, 0.65],
-  "shorten-hero": [0.30, 0.65],
-  "vertical": [0.30, 0.70],
+  "shorten": [0.20, 0.78],
+  "shorten-hero": [0.20, 0.78],
+  "vertical": [0.20, 0.80],
 };
 
 export const variants: DepthVariant[] = [];
