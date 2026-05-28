@@ -63,3 +63,6 @@ proposal.html
 /sea-society/
 /supabase/.temp/
 
+# Local design folder — source videos + DA-V2 clone, not for the repo.
+/designs/
+

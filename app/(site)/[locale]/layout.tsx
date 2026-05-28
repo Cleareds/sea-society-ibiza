@@ -60,7 +60,12 @@ export default async function SiteLayout({
     <>
       <HtmlLang locale={lc} />
       <JsonLd data={organizationLd(settings)} />
-      <Header transparentOnHero locale={lc} labels={headerLabels} />
+      <Header
+        transparentOnHero
+        locale={lc}
+        labels={headerLabels}
+        whatsappNumber={settings.whatsappNumber}
+      />
       <main id="main" className="pt-0">
         {children}
       </main>

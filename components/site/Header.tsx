@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { Menu, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/site/Logo";
 import { localePath, type Locale } from "@/lib/i18n/config";
+import { whatsappLink } from "@/lib/whatsapp";
 
 export interface HeaderLabels {
   fleet: string;
@@ -28,9 +29,11 @@ interface HeaderProps {
   transparentOnHero?: boolean;
   locale: Locale;
   labels: HeaderLabels;
+  /** When provided, renders a Book here pill in the header next to the nav. */
+  whatsappNumber?: string;
 }
 
-export function Header({ transparentOnHero = false, locale, labels }: HeaderProps) {
+export function Header({ transparentOnHero = false, locale, labels, whatsappNumber }: HeaderProps) {
   // Initialise from `transparentOnHero` so we never need a sync setState
   // inside the effect for the static-header case (React 19.2 forbids it).
   const [scrolled, setScrolled] = React.useState(!transparentOnHero);
@@ -79,23 +82,69 @@ export function Header({ transparentOnHero = false, locale, labels }: HeaderProp
           />
         </Link>
 
-        <ul className="hidden items-center gap-8 md:flex">
-          {navLinks.map((l) => (
-            <li key={l.href}>
-              <Link
-                href={l.href}
+        <div className="hidden items-center gap-8 md:flex">
+          <ul className="flex items-center gap-8">
+            {navLinks.map((l) => (
+              <li key={l.href}>
+                <Link
+                  href={l.href}
+                  className={cn(
+                    "text-sm transition-colors",
+                    isSolid
+                      ? "text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                      : "text-white/90 hover:text-white",
+                  )}
+                >
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          {whatsappNumber && (
+            <a
+              href={whatsappLink({ number: whatsappNumber })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                // Luxe pill — thin gold border, sliding fill on hover, never a
+                // generic button. Same height as the nav so it sits inside
+                // the optical baseline.
+                "group relative inline-flex h-10 items-center gap-2 overflow-hidden rounded-full border px-5 text-[11px] font-medium uppercase tracking-[0.22em] transition-all duration-500",
+                isSolid
+                  ? "border-[var(--color-primary)]/40 text-[var(--color-primary)] hover:border-[var(--color-primary)]"
+                  : "border-white/55 text-white hover:border-white",
+              )}
+            >
+              <span
+                aria-hidden
                 className={cn(
-                  "text-sm transition-colors",
+                  "absolute inset-0 -z-0 translate-y-full transition-transform duration-500 ease-out group-hover:translate-y-0",
+                  isSolid ? "bg-[var(--color-primary)]" : "bg-white",
+                )}
+              />
+              <span
+                className={cn(
+                  "relative z-10 transition-colors duration-500",
                   isSolid
-                    ? "text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
-                    : "text-white/90 hover:text-white",
+                    ? "group-hover:text-white"
+                    : "group-hover:text-[#06141a]",
                 )}
               >
-                {l.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+                Book here
+              </span>
+              <ArrowUpRight
+                aria-hidden
+                className={cn(
+                  "relative z-10 h-3.5 w-3.5 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
+                  isSolid
+                    ? "group-hover:text-white"
+                    : "group-hover:text-[#06141a]",
+                )}
+              />
+            </a>
+          )}
+        </div>
 
         <Sheet>
           <SheetTrigger asChild>
