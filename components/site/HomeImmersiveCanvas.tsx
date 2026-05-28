@@ -173,10 +173,20 @@ const FRAGMENT = /* glsl */ `
         vnoise(uvZoomed * 9.0 - vec2(uTime * 0.17, uTime * 0.06)) * 0.5;
     caustic = (caustic - 0.75) * 0.45;
 
-    // 6. Displacement — only the time-driven wave, gated by water.
-    //    Cursor no longer displaces UVs. Amplitude up ~50% (0.0018 → 0.0027).
+    // 6. Displacement — time-driven wave (gated by water) + a gentle
+    //    cursor-driven parallax. Cursor's horizontal motion swings the
+    //    HORIZON (top of viewport) noticeably; everything else gets a
+    //    smaller, mostly-vertical drift. Static foreground (lady,
+    //    foreground rocks) doesn't move with the cursor.
+    vec2 cursorOffset = uCursor - vec2(0.5);             // -0.5..0.5
+    float horizonWeight = 1.0 - vuv.y;                   // 1 at viewport top, 0 at bottom
+    vec2 parallax = vec2(
+      cursorOffset.x * horizonWeight * 0.045,
+      cursorOffset.y * 0.015
+    ) * (1.0 - staticMask);
+
     vec2 displacement = vec2(wave) * 0.0027 * water;
-    vec2 sampleUV = uvZoomed + displacement;
+    vec2 sampleUV = uvZoomed + displacement + parallax;
 
     // 7. Sample the color image. Slight brightness boost (×1.10) so
     //    the WebGL render reads at the same exposure as the static
