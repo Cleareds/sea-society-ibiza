@@ -72,34 +72,37 @@ export interface MaskParams {
 
 function defaultMaskFor(slot: "s1" | "s2"): Required<MaskParams> {
   if (slot === "s1") {
-    // Slide 1 yacht: small horizontal boat at image centre, surrounded by
-    // bright water highlights. The depth gradient at the hull is gentle
-    // (~0.6 at edges → ~1.0 at the brightest centre). The earlier tight
-    // threshold left the hull edges treated as water → "underwater" feel.
-    // Wider band + larger dilation captures the whole boat plus a small
-    // halo so cursor/caustic effects can't reach the hull.
+    // Slide 1: Depth-Anything reads the rocky coastline along the LEFT
+    // edge as "near" too (depth ~0.6–0.77), so a permissive threshold
+    // locks the entire left half of the frame and only the right side
+    // ever reacts to cursor. The yacht core peaks at ~0.85; rocks max
+    // out around 0.77. Threshold band sits above the rocks so the mask
+    // catches the yacht alone — everything else stays dynamic.
     return {
       anchorShiftY: 0,
-      dilateUp: 0,
-      dilateDown: 0,
-      dilateLeft: 0,
-      // Yacht's bow points right in the source image — the depth gradient
-      // tapers sharply that way so the mask needs extra reach there to
-      // cover the bow tip without leaving a thin "underwater" sliver.
-      dilateRight: 0,
-      thresholdLow: 0.22,
-      thresholdHigh: 0.32,
+      // Yacht core is small and bright; the hull edges fall below the
+      // threshold (depth 0.6–0.75) so without dilation they read as
+      // water. Dilation lets each fragment sample the bright core a
+      // few % away and adopt its mask value — extends coverage to the
+      // full hull. Rocks max at 0.77 so dilating around them never
+      // crosses the threshold.
+      dilateUp: 0.01,
+      dilateDown: 0.01,
+      dilateLeft: 0.01,
+      dilateRight: 0.01,
+      thresholdLow: 0,
+      thresholdHigh: 0.86,
     };
   }
   // Slide 2 — the close-up portrait yacht we tuned before.
   return {
-    anchorShiftY: 0.007,
-    dilateUp: 0.020,
-    dilateDown: 0.00165,
-    dilateLeft: 0.00424,
-    dilateRight: 0.003,
-    thresholdLow: 0.40,
-    thresholdHigh: 0.55,
+    anchorShiftY: 0,
+    dilateUp: 0.025,
+    dilateDown: 0.025,
+    dilateLeft: 0.005,
+    dilateRight: 0.005,
+    thresholdLow: 0,
+    thresholdHigh: 0.75,
   };
 }
 
