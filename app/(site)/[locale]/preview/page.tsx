@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HomeImmersiveScene } from "@/components/site/HomeImmersiveScene";
-import { InstagramGrid } from "@/components/site/InstagramGrid";
+import { InstagramFeed } from "@/components/site/InstagramFeed";
 import { getFeaturedBoats, getSettings } from "@/lib/data";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -51,7 +51,7 @@ export default async function HomePreviewPage({
           the sea. */}
       <div id="after-hero" className="relative z-10">
         <div className="pt-16 md:pt-24">
-          <InstagramGrid
+          <InstagramFeed
             handle={settings.instagramHandle}
             href={settings.instagramUrl}
             tone="dark"

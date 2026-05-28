@@ -3,8 +3,8 @@ import type { Settings } from "../types";
 export const settings: Settings = {
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+34600000000",
   whatsappDefaultMessage: "Hi Sea Society, I'd like to enquire about a charter.",
-  instagramUrl: "https://instagram.com/seasocietyibiza",
-  instagramHandle: "@seasocietyibiza",
+  instagramUrl: "https://instagram.com/seasociety.ibiza",
+  instagramHandle: "@seasociety.ibiza",
   email: "hello@seasocietyibiza.com",
   phone: "+34 600 000 000",
   address: "Botafoc Marina, 07800 Ibiza, Balearic Islands, Spain",
