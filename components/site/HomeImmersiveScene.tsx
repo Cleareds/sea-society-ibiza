@@ -86,10 +86,11 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
 
       <div>
       {/* ---------- HERO — natural flow, scrolls away normally. ----------
-          No dark legibility overlay: the user wants the photo to read
-          unobstructed. The brand-headline text-shadow already gives
-          the title enough contrast against the sky region. */}
+          brand-image-overlay matches the live homepage's hero treatment
+          (radial vignette + foot darken) so the preview hero reads at
+          the same exposure as /en. */}
       <section className="relative z-10 w-full text-white" style={{ height: "100svh" }}>
+        <div className="pointer-events-none absolute inset-0 brand-image-overlay" />
         <div className="relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 pt-28 md:px-10 md:pb-40 md:pt-40">
           <p className="brand-eyebrow">Sea Society Ibiza</p>
           <h1 className="brand-headline mt-5 max-w-4xl text-[clamp(2.75rem,9vw,6rem)]">

@@ -115,25 +115,28 @@ const FRAGMENT = /* glsl */ `
         : vec2(1.0 / ar, 1.0); // image overflows horizontally (mobile case)
     vec2 startPos = vec2(0.0);
     if (ar < 1.0) {
-      // Vertical-overflow case. uPan=0 → window at image top
-      // (sky+mountain). uPan=1 → window slid further down (sea+lady).
-      // We DON'T pan all the way to the image bottom; we stop with
-      // sea well in view so the zoom can take over cleanly.
+      // Vertical-overflow case. Three.js textures default to flipY=true,
+      // so texture-v=1 corresponds to the IMAGE TOP and texture-v=0 to
+      // the IMAGE BOTTOM. To show the image TOP (sky+mountain) at the
+      // start, startPos.y must be set so the visible window samples the
+      // upper part of texture v — which is the upper part of the image.
+      //   uPan = 0 → startPos.y = 1 - visibleFraction.y  → image TOP
+      //   uPan = 1 → startPos.y = 0                       → image BOTTOM
       float maxPanY = 1.0 - visibleFraction.y;
-      startPos.y = uPan * maxPanY * 0.95;
+      startPos.y = mix(maxPanY * 0.95, 0.0, uPan);
     } else {
       startPos.x = (1.0 - visibleFraction.x) * 0.5;
     }
     vec2 base = startPos + vuv * visibleFraction;
 
     // 2. Zoom phase — narrows the visible window down to the sea region.
-    //    zoomCenter is in IMAGE UV space (0=top-left of source,
-    //    1=bottom-right). Target: image x ≈ 0.45 (right of mountain),
-    //    y ≈ 0.65 (mid-sea) → at peak zoom the visible window crops
-    //    to sea, with the mountain off-frame to the left and the
-    //    lady off-frame to the right.
-    float zoom = mix(1.0, 0.45, uZoom);
-    vec2 zoomCenter = vec2(0.45, 0.65);
+    //    zoomCenter is in TEXTURE-V space (with flipY, v=0 is image
+    //    bottom and v=1 is image top). To target sea (image y ≈ 0.65)
+    //    set zoomCenter.y = 1 - 0.65 = 0.35. x is unflipped, so 0.50
+    //    targets the open sea to the right of the mountain (image
+    //    x ≈ 0.18).
+    float zoom = mix(1.0, 0.35, uZoom);
+    vec2 zoomCenter = vec2(0.50, 0.35);
     vec2 uvZoomed = (base - zoomCenter) * zoom + zoomCenter;
 
     // 3. Sample the mask AFTER zoom so subject pixels stay subject pixels
@@ -214,6 +217,10 @@ export function HomeImmersiveCanvas({
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x06141a, 1);
+    // Explicit sRGB output so the WebGL render matches the static
+    // <Image> render on the live homepage (Next.js Image uses the
+    // browser's native sRGB display path; three.js needs this set).
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
     Object.assign(renderer.domElement.style, {
       position: "absolute",
@@ -231,14 +238,15 @@ export function HomeImmersiveCanvas({
     const colorTex = loader.load(imageSrc);
     const maskTex = loader.load(maskSrc);
     [colorTex, maskTex].forEach((t) => {
-      t.colorSpace = THREE.SRGBColorSpace;
       t.minFilter = THREE.LinearFilter;
       t.magFilter = THREE.LinearFilter;
       t.wrapS = THREE.ClampToEdgeWrapping;
       t.wrapT = THREE.ClampToEdgeWrapping;
       t.generateMipmaps = false;
     });
-    // Mask is treated as data (already linear pixel data, not sRGB).
+    // sRGB color space so the WebGL render matches the brightness of
+    // the static <Image> render on the homepage. Mask is data (linear).
+    colorTex.colorSpace = THREE.SRGBColorSpace;
     maskTex.colorSpace = THREE.NoColorSpace;
 
     // Uniforms ----------------------------------------------------------
