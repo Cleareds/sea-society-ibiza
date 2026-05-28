@@ -158,25 +158,34 @@ const FRAGMENT = /* glsl */ `
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);
 
-    // 5. Two-octave sea motion — a slow long-period SWELL plus a faster
-    //    short-period CHOP, cross-mixed on both axes so the pattern
-    //    doesn't read as a regular grid. Together they look like real
-    //    ocean texture rather than a sine wave.
-    //      swell: 3.5/2.8 freq, period ~1s — gentle rolling undulation
-    //      chop:  18-22 freq, period ~0.5s — surface ripple texture
-    float swellX = sin(uvZoomed.x * 3.5 + uvZoomed.y * 1.2 - uTime * 0.18);
-    float swellY = sin(uvZoomed.y * 2.8 - uvZoomed.x * 0.8 + uTime * 0.14);
-    float chopX  = sin(uvZoomed.x * 18.0 + uTime * 0.95) * 0.55 +
-                   sin(uvZoomed.y * 22.0 - uTime * 0.75) * 0.45;
-    float chopY  = cos(uvZoomed.y * 18.0 + uTime * 0.82) * 0.55 +
-                   cos(uvZoomed.x * 22.0 - uTime * 0.62) * 0.45;
+    // 5. Idle sea motion — runs purely on uTime so the surface is alive
+    //    even when the cursor is still. Three layered components:
+    //
+    //    SWELL — rolling waves traveling FROM the horizon TOWARD the
+    //      camera. Phase depends on uvZoomed.y so the wave fronts
+    //      sweep visibly down the frame (period ~9s). This is the
+    //      thing that sells "sea moving on its own".
+    //    CROSS-SWELL — a slower lateral component that breaks up the
+    //      vertical regularity.
+    //    CHOP — fine surface ripple, faster, cross-mixed on both axes.
+    float t = uTime;
+    float swellPhase = uvZoomed.y * 5.2 - t * 0.55;
+    float swell = sin(swellPhase) * 0.7 +
+                  sin(swellPhase * 1.6 + uvZoomed.x * 1.1) * 0.3;
+    float cross = sin(uvZoomed.x * 3.2 + t * 0.32) * 0.5;
+    float chopX = sin(uvZoomed.x * 17.0 + t * 1.10) * 0.55 +
+                  sin(uvZoomed.y * 21.0 - t * 0.85) * 0.45;
+    float chopY = cos(uvZoomed.y * 17.0 + t * 0.95) * 0.55 +
+                  cos(uvZoomed.x * 21.0 - t * 0.68) * 0.45;
 
-    // Caustic shimmer — band-limited value noise. Brightens + darkens
-    // the sea so it shimmers naturally even with the small wave.
+    // Caustic shimmer — sun glint on water. Stronger temporal scroll
+    // + more amplitude so the sparkle visibly drifts across the
+    // surface. This + the rolling swell are the two cues that
+    // convince the eye the sea is moving on its own.
     float caustic =
-        vnoise(uvZoomed * 5.0 + vec2(uTime * 0.12, -uTime * 0.08)) +
-        vnoise(uvZoomed * 9.0 - vec2(uTime * 0.17, uTime * 0.06)) * 0.5;
-    caustic = (caustic - 0.75) * 0.45;
+        vnoise(uvZoomed * 5.0 + vec2(t * 0.22, -t * 0.15)) +
+        vnoise(uvZoomed * 9.0 - vec2(t * 0.30, t * 0.10)) * 0.5;
+    caustic = (caustic - 0.75) * 0.55;
 
     // 6. Displacement — time-driven wave (gated by water) + a gentle
     //    cursor-driven parallax. Cursor's horizontal motion swings the
@@ -193,12 +202,13 @@ const FRAGMENT = /* glsl */ `
       cursorOffset.y * 0.004
     ) * (1.0 - staticMask);
 
-    // Sea displacement — composite swell + chop, gated by water.
-    // Total max ≈ 0.0014 vs previous 0.0027. Sea reads as moving water
-    // but doesn't distort the underlying composition.
+    // Sea displacement — swell (mostly vertical, rolling toward camera)
+    // + cross-swell (lateral) + chop (omnidirectional). Total max
+    // ≈ 0.0020 of UV — visibly alive but still small enough that the
+    // composition isn't disturbed.
     vec2 displacement = (
-      vec2(swellX, swellY) * 0.00085 +
-      vec2(chopX,  chopY ) * 0.00055
+      vec2(swell * 0.35 + cross * 0.20, swell * 0.85) * 0.0013 +
+      vec2(chopX, chopY) * 0.0008
     ) * water;
     vec2 sampleUV = uvZoomed + displacement + parallax;
 
@@ -209,10 +219,10 @@ const FRAGMENT = /* glsl */ `
     vec3 color = texture2D(uColor, sampleUV).rgb * 1.10;
 
     // 8. Caustic shimmer (water only) + cursor LIGHT (global, soft).
-    //    Cursor adds additive brightness across the whole frame — sea,
-    //    rocks, lady silhouette — so the user feels their pointer is
-    //    illuminating wherever it hovers.
-    float shimmer = caustic * 0.06 * water;
+    //    Shimmer amplitude bumped 0.06 → 0.10 so the sun-glint sparkle
+    //    is visibly drifting across the sea even when the user isn't
+    //    moving the cursor — sells the premium "real water" feel.
+    float shimmer = caustic * 0.10 * water;
     float cursorLight = exp(-cursorDist * 3.2) * 0.18;
     color += shimmer + cursorLight;
 
