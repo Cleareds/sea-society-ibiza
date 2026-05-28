@@ -92,13 +92,14 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
           the raw photo. */}
       <section className="relative z-10 w-full text-white" style={{ height: "100svh" }}>
         <div className="relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 pt-28 md:px-10 md:pb-40 md:pt-40">
-          <p className="brand-eyebrow">Sea Society Ibiza</p>
-          <h1 className="brand-headline mt-5 max-w-4xl text-[clamp(2.75rem,9vw,6rem)]">
+          <h1 className="brand-headline max-w-4xl text-[clamp(2.75rem,9vw,6rem)]">
             Ibiza is <span className="brand-accent">different</span>
             <br className="hidden md:block" /> from the sea.
           </h1>
           <p className="brand-sub mt-6 max-w-xl text-base md:text-lg">
-            One platform. Endless experiences at sea.
+            From the moment you step aboard at Botafoc Marina to the moment
+            you watch the sun dissolve into the Mediterranean, every detail
+            is handled.
           </p>
           <div className="mt-10">
             <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
