@@ -38,7 +38,7 @@ export default async function HomePreviewPage({
   }));
 
   return (
-    <main className="bg-[#06141a] text-white">
+    <main className="text-white">
       <HomeImmersiveScene
         whatsappNumber={settings.whatsappNumber}
         featured={featuredWithLabels}

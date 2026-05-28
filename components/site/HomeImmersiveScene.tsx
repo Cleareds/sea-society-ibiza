@@ -40,154 +40,65 @@ interface Props {
 }
 
 /**
- * Pinned WebGL "stage" + a natural-flow yacht-cards block over a frozen
- * sea backdrop.
+ * Fixed-canvas backdrop + flow content.
  *
- * Stage scroll (sticky canvas):
- *   - phase A (~2/3 of the pin on desktop): the camera pans down through
- *     the portrait Es Vedra photo. Hero copy stays in place; everything
- *     except the sea is locked.
- *   - phase B (~1/3): the camera zooms into the sea band; hero copy
- *     fades out; "A fleet. One Mediterranean." fades in.
+ *   - HomeImmersiveCanvas is fixed inset-0 z-[-1] and stays behind ALL
+ *     page sections (until the footer's own background covers it). It
+ *     reads window.scrollY directly each frame.
  *
- * After the pin releases, the canvas is gone. The cards section uses a
- * static cover-fit photo of the same hero (positioned to show only the
- * sea region) as its backdrop, and the yacht cards scroll one-by-one
- * in natural document flow at whatever height they need.
+ *   - Page content (hero copy, yacht cards) lives in natural document
+ *     flow on top of the canvas. There is no sticky pinning, no overlay
+ *     text on top of the cards — the hero text scrolls up as the user
+ *     scrolls down, and the yacht cards arrive in their own time.
+ *
+ *   - Canvas phases driven by scrollY:
+ *        0       → 1×vh   : full Es Vedra. Sea animating; subject locked.
+ *        1×vh    → 2×vh   : smooth zoom into the sea band.
+ *        > 2×vh           : stays at the zoomed sea forever (or until
+ *                            the footer's own bg hides it).
  */
 export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) {
-  const stageRef = React.useRef<HTMLDivElement>(null);
-  const panRef = React.useRef(0);
-  const zoomRef = React.useRef(0);
-  const heroCopyRef = React.useRef<HTMLDivElement>(null);
-  const fleetCopyRef = React.useRef<HTMLDivElement>(null);
-  const cueRef = React.useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
-
-  React.useEffect(() => {
-    const el = stageRef.current;
-    if (!el) return;
-    let raf = 0;
-
-    const tick = () => {
-      raf = 0;
-      const rect = el.getBoundingClientRect();
-      const scrolled = Math.max(0, -rect.top);
-      const total = el.offsetHeight - window.innerHeight;
-      const p = total > 0 ? Math.min(1, scrolled / total) : 0;
-
-      // Split progress into pan + zoom phases.
-      // Pan runs across the first 2/3 of the pin (longer on desktop
-      // because the stage is taller); zoom takes the last 1/3.
-      const panEnd = 0.66;
-      const pan = clamp(p / panEnd, 0, 1);
-      const zoom = clamp((p - panEnd) / (1 - panEnd), 0, 1);
-      panRef.current = pan;
-      zoomRef.current = zoom;
-
-      // Hero copy stays in place during the pan, fades out as the zoom
-      // begins so the camera move feels like one continuous beat.
-      const heroOp = clamp(1 - zoom * 1.3, 0, 1);
-      if (heroCopyRef.current) {
-        heroCopyRef.current.style.opacity = String(heroOp);
-        heroCopyRef.current.style.pointerEvents = heroOp > 0.4 ? "auto" : "none";
-      }
-      // Fleet copy fades in over the zoom — by the time the zoom is done,
-      // it's fully visible.
-      const fleetOp = clamp((zoom - 0.20) / 0.6, 0, 1);
-      if (fleetCopyRef.current) {
-        fleetCopyRef.current.style.opacity = String(fleetOp);
-      }
-      if (cueRef.current) {
-        cueRef.current.style.opacity = String(clamp(1 - pan * 6, 0, 1));
-      }
-    };
-
-    const schedule = () => { if (!raf) raf = requestAnimationFrame(tick); };
-    schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    return () => {
-      if (raf) cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-    };
-  }, []);
-
   const lp = (path: string) => localePath(locale, path);
 
   return (
     <>
-      {/* ---------- STAGE — sticky canvas, pan + zoom by scroll. ----------
-          Desktop pin: 3 viewport heights so the user gets 2 screens of
-          pure hero pan before the zoom begins.
-          Mobile pin: 2 viewport heights — image is portrait and already
-          mostly visible, so we skip the vertical pan and go straight
-          into hero-then-zoom. */}
-      <section
-        ref={stageRef}
-        className="relative w-full bg-[#06141a] text-white [--stage-h:200svh] md:[--stage-h:300svh]"
-        style={{ height: "var(--stage-h)" }}
-      >
-        <div className="sticky top-0 isolate h-[100svh] w-full overflow-hidden">
-          {reduced ? (
-            <div className="absolute inset-0 -z-10">
-              <Image
-                src="/sea-society/site/home-hero.webp"
-                alt="Looking out at Es Vedra rock at golden hour."
-                fill
-                priority
-                sizes="100vw"
-                quality={85}
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <HomeImmersiveCanvas panRef={panRef} zoomRef={zoomRef} />
-          )}
+      {/* Fixed page backdrop. Sits at z-0 with the page main background
+          made transparent on the host page; content sections layer at
+          z-10 so they sit above the canvas. */}
+      {reduced ? (
+        <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+          <Image
+            src="/sea-society/site/home-hero.webp"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={85}
+            className="object-cover"
+          />
+        </div>
+      ) : (
+        <HomeImmersiveCanvas />
+      )}
 
-          {/* Legibility overlay */}
-          <div className="absolute inset-0 brand-image-overlay" />
-
-          {/* Hero copy — visible across the entire pan phase */}
-          <div
-            ref={heroCopyRef}
-            className="absolute inset-0 z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 pt-28 md:px-10 md:pb-40 md:pt-40"
-          >
-            <p className="brand-eyebrow">Sea Society Ibiza</p>
-            <h1 className="brand-headline mt-5 max-w-4xl text-[clamp(2.75rem,9vw,6rem)]">
-              Ibiza is <span className="brand-accent">different</span>
-              <br className="hidden md:block" /> from the sea.
-            </h1>
-            <p className="brand-sub mt-6 max-w-xl text-base md:text-lg">
-              One platform. Endless experiences at sea.
-            </p>
-            <div className="mt-10">
-              <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
-            </div>
+      {/* ---------- HERO — natural flow, scrolls away normally. ---------- */}
+      <section className="relative z-10 w-full text-white" style={{ height: "100svh" }}>
+        <div className="pointer-events-none absolute inset-0 brand-image-overlay" />
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 pt-28 md:px-10 md:pb-40 md:pt-40">
+          <p className="brand-eyebrow">Sea Society Ibiza</p>
+          <h1 className="brand-headline mt-5 max-w-4xl text-[clamp(2.75rem,9vw,6rem)]">
+            Ibiza is <span className="brand-accent">different</span>
+            <br className="hidden md:block" /> from the sea.
+          </h1>
+          <p className="brand-sub mt-6 max-w-xl text-base md:text-lg">
+            One platform. Endless experiences at sea.
+          </p>
+          <div className="mt-10">
+            <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
           </div>
 
-          {/* Fleet copy — crossfades in over the zoom phase */}
-          <div
-            ref={fleetCopyRef}
-            className="pointer-events-none absolute inset-0 z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 md:px-10 md:pb-40"
-            style={{ opacity: 0 }}
-          >
-            <p className="brand-eyebrow">The fleet</p>
-            <h2 className="brand-headline mt-3 max-w-3xl text-[clamp(2.25rem,7vw,5rem)]">
-              A <span className="brand-accent">fleet</span>. One Mediterranean.
-            </h2>
-            <p className="brand-sub mt-6 max-w-xl text-base md:text-lg">
-              Twenty-one yachts from Botafoc Marina. Pick the right one for
-              the day — or send us a message and we will choose.
-            </p>
-          </div>
-
-          {/* Scroll cue */}
-          <div
-            ref={cueRef}
-            className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.25rem)] z-10 flex justify-center"
-          >
+          <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.25rem)] z-10 flex justify-center">
             <a
               href="#fleet-cards"
               aria-label="Scroll to the fleet"
@@ -203,28 +114,16 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
         </div>
       </section>
 
-      {/* ---------- CARDS — natural flow on a frozen sea backdrop. ----------
-          The hero photo is rendered behind, biased so the sea band fills
-          the visible area. No animation here — the sea is static, the
-          yacht cards scroll one-by-one as the user moves down the page. */}
-      <section
-        id="fleet-cards"
-        className="relative isolate w-full overflow-hidden bg-[#06141a] text-white"
-      >
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="/sea-society/site/home-hero.webp"
-            alt=""
-            fill
-            sizes="100vw"
-            quality={85}
-            className="object-cover"
-            style={{ objectPosition: "20% 55%" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#06141a]/40 via-[#06141a]/55 to-[#06141a]/80" />
-        </div>
+      {/* ---------- FLEET CARDS — natural flow on top of the canvas. ----------
+          No "A fleet. One Mediterranean." overlay text on top of the
+          cards (per design feedback). Cards drift up through the canvas
+          while the canvas is still finishing its zoom into the sea. */}
+      <section id="fleet-cards" className="relative z-10 w-full text-white">
+        {/* Soft veil for legibility — light enough that the sea still
+            reads as the dominant background. */}
+        <div className="pointer-events-none absolute inset-0 bg-[#06141a]/35" />
 
-        <div className="mx-auto max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
+        <div className="relative z-10 mx-auto max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
           <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
             {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
               <li
@@ -264,8 +163,4 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
       </section>
     </>
   );
-}
-
-function clamp(v: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, v));
 }

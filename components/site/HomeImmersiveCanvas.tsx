@@ -6,34 +6,31 @@ import * as THREE from "three";
 /**
  * Homepage WebGL canvas — Es Vedra hero with depth-aware water shader.
  *
- * Two textures:
- *   - Color image (home-hero.webp): the photograph.
- *   - Mask image (home-hero-depth.png): RGB packed.
- *       R = depth   (0 far → 255 near, for subtle background parallax)
- *       G = water   (sea region, where the shader animates ripple + caustics)
- *       B = static  (lady + foreground rocks, no movement at all)
+ * Mounted as a position-FIXED backdrop behind the entire page (z-index
+ * -1). Reads window.scrollY directly each frame and runs three phases:
  *
- * Scroll progress drives a UV crop:
- *   p = 0.0  → full Es Vedra frame
- *   p = 1.0  → zoomed in on the sea region (the "next screen" framing,
- *              where the yacht cards + fleet headline overlay).
+ *   scrollY  in [0,           zoomStartPx ]  → full Es Vedra frame
+ *           in [zoomStartPx,  zoomEndPx   ]  → smooth zoom into the sea
+ *           >    zoomEndPx                   → locked at sea-only crop
+ *
+ * Defaults to 1×viewport and 2×viewport, so by the time the user has
+ * scrolled 2 screens the backdrop is sea-only and stays that way until
+ * the footer.
  *
  * Effects are gated so the lady silhouette + foreground rocks stay
  * absolutely crisp + static — only the sea moves.
  */
 export interface HomeImmersiveCanvasProps {
-  /** Vertical pan progress (0 = look at top of image, 1 = look at
-   *  bottom). Lets the camera pan through the portrait Es Vedra image
-   *  on a landscape desktop viewport before any zoom happens. */
-  panRef: React.RefObject<number>;
-  /** Zoom progress (0 = full frame after pan, 1 = sea-only crop). */
-  zoomRef: React.RefObject<number>;
   /** Color photo. */
   imageSrc?: string;
   /** RGB mask (R depth · G water · B static-foreground). */
   maskSrc?: string;
   /** Strength of cursor-driven refraction in the sea. */
   cursorRippleStrength?: number;
+  /** Scroll Y where the zoom STARTS (px). Default = viewport height. */
+  zoomStartPx?: number;
+  /** Scroll Y where the zoom ENDS (px). Default = 2 × viewport height. */
+  zoomEndPx?: number;
 }
 
 const DEFAULT_IMAGE = "/sea-society/site/home-hero.webp";
@@ -182,11 +179,11 @@ const FRAGMENT = /* glsl */ `
 `;
 
 export function HomeImmersiveCanvas({
-  panRef,
-  zoomRef,
   imageSrc = DEFAULT_IMAGE,
   maskSrc = DEFAULT_MASK,
   cursorRippleStrength = 0.006,
+  zoomStartPx,
+  zoomEndPx,
 }: HomeImmersiveCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -277,16 +274,12 @@ export function HomeImmersiveCanvas({
     const ro = new ResizeObserver(resize);
     ro.observe(container);
 
-    // IntersectionObserver — pause the RAF when off-screen.
-    let visible = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry) visible = entry.isIntersecting;
-      },
-      { threshold: 0 },
-    );
-    io.observe(container);
+    // Pause the RAF when the document is hidden (tab change). The
+    // backdrop covers the whole viewport so we can't rely on
+    // IntersectionObserver to find an "offscreen" state.
+    let visible = !document.hidden;
+    const onVis = () => { visible = !document.hidden; };
+    document.addEventListener("visibilitychange", onVis);
 
     // Forced context loss on cleanup so HMR doesn't leak contexts.
     const loseCtx = renderer
@@ -306,11 +299,24 @@ export function HomeImmersiveCanvas({
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
 
+      // Compute pan + zoom from the page scroll position. The canvas is
+      // a fixed backdrop behind the whole page — its visual state is
+      // entirely driven by where the user is in the document.
+      const vh = window.innerHeight;
+      const start = zoomStartPx ?? vh;       // default 1 viewport
+      const end = zoomEndPx ?? vh * 2;       // default 2 viewports
+      const sy = window.scrollY;
+      // Pan runs across the first viewport — gives a slight vertical
+      // drift of the camera through the portrait image while the hero
+      // is still in view.
+      const targetPan = clamp01(sy / start);
+      const targetZoom = clamp01((sy - start) / Math.max(1, end - start));
+
       // Damp inputs so they don't twitch on jittery scroll/touch events
       smoothCursor[0] += (targetCursor[0] - smoothCursor[0]) * 0.12;
       smoothCursor[1] += (targetCursor[1] - smoothCursor[1]) * 0.12;
-      smoothPan[0] += (panRef.current - smoothPan[0]) * 0.18;
-      smoothZoom[0] += (zoomRef.current - smoothZoom[0]) * 0.18;
+      smoothPan[0] += (targetPan - smoothPan[0]) * 0.18;
+      smoothZoom[0] += (targetZoom - smoothZoom[0]) * 0.18;
 
       (uniforms.uCursor as { value: THREE.Vector2 }).value.set(
         smoothCursor[0],
@@ -326,8 +332,8 @@ export function HomeImmersiveCanvas({
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointer);
+      document.removeEventListener("visibilitychange", onVis);
       ro.disconnect();
-      io.disconnect();
       try { loseCtx?.loseContext(); } catch { /* hmr safety */ }
       renderer.dispose();
       material.dispose();
@@ -338,7 +344,21 @@ export function HomeImmersiveCanvas({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [imageSrc, maskSrc, cursorRippleStrength, panRef, zoomRef]);
+  }, [imageSrc, maskSrc, cursorRippleStrength, zoomStartPx, zoomEndPx]);
 
-  return <div ref={containerRef} className="absolute inset-0 -z-10" />;
+  // Fixed full-viewport backdrop. Sits at z-0 so it appears in front of
+  // the body/main background but BEHIND every flow section (which must
+  // carry `relative z-10` to layer above). pointer-events:none so it
+  // never eats clicks on the content above.
+  return (
+    <div
+      ref={containerRef}
+      className="pointer-events-none fixed inset-0 z-0"
+      aria-hidden
+    />
+  );
+}
+
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
 }
