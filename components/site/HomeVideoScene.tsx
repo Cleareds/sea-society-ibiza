@@ -30,6 +30,7 @@ export interface CanvasOverrides {
   contrast?: number;
   parallaxX?: number;
   parallaxY?: number;
+  waterMotion?: number;
 }
 
 export type Layout = "bottom-left" | "center" | "right-band";
@@ -49,9 +50,8 @@ export interface HomeVideoSceneProps {
   layout?: Layout;
   canvas?: CanvasOverrides;
   variantTag?: string;
-  /** How many viewports of scroll the user must cover to fully scrub
-   *  through the video. Default 2.5 (smooth feel without dragging). */
   scrubViewports?: number;
+  panMode?: "none" | "vertical";
 }
 
 function useReducedMotion(): boolean {
@@ -88,16 +88,45 @@ const SUB_CLASSES: Record<Typography, string> = {
 };
 
 /**
- * Scroll-scrubbed video hero.
+ * Hook: tracks scroll progress through a given element. Returns a ref to
+ * stick on the runway + a live 0..1 progress value. Updates on a RAF
+ * loop so it stays smooth.
+ */
+function useScrollProgress(): [
+  React.RefObject<HTMLDivElement | null>,
+  React.RefObject<number>,
+] {
+  const ref = React.useRef<HTMLDivElement | null>(null);
+  const progressRef = React.useRef(0);
+
+  React.useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const total = Math.max(1, el.offsetHeight - window.innerHeight);
+      const scrolled = Math.max(0, -rect.top);
+      progressRef.current = Math.min(1, scrolled / total);
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return [ref, progressRef];
+}
+
+/**
+ * Three phases laid out on top of the same scroll runway:
  *
- *   <runwayRef                 height: scrubViewports × 100vh>
- *     <div sticky top:0 h:100svh>          ← stays pinned while
- *       <HomeVideoCanvas />                  scroll advances
- *       <copy/CTA overlay />
- *     </div>
- *   </runwayRef>
+ *   p in [0.00, 0.35]  → hero text + CTA visible, no yacht cards
+ *   p in [0.35, 0.55]  → cross-fade — text out, cards in
+ *   p in [0.55, 1.00]  → yacht cards visible over the still-scrubbing
+ *                         video; frosted-glass tiles, no white panel
  *
- *   <fleet cards section />                 ← reveals after runway ends
+ * The video continues scrubbing through the whole runway, so the
+ * footage is alive behind the yacht cards too.
  */
 export function HomeVideoScene(props: HomeVideoSceneProps) {
   const {
@@ -108,49 +137,70 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     layout = "bottom-left",
     canvas,
     variantTag,
-    scrubViewports = 2.5,
+    scrubViewports = 4,
+    panMode = "none",
   } = props;
   const reduced = useReducedMotion();
   const lp = (p: string) => localePath(locale, p);
-  const runwayRef = React.useRef<HTMLDivElement>(null);
+
+  // ---- Scroll-progress driven overlays --------------------------------
+  const [runwayRef, progressRef] = useScrollProgress();
+  const heroRef = React.useRef<HTMLDivElement>(null);
+  const cardsRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const p = progressRef.current;
+      // Hero copy — full opacity to 0.30, fully gone by 0.50
+      const heroOpacity = clamp01(1 - (p - 0.30) / 0.20);
+      // Yacht cards — start fading in at 0.35, fully in by 0.55
+      const cardsOpacity = clamp01((p - 0.35) / 0.20);
+      if (heroRef.current) {
+        heroRef.current.style.opacity = String(heroOpacity);
+        heroRef.current.style.pointerEvents = heroOpacity < 0.05 ? "none" : "";
+      }
+      if (cardsRef.current) {
+        cardsRef.current.style.opacity = String(cardsOpacity);
+        cardsRef.current.style.pointerEvents = cardsOpacity < 0.05 ? "none" : "";
+      }
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [progressRef]);
 
   return (
-    <>
-      {/* Scroll runway — tall outer wrapper, sticky inner pins the
-          canvas + copy to the viewport while scroll advances. The
-          canvas maps progress through this runway → video.currentTime. */}
-      <div
-        ref={runwayRef}
-        className="relative z-10 w-full"
-        style={{ height: `${scrubViewports * 100}svh` }}
-      >
-        <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-          {reduced ? (
-            <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-              {posterSrc && (
-                <Image
-                  src={posterSrc}
-                  alt=""
-                  fill
-                  priority
-                  sizes="100vw"
-                  className="object-cover"
-                />
-              )}
-            </div>
-          ) : (
-            <HomeVideoCanvas
-              videoSrc={videoSrc}
-              videoSrcMobile={videoSrcMobile}
-              maskSrc={maskSrc}
-              videoAspect={videoAspect}
-              posterSrc={posterSrc}
-              scrubScopeRef={runwayRef}
-              {...(canvas ?? {})}
-            />
-          )}
+    <div
+      ref={runwayRef}
+      className="relative z-10 w-full"
+      style={{ height: `${scrubViewports * 100}svh` }}
+    >
+      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+        {reduced ? (
+          <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
+            {posterSrc && (
+              <Image src={posterSrc} alt="" fill priority sizes="100vw" className="object-cover" />
+            )}
+          </div>
+        ) : (
+          <HomeVideoCanvas
+            videoSrc={videoSrc}
+            videoSrcMobile={videoSrcMobile}
+            maskSrc={maskSrc}
+            videoAspect={videoAspect}
+            posterSrc={posterSrc}
+            scrubScopeRef={runwayRef}
+            panMode={panMode}
+            {...(canvas ?? {})}
+          />
+        )}
 
-          {/* Copy overlay — sits in front of the canvas. */}
+        {/* PHASE A — hero text. Fades out as user scrolls past 30% */}
+        <div
+          ref={heroRef}
+          className="absolute inset-0 z-10 transition-opacity duration-300"
+        >
           <div
             className={
               "relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col px-5 pt-28 pb-28 text-white md:px-10 md:pt-40 md:pb-40 " +
@@ -166,79 +216,86 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
             <div className={layout === "center" ? "mt-10 flex justify-center" : "mt-10"}>
               <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
             </div>
+          </div>
 
-            {/* Scroll cue */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
-              <span className="pointer-events-auto inline-flex flex-col items-center gap-3 text-white/80">
-                <span className="text-[10px] uppercase tracking-[0.35em] text-white/85">
-                  Scroll
-                </span>
-                <span className="home-cue-arrow inline-block" aria-hidden>
-                  <svg
-                    viewBox="0 0 16 24"
-                    className="h-6 w-4 fill-none stroke-white/85"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M8 1 L8 19" />
-                    <path d="M2 14 L8 21 L14 14" />
-                  </svg>
-                </span>
+          {/* Scroll cue — anchored bottom of viewport, separate from copy. */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
+            <span className="inline-flex flex-col items-center gap-3 text-white/80">
+              <span className="text-[10px] uppercase tracking-[0.35em] text-white/85">
+                Scroll
               </span>
+              <span className="home-cue-arrow inline-block" aria-hidden>
+                <svg
+                  viewBox="0 0 16 24"
+                  className="h-6 w-4 fill-none stroke-white/85"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M8 1 L8 19" />
+                  <path d="M2 14 L8 21 L14 14" />
+                </svg>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        {/* PHASE B — yacht cards over the live video. Frosted glass tiles
+            so the video reads through them while keeping the type legible. */}
+        <div
+          ref={cardsRef}
+          className="absolute inset-0 z-10 flex items-center opacity-0 transition-opacity duration-300"
+        >
+          <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 md:px-10">
+            <div className="flex items-baseline justify-between gap-4 pb-6 text-white">
+              <h2 className="font-serif text-2xl md:text-4xl">
+                Explore the <span className="brand-accent">fleet</span>
+              </h2>
+              <Link
+                href={lp("/fleet")}
+                className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-white/90 transition-colors hover:text-white"
+              >
+                See all
+                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
+            <ul className="grid gap-4 md:grid-cols-3 md:gap-6">
+              {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
+                <li
+                  key={b.id}
+                  className="overflow-hidden rounded-2xl border border-white/20 bg-black/35 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.7)] backdrop-blur-xl backdrop-saturate-150"
+                >
+                  <Link href={lp(`/fleet/${b.slug}`)} className="group block">
+                    <div className="relative aspect-[5/3] overflow-hidden">
+                      <Image
+                        src={b.heroImage}
+                        alt={`${b.name} — ${b.modelName ?? b.brand}`}
+                        fill
+                        sizes="(min-width: 768px) 30vw, 90vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-4 md:p-5">
+                      <p className="brand-eyebrow text-[10px] text-white/75">{b.brand}</p>
+                      <h3 className="mt-1 font-serif text-lg text-white md:text-xl">{b.name}</h3>
+                      <p className="mt-1 text-xs text-white/80">{fromLabel}</p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {variantTag && (
+              <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/55">
+                {variantTag}
+              </p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Fleet cards — reveals after the scroll runway. Bg solid so
-          the canvas above is fully hidden (no more z-stacking trick). */}
-      <section
-        id="fleet-cards"
-        className="relative z-10 w-full bg-[var(--color-surface)] text-[var(--color-on-surface)]"
-      >
-        <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
-          <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
-            {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
-              <li
-                key={b.id}
-                className="overflow-hidden rounded-2xl bg-[var(--color-surface-container-low)] ring-1 ring-[var(--color-outline-variant)]/40"
-              >
-                <Link href={lp(`/fleet/${b.slug}`)} className="group block">
-                  <div className="relative aspect-[5/3] overflow-hidden">
-                    <Image
-                      src={b.heroImage}
-                      alt={`${b.name} — ${b.modelName ?? b.brand}`}
-                      fill
-                      sizes="(min-width: 768px) 30vw, 90vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <p className="brand-eyebrow text-[10px]">{b.brand}</p>
-                    <h3 className="font-serif text-xl md:text-2xl">{b.name}</h3>
-                    <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">{fromLabel}</p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-10 flex items-center justify-between md:mt-14">
-            {variantTag && (
-              <span className="rounded-full bg-[var(--color-surface-container-low)] px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
-                {variantTag}
-              </span>
-            )}
-            <Link
-              href={lp("/fleet")}
-              className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-[var(--color-primary)]"
-            >
-              See the full fleet
-              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+    </div>
   );
+}
+
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
 }

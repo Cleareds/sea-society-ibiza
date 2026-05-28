@@ -68,6 +68,8 @@ export default async function PreviewVideoVariantPage({
         layout={variant.layout}
         canvas={variant.canvas}
         variantTag={variant.tag}
+        scrubViewports={variant.scrubViewports}
+        panMode={variant.panMode}
       />
     </main>
   );

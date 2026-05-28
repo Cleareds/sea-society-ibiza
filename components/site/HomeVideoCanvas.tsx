@@ -43,6 +43,14 @@ export interface HomeVideoCanvasProps {
   contrast?: number;
   parallaxX?: number;
   parallaxY?: number;
+
+  /** Amplitude of the procedural sea displacement (swell + chop) applied
+   *  to the water-mask region. 0 = off. Default 0.0018. */
+  waterMotion?: number;
+  /** When `vertical`, the shader pans through the video's height as
+   *  scroll progresses (top of clip at scroll=0, bottom at scroll=1).
+   *  Pairs naturally with portrait source videos. */
+  panMode?: "none" | "vertical";
 }
 
 const VERTEX = /* glsl */ `
@@ -71,6 +79,8 @@ const FRAGMENT = /* glsl */ `
   uniform float uContrast;
   uniform float uParallaxX;
   uniform float uParallaxY;
+  uniform float uWaterMotion;  // amplitude of procedural sea swell + chop
+  uniform float uPanY;         // [0..1] vertical pan progress; only used in vertical mode
 
   varying vec2 vuv;
 
@@ -92,12 +102,24 @@ const FRAGMENT = /* glsl */ `
   }
 
   void main() {
-    // Cover-fit
+    // Cover-fit by the LONGER axis of the video so it always fills the
+    // viewport. start.y in vertical mode is driven by uPanY so the
+    // visible window can slide from TOP of the source (panY=0) to
+    // BOTTOM (panY=1) as the user scrolls.
+    //
+    // VideoTexture in three.js defaults flipY=true, so texture-v=1
+    // corresponds to the IMAGE TOP. To show the top of the video,
+    // start.y should be (1 - visible.y) — i.e. the highest possible
+    // start. To show the bottom, start.y should be 0.
     float ar = uAspectVideo / uAspectViewport;
     vec2 visible = (ar < 1.0) ? vec2(1.0, ar) : vec2(1.0 / ar, 1.0);
     vec2 start = vec2(0.0);
+    float maxStartY = max(0.0, 1.0 - visible.y);
     if (ar < 1.0) {
-      start.y = (1.0 - visible.y) * 0.5;
+      // Vertical-overflow case (portrait source on landscape viewport,
+      // OR landscape source on landscape viewport with a taller image
+      // than viewport). Pan top → bottom of texture as panY goes 0 → 1.
+      start.y = mix(maxStartY, 0.0, uPanY);
     } else {
       start.x = (1.0 - visible.x) * 0.5;
     }
@@ -111,9 +133,21 @@ const FRAGMENT = /* glsl */ `
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);
 
-    // Mild caustic shimmer (subtler than static hero — video already
-    // has real motion of its own).
+    // ------- Procedural sea motion -------
+    // Same swell + chop + caustic pattern as the static Es Vedra hero
+    // but at lower amplitude — keeps the sea "alive" when the video
+    // is paused on scroll. The whole displacement is gated by water
+    // (the smoothstep result), so yacht and mountains stay rock-still.
     float t = uTime;
+    float swellPhase = uv.y * 5.2 - t * 0.55;
+    float swell = sin(swellPhase) * 0.7 +
+                  sin(swellPhase * 1.6 + uv.x * 1.1) * 0.3;
+    float cross = sin(uv.x * 3.2 + t * 0.32) * 0.5;
+    float chopX = sin(uv.x * 17.0 + t * 1.10) * 0.55 +
+                  sin(uv.y * 21.0 - t * 0.85) * 0.45;
+    float chopY = cos(uv.y * 17.0 + t * 0.95) * 0.55 +
+                  cos(uv.x * 21.0 - t * 0.68) * 0.45;
+
     float caustic =
         vnoise(uv * 5.0 + vec2(t * 0.18, -t * 0.11)) +
         vnoise(uv * 9.0 - vec2(t * 0.25, t * 0.08)) * 0.5;
@@ -126,7 +160,15 @@ const FRAGMENT = /* glsl */ `
       cursorOffset.y * uParallaxY
     ) * (1.0 - staticMask);
 
-    vec2 sampleUV = uv + parallax;
+    vec2 seaDisplacement = (
+      vec2(swell * 0.35 + cross * 0.20, swell * 0.85) * 0.0013 +
+      vec2(chopX, chopY) * 0.0008
+    ) * water * (uWaterMotion / 0.0018);   // normalise so default
+                                           // uWaterMotion=0.0018 gives
+                                           // the same intensity as the
+                                           // static hero.
+
+    vec2 sampleUV = uv + parallax + seaDisplacement;
     vec3 color = texture2D(uVideo, sampleUV).rgb * uBrightness;
     color = grade(color);
 
@@ -153,6 +195,8 @@ export function HomeVideoCanvas({
   contrast = 1.0,
   parallaxX = 0.008,
   parallaxY = 0.004,
+  waterMotion = 0.0018,
+  panMode = "none",
 }: HomeVideoCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -234,6 +278,8 @@ export function HomeVideoCanvas({
       uContrast: { value: contrast },
       uParallaxX: { value: parallaxX },
       uParallaxY: { value: parallaxY },
+      uWaterMotion: { value: waterMotion },
+      uPanY: { value: 0 },
     };
 
     const material = new THREE.ShaderMaterial({
@@ -307,9 +353,12 @@ export function HomeVideoCanvas({
       const dt = Math.min(0.05, (now - lastFrame) / 1000);
       lastFrame = now;
 
-      // Update target time from scroll
+      // Update target time + pan from scroll progress.
+      const p = computeProgress();
+      if (panMode === "vertical") {
+        (uniforms.uPanY as { value: number }).value = p;
+      }
       if (duration > 0) {
-        const p = computeProgress();
         // Leave a tiny epsilon at the end so the last frame is reachable.
         targetTime = p * Math.max(0, duration - 0.02);
 
@@ -376,6 +425,8 @@ export function HomeVideoCanvas({
     contrast,
     parallaxX,
     parallaxY,
+    waterMotion,
+    panMode,
   ]);
 
   // The canvas is rendered INSIDE the scroll runway (not fixed). The
