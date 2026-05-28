@@ -11,6 +11,7 @@ const nav = [
   { href: "/admin/experiences", label: "Experiences" },
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/faqs", label: "FAQs" },
+  { href: "/admin/integrations", label: "Integrations" },
   { href: "/admin/settings", label: "Settings" },
 ];
 

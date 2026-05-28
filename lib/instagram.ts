@@ -1,27 +1,20 @@
 /**
  * Instagram Graph API fetcher for the @seasociety.ibiza feed.
  *
- * REQUIREMENTS (one-time setup on Meta side):
- *   1. Convert @seasociety.ibiza to a Business or Creator account.
- *   2. Create a Meta Developer App, add the Instagram Graph API product.
- *   3. Generate a long-lived User Access Token (60-day TTL).
- *   4. Set the env vars below in Vercel (or .env.local for dev):
+ * Token source order:
+ *   1. The `integrations` table (id='instagram') — written by the
+ *      admin OAuth flow at /admin/integrations.
+ *   2. INSTAGRAM_ACCESS_TOKEN + INSTAGRAM_USER_ID env vars — fallback
+ *      for dev / one-off manual setups.
  *
- *        INSTAGRAM_ACCESS_TOKEN  =  IGQVJX… (long-lived token)
- *        INSTAGRAM_USER_ID       =  the IG Business user id (17841…)
- *
- *   Token refresh: hit the /refresh_access_token endpoint at least
- *   monthly. The simplest pattern is a Vercel cron that calls
- *   /api/admin/refresh-instagram (out of scope for this commit).
- *
- * WITHOUT the env vars set, fetchInstagramFeed() returns `null` and
- * callers should fall back to the static <InstagramGrid /> tiles —
- * keeps the preview page rendering until the token is wired up.
+ * Without either available, fetchInstagramFeed() returns `null` and
+ * callers should render the static <InstagramGrid /> fallback.
  *
  * CACHING: fetch() uses Next's data cache with `revalidate: 3600`, so
- * the API is hit at most once an hour per build. The IG CDN URLs we
- * receive are short-lived (signed); 1h is well inside their TTL.
+ * the API is hit at most once an hour per build. IG CDN URLs are
+ * short-lived (signed); 1h is well inside their TTL.
  */
+import { getInstagramConfig } from "./integrations";
 
 export type IgMediaType = "IMAGE" | "VIDEO" | "CAROUSEL_ALBUM";
 
@@ -57,8 +50,18 @@ interface RawMedia {
  * callers should treat that as "render the static fallback".
  */
 export async function fetchInstagramFeed(limit = 18): Promise<IgMedia[] | null> {
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
-  const userId = process.env.INSTAGRAM_USER_ID;
+  // Prefer DB credentials (admin-managed). Fall back to env for dev.
+  let token: string | undefined;
+  let userId: string | undefined;
+  try {
+    const cfg = await getInstagramConfig();
+    token = cfg?.accessToken;
+    userId = cfg?.userId;
+  } catch {
+    // DB unreachable — fall through to env.
+  }
+  token ??= process.env.INSTAGRAM_ACCESS_TOKEN;
+  userId ??= process.env.INSTAGRAM_USER_ID;
   if (!token || !userId) return null;
 
   const fields = [
