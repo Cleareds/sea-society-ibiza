@@ -66,3 +66,6 @@ proposal.html
 # Local design folder — source videos + DA-V2 clone, not for the repo.
 /designs/
 
+# DA-V2 batch run logs (verbose ffmpeg / torch warnings, not for repo)
+/logs/
+

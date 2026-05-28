@@ -27,7 +27,20 @@ import * as THREE from "three";
 export interface HomeVideoCanvasProps {
   videoSrc: string;
   videoSrcMobile?: string;
+  /** Static RGB mask PNG (R depth, G water, B static-fg). Used when
+   *  depthVideoSrc is not provided. */
   maskSrc: string;
+  /** Optional grayscale depth video that scrubs in lock-step with the
+   *  colour video. When provided, the shader derives the water-mask
+   *  + static-foreground per frame from the depth values (so a moving
+   *  yacht stays masked correctly). The static maskSrc is ignored. */
+  depthVideoSrc?: string;
+  depthVideoSrcMobile?: string;
+  /** Depth value range that counts as "water" when depthVideoSrc is
+   *  set. Outside the range is treated as static foreground. Default
+   *  [0.30, 0.70] — middle of normalized depth. */
+  depthWaterLo?: number;
+  depthWaterHi?: number;
   videoAspect: number;
   posterSrc?: string;
 
@@ -81,6 +94,10 @@ const FRAGMENT = /* glsl */ `
   uniform float uParallaxY;
   uniform float uWaterMotion;  // amplitude of procedural sea swell + chop
   uniform float uPanY;         // [0..1] vertical pan progress; only used in vertical mode
+  uniform float uHasDepth;     // 1 = use uDepth video, 0 = use uMask PNG
+  uniform sampler2D uDepth;    // depth video texture (grayscale)
+  uniform float uDepthLo;      // depth band lower bound — water
+  uniform float uDepthHi;      // depth band upper bound — water
 
   varying vec2 vuv;
 
@@ -125,9 +142,23 @@ const FRAGMENT = /* glsl */ `
     }
     vec2 uv = start + vuv * visible;
 
-    vec3 mask = texture2D(uMask, uv).rgb;
-    float waterMask = mask.g;
-    float staticMask = mask.b;
+    float waterMask;
+    float staticMask;
+    if (uHasDepth > 0.5) {
+      // Per-frame depth video. We derive water as a depth-band: pixels
+      // whose depth value sits between uDepthLo and uDepthHi are sea;
+      // anything brighter (near = yacht/foreground rocks) or darker
+      // (far = sky) is static-fg.
+      float d = texture2D(uDepth, uv).r;
+      float inBand = smoothstep(uDepthLo, uDepthLo + 0.05, d)
+                   * (1.0 - smoothstep(uDepthHi - 0.05, uDepthHi, d));
+      waterMask = inBand;
+      staticMask = 1.0 - inBand;
+    } else {
+      vec3 mask = texture2D(uMask, uv).rgb;
+      waterMask = mask.g;
+      staticMask = mask.b;
+    }
     float water = smoothstep(0.30, 0.55, waterMask) * (1.0 - staticMask);
 
     vec2 toCursor = vuv - uCursor;
@@ -197,6 +228,10 @@ export function HomeVideoCanvas({
   parallaxY = 0.004,
   waterMotion = 0.0018,
   panMode = "none",
+  depthVideoSrc,
+  depthVideoSrcMobile,
+  depthWaterLo = 0.30,
+  depthWaterHi = 0.70,
 }: HomeVideoCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -263,9 +298,41 @@ export function HomeVideoCanvas({
     maskTex.magFilter = THREE.LinearFilter;
     maskTex.colorSpace = THREE.NoColorSpace;
 
+    // Optional per-frame depth video — runs in lock-step with the
+    // colour video. When provided, the shader derives the water +
+    // static masks from this each frame instead of the static PNG,
+    // so a moving yacht stays masked correctly.
+    let depthVideo: HTMLVideoElement | null = null;
+    let depthTex: THREE.VideoTexture | null = null;
+    if (depthVideoSrc) {
+      depthVideo = document.createElement("video");
+      depthVideo.crossOrigin = "anonymous";
+      depthVideo.muted = true;
+      depthVideo.loop = false;
+      depthVideo.playsInline = true;
+      depthVideo.autoplay = false;
+      depthVideo.setAttribute("webkit-playsinline", "true");
+      depthVideo.preload = "auto";
+      depthVideo.src = isMobile && depthVideoSrcMobile ? depthVideoSrcMobile : depthVideoSrc;
+      depthVideo.load();
+      depthVideo.addEventListener("loadedmetadata", () => {
+        depthVideo!.play().then(() => depthVideo!.pause()).catch(() => { /* noop */ });
+      });
+      depthTex = new THREE.VideoTexture(depthVideo);
+      depthTex.minFilter = THREE.LinearFilter;
+      depthTex.magFilter = THREE.LinearFilter;
+      depthTex.wrapS = THREE.ClampToEdgeWrapping;
+      depthTex.wrapT = THREE.ClampToEdgeWrapping;
+      depthTex.colorSpace = THREE.NoColorSpace;
+    }
+
     const uniforms: Record<string, { value: unknown }> = {
       uVideo: { value: videoTex },
       uMask: { value: maskTex },
+      uDepth: { value: depthTex ?? maskTex },   // bind something, shader gates
+      uHasDepth: { value: depthTex ? 1 : 0 },
+      uDepthLo: { value: depthWaterLo },
+      uDepthHi: { value: depthWaterHi },
       uCursor: { value: new THREE.Vector2(0.5, 0.5) },
       uTime: { value: 0 },
       uAspectViewport: { value: 1 },
@@ -374,6 +441,7 @@ export function HomeVideoCanvas({
         ) {
           try {
             video.currentTime = currentSmoothTime;
+            if (depthVideo) depthVideo.currentTime = currentSmoothTime;
             lastSeekAt = now;
           } catch {
             /* seek not ready yet */
@@ -400,11 +468,17 @@ export function HomeVideoCanvas({
       video.pause();
       video.removeAttribute("src");
       video.load();
+      if (depthVideo) {
+        depthVideo.pause();
+        depthVideo.removeAttribute("src");
+        depthVideo.load();
+      }
       renderer.dispose();
       material.dispose();
       geometry.dispose();
       videoTex.dispose();
       maskTex.dispose();
+      depthTex?.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
       }
@@ -427,6 +501,10 @@ export function HomeVideoCanvas({
     parallaxY,
     waterMotion,
     panMode,
+    depthVideoSrc,
+    depthVideoSrcMobile,
+    depthWaterLo,
+    depthWaterHi,
   ]);
 
   // The canvas is rendered INSIDE the scroll runway (not fixed). The

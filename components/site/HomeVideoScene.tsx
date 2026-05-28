@@ -52,6 +52,13 @@ export interface HomeVideoSceneProps {
   variantTag?: string;
   scrubViewports?: number;
   panMode?: "none" | "vertical";
+  /** Optional per-frame depth video — passed straight through to
+   *  HomeVideoCanvas. When set, the shader uses live depth for masks
+   *  instead of the static maskSrc PNG. */
+  depthVideoSrc?: string;
+  depthVideoSrcMobile?: string;
+  depthWaterLo?: number;
+  depthWaterHi?: number;
   /** Optional Instagram slot — rendered as the third phase (after the
    *  yacht cards) over the still-scrubbing video. Pass <InstagramFeed />
    *  from the page. */
@@ -147,6 +154,10 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     variantTag,
     scrubViewports = 4,
     panMode = "none",
+    depthVideoSrc,
+    depthVideoSrcMobile,
+    depthWaterLo,
+    depthWaterHi,
     instagramSlot,
     instagramHandle,
     instagramHref,
@@ -233,6 +244,10 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
             videoSrc={videoSrc}
             videoSrcMobile={videoSrcMobile}
             maskSrc={maskSrc}
+            depthVideoSrc={depthVideoSrc}
+            depthVideoSrcMobile={depthVideoSrcMobile}
+            depthWaterLo={depthWaterLo}
+            depthWaterHi={depthWaterHi}
             videoAspect={videoAspect}
             posterSrc={posterSrc}
             scrubScopeRef={runwayRef}
