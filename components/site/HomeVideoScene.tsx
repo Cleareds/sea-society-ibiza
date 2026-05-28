@@ -30,12 +30,6 @@ export interface CanvasOverrides {
   contrast?: number;
   parallaxX?: number;
   parallaxY?: number;
-  zoomEnd?: number;
-  zoomCenter?: [number, number];
-  zoomStartVh?: number;
-  zoomEndVh?: number;
-  rippleStrength?: number;
-  vignette?: number;
 }
 
 export type Layout = "bottom-left" | "center" | "right-band";
@@ -49,14 +43,15 @@ export interface HomeVideoSceneProps {
   whatsappNumber: string;
   featured: Array<{ boat: Boat; fromLabel: string }>;
   locale: Locale;
-  /** Headline copy + a colored accent word. */
   headline: React.ReactNode;
   sub: string;
   typography?: Typography;
   layout?: Layout;
   canvas?: CanvasOverrides;
-  /** Variant label for the small footer chip — helps tell pages apart. */
   variantTag?: string;
+  /** How many viewports of scroll the user must cover to fully scrub
+   *  through the video. Default 2.5 (smooth feel without dragging). */
+  scrubViewports?: number;
 }
 
 function useReducedMotion(): boolean {
@@ -93,11 +88,16 @@ const SUB_CLASSES: Record<Typography, string> = {
 };
 
 /**
- * Shared scene host for all POC video variants.
+ * Scroll-scrubbed video hero.
  *
- * Structure is identical to HomeImmersiveScene (fixed canvas backdrop +
- * flow content above) — only the canvas component is swapped to the
- * video version and props are surfaced for typography + grade tweaks.
+ *   <runwayRef                 height: scrubViewports × 100vh>
+ *     <div sticky top:0 h:100svh>          ← stays pinned while
+ *       <HomeVideoCanvas />                  scroll advances
+ *       <copy/CTA overlay />
+ *     </div>
+ *   </runwayRef>
+ *
+ *   <fleet cards section />                 ← reveals after runway ends
  */
 export function HomeVideoScene(props: HomeVideoSceneProps) {
   const {
@@ -108,46 +108,57 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     layout = "bottom-left",
     canvas,
     variantTag,
+    scrubViewports = 2.5,
   } = props;
   const reduced = useReducedMotion();
   const lp = (p: string) => localePath(locale, p);
+  const runwayRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
-      {reduced ? (
-        <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-          {posterSrc && (
-            <Image
-              src={posterSrc}
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
+      {/* Scroll runway — tall outer wrapper, sticky inner pins the
+          canvas + copy to the viewport while scroll advances. The
+          canvas maps progress through this runway → video.currentTime. */}
+      <div
+        ref={runwayRef}
+        className="relative z-10 w-full"
+        style={{ height: `${scrubViewports * 100}svh` }}
+      >
+        <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+          {reduced ? (
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
+              {posterSrc && (
+                <Image
+                  src={posterSrc}
+                  alt=""
+                  fill
+                  priority
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              )}
+            </div>
+          ) : (
+            <HomeVideoCanvas
+              videoSrc={videoSrc}
+              videoSrcMobile={videoSrcMobile}
+              maskSrc={maskSrc}
+              videoAspect={videoAspect}
+              posterSrc={posterSrc}
+              scrubScopeRef={runwayRef}
+              {...(canvas ?? {})}
             />
           )}
-        </div>
-      ) : (
-        <HomeVideoCanvas
-          videoSrc={videoSrc}
-          videoSrcMobile={videoSrcMobile}
-          maskSrc={maskSrc}
-          videoAspect={videoAspect}
-          posterSrc={posterSrc}
-          {...(canvas ?? {})}
-        />
-      )}
 
-      <div>
-        <section className="relative z-10 w-full text-white" style={{ height: "100svh" }}>
+          {/* Copy overlay — sits in front of the canvas. */}
           <div
             className={
-              "relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col px-5 pt-28 md:px-10 md:pt-40 " +
+              "relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col px-5 pt-28 pb-28 text-white md:px-10 md:pt-40 md:pb-40 " +
               (layout === "center"
-                ? "items-center justify-center pb-28 text-center md:pb-40"
+                ? "items-center justify-center text-center"
                 : layout === "right-band"
-                  ? "items-end justify-end pb-28 text-right md:pb-40"
-                  : "justify-end pb-28 md:pb-40")
+                  ? "items-end justify-end text-right"
+                  : "justify-end")
             }
           >
             <h1 className={HEADLINE_CLASSES[typography]}>{headline}</h1>
@@ -156,12 +167,9 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
               <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
             </div>
 
+            {/* Scroll cue */}
             <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
-              <a
-                href="#fleet-cards"
-                aria-label="Scroll to the fleet"
-                className="pointer-events-auto inline-flex flex-col items-center gap-3 text-white/80 transition-opacity hover:text-white"
-              >
+              <span className="pointer-events-auto inline-flex flex-col items-center gap-3 text-white/80">
                 <span className="text-[10px] uppercase tracking-[0.35em] text-white/85">
                   Scroll
                 </span>
@@ -177,58 +185,60 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
                     <path d="M2 14 L8 21 L14 14" />
                   </svg>
                 </span>
-              </a>
+              </span>
             </div>
           </div>
-        </section>
-
-        <section
-          id="fleet-cards"
-          className="relative z-10 flex w-full items-center text-white md:min-h-screen"
-        >
-          <div className="relative z-10 mx-auto w-full max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
-            <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
-              {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
-                <li
-                  key={b.id}
-                  className="overflow-hidden rounded-2xl bg-black/45 backdrop-blur-md ring-1 ring-white/15"
-                >
-                  <Link href={lp(`/fleet/${b.slug}`)} className="group block">
-                    <div className="relative aspect-[5/3] overflow-hidden">
-                      <Image
-                        src={b.heroImage}
-                        alt={`${b.name} — ${b.modelName ?? b.brand}`}
-                        fill
-                        sizes="(min-width: 768px) 30vw, 90vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-5">
-                      <p className="brand-eyebrow text-[10px]">{b.brand}</p>
-                      <h3 className="font-serif text-xl text-white md:text-2xl">{b.name}</h3>
-                      <p className="mt-2 text-sm text-white/85">{fromLabel}</p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-10 flex items-center justify-between md:mt-14">
-              {variantTag && (
-                <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-white/70 backdrop-blur">
-                  {variantTag}
-                </span>
-              )}
-              <Link
-                href={lp("/fleet")}
-                className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-white/90 transition-colors hover:text-white"
-              >
-                See the full fleet
-                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-          </div>
-        </section>
+        </div>
       </div>
+
+      {/* Fleet cards — reveals after the scroll runway. Bg solid so
+          the canvas above is fully hidden (no more z-stacking trick). */}
+      <section
+        id="fleet-cards"
+        className="relative z-10 w-full bg-[var(--color-surface)] text-[var(--color-on-surface)]"
+      >
+        <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
+          <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
+            {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
+              <li
+                key={b.id}
+                className="overflow-hidden rounded-2xl bg-[var(--color-surface-container-low)] ring-1 ring-[var(--color-outline-variant)]/40"
+              >
+                <Link href={lp(`/fleet/${b.slug}`)} className="group block">
+                  <div className="relative aspect-[5/3] overflow-hidden">
+                    <Image
+                      src={b.heroImage}
+                      alt={`${b.name} — ${b.modelName ?? b.brand}`}
+                      fill
+                      sizes="(min-width: 768px) 30vw, 90vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <p className="brand-eyebrow text-[10px]">{b.brand}</p>
+                    <h3 className="font-serif text-xl md:text-2xl">{b.name}</h3>
+                    <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">{fromLabel}</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-10 flex items-center justify-between md:mt-14">
+            {variantTag && (
+              <span className="rounded-full bg-[var(--color-surface-container-low)] px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
+                {variantTag}
+              </span>
+            )}
+            <Link
+              href={lp("/fleet")}
+              className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-[var(--color-primary)]"
+            >
+              See the full fleet
+              <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

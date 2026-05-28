@@ -4,66 +4,45 @@ import * as React from "react";
 import * as THREE from "three";
 
 /**
- * WebGL canvas backed by a looping VIDEO texture + paired RGB mask.
+ * Scroll-scrubbed video hero canvas.
  *
- * Same shader vocabulary as HomeImmersiveCanvas (cursor light, water
- * shimmer, parallax weighted by depth, scroll-driven zoom) — only the
- * source pixel is the current frame of an autoplaying muted video
- * rather than a static photo.
+ *   - The video does NOT autoplay. It's paused on mount.
+ *   - scroll position → maps to video.currentTime each frame.
+ *   - Scrolling forward advances the video, scrolling back rewinds it.
+ *   - Same three.js shader vocabulary as the immersive hero (cursor
+ *     light, water shimmer, depth-weighted parallax) sampled per frame
+ *     against the live video texture.
  *
- * The video is decoded entirely client-side (hidden <video> element);
- * Three.js samples each frame via THREE.VideoTexture which updates
- * automatically as the video plays. Mobile autoplay works only with
- * `muted` + `playsInline` — both forced on.
+ * For smooth bidirectional seeking the source must be encoded with
+ * keyframe-every-frame (`ffmpeg -g 1 -keyint_min 1 -sc_threshold 0`).
+ * Without that, seeking lands on the nearest keyframe and the video
+ * jumps in chunks instead of scrubbing smoothly.
  *
- * Multiple "looks" (cool/warm grade, ripple intensity, cursor falloff,
- * scroll behaviour) are driven by the props below so we can ship many
- * POC variants without forking the component.
+ * The component renders ONLY the canvas. The page wraps it in a tall
+ * "scroll runway" that is `position: sticky` so the canvas stays
+ * pinned to the viewport while scroll advances the video. The
+ * `scrubScopeRef` points at that runway; we measure progress as
+ * (-runwayTop) / (runwayHeight - viewportHeight).
  */
 export interface HomeVideoCanvasProps {
-  /** Source MP4 (re-encoded for web). */
   videoSrc: string;
-  /** Smaller mobile variant — used when innerWidth < 900. */
   videoSrcMobile?: string;
-  /** RGB-packed mask (R depth, G water, B static-fg). */
   maskSrc: string;
-  /** Width / height of the source video, for cover-fit math. */
   videoAspect: number;
-  /** Poster image shown until first frame is decoded. */
   posterSrc?: string;
 
-  /** Strength multipliers — tune per route to make each variant feel
-   *  distinct. All in [0, 1] except brightness which is a linear gain. */
-  cursorLightStrength?: number;     // default 0.18
-  shimmerStrength?: number;         // default 0.10
-  brightnessLift?: number;          // default 1.18 (lower than the static
-                                    //              hero — videos already
-                                    //              come encoded sRGB)
+  /** REF to the tall scroll runway. The video's currentTime is mapped
+   *  to the user's progress through this element's height. */
+  scrubScopeRef: React.RefObject<HTMLElement | null>;
 
-  /** Colour grade — RGB tint multiplier + saturation. */
-  tint?: [number, number, number];  // default [1,1,1]
-  saturation?: number;              // 1 = neutral, 1.2 = punchier sea
-  contrast?: number;                // 1 = neutral, 1.1 = punchier
-
-  /** Cursor parallax magnitudes. */
-  parallaxX?: number;               // default 0.010
-  parallaxY?: number;               // default 0.005
-
-  /** Scroll behaviour. */
-  zoomEnd?: number;                 // target zoom at the end of the phase
-                                    // (0.35 = strong, 0.85 = subtle).
-                                    // default 0.55
-  zoomCenter?: [number, number];    // texture-v space, default [0.5, 0.5]
-  /** Where (in vh units) the zoom STARTS / ENDS. */
-  zoomStartVh?: number;             // default 0.05
-  zoomEndVh?: number;               // default 0.55
-
-  /** Cursor-driven UV ripple amplitude (sea only). 0 = off. */
-  rippleStrength?: number;          // default 0
-  /** Luxe vignette mix. 0 = off, 1 = full. */
-  vignette?: number;                // default 0
-
-  scopeRef?: React.RefObject<HTMLElement | null>;
+  cursorLightStrength?: number;
+  shimmerStrength?: number;
+  brightnessLift?: number;
+  tint?: [number, number, number];
+  saturation?: number;
+  contrast?: number;
+  parallaxX?: number;
+  parallaxY?: number;
 }
 
 const VERTEX = /* glsl */ `
@@ -81,8 +60,6 @@ const FRAGMENT = /* glsl */ `
   uniform sampler2D uMask;
   uniform vec2  uCursor;
   uniform float uTime;
-  uniform float uPan;
-  uniform float uZoom;
   uniform float uAspectViewport;
   uniform float uAspectVideo;
 
@@ -94,10 +71,6 @@ const FRAGMENT = /* glsl */ `
   uniform float uContrast;
   uniform float uParallaxX;
   uniform float uParallaxY;
-  uniform float uZoomEnd;
-  uniform vec2  uZoomCenter;
-  uniform float uRippleStrength;   // cursor-driven UV ripple in sea
-  uniform float uVignette;         // 0 = none, 1 = strong dark vignette
 
   varying vec2 vuv;
 
@@ -110,57 +83,42 @@ const FRAGMENT = /* glsl */ `
     return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
   }
 
-  // Saturation/contrast helpers
   vec3 grade(vec3 c) {
-    // contrast around 0.5
     c = (c - 0.5) * uContrast + 0.5;
-    // saturation
     float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
     c = mix(vec3(l), c, uSaturation);
-    // tint
     c *= uTint;
     return c;
   }
 
   void main() {
-    // Cover-fit the source into the viewport.
+    // Cover-fit
     float ar = uAspectVideo / uAspectViewport;
     vec2 visible = (ar < 1.0) ? vec2(1.0, ar) : vec2(1.0 / ar, 1.0);
     vec2 start = vec2(0.0);
     if (ar < 1.0) {
-      float maxPan = 1.0 - visible.y;
-      start.y = mix(maxPan * 0.5, 0.0, uPan);  // pan range tighter than
-                                               // static hero because video
-                                               // already shows the subject
+      start.y = (1.0 - visible.y) * 0.5;
     } else {
       start.x = (1.0 - visible.x) * 0.5;
     }
-    vec2 base = start + vuv * visible;
+    vec2 uv = start + vuv * visible;
 
-    // Scroll-driven zoom into the centre (configurable).
-    float zoom = mix(1.0, uZoomEnd, uZoom);
-    vec2 uvZoomed = (base - uZoomCenter) * zoom + uZoomCenter;
-
-    // Mask sampled after zoom so the yacht stays the yacht.
-    vec3 mask = texture2D(uMask, uvZoomed).rgb;
+    vec3 mask = texture2D(uMask, uv).rgb;
     float waterMask = mask.g;
     float staticMask = mask.b;
     float water = smoothstep(0.30, 0.55, waterMask) * (1.0 - staticMask);
 
-    // Cursor light + small water displacement.
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);
 
+    // Mild caustic shimmer (subtler than static hero — video already
+    // has real motion of its own).
     float t = uTime;
-    // Mild caustic — for video we keep this subtler than the static
-    // hero because the video already has real motion in it; we just
-    // add a hint of sun glint.
     float caustic =
-        vnoise(uvZoomed * 5.0 + vec2(t * 0.20, -t * 0.13)) +
-        vnoise(uvZoomed * 9.0 - vec2(t * 0.27, t * 0.09)) * 0.5;
+        vnoise(uv * 5.0 + vec2(t * 0.18, -t * 0.11)) +
+        vnoise(uv * 9.0 - vec2(t * 0.25, t * 0.08)) * 0.5;
     caustic = (caustic - 0.75) * 0.55;
 
-    // Parallax — only outside the static foreground.
     vec2 cursorOffset = uCursor - vec2(0.5);
     float horizonWeight = 1.0 - vuv.y;
     vec2 parallax = vec2(
@@ -168,35 +126,13 @@ const FRAGMENT = /* glsl */ `
       cursorOffset.y * uParallaxY
     ) * (1.0 - staticMask);
 
-    // Cursor ripple — small radial UV pull around the cursor, gated by
-    // the water mask so the yacht itself doesn't distort. Subtle by
-    // default; variants can boost it for a more interactive feel.
-    vec2 toCursorUv = vuv - uCursor;
-    float ripplePhase = sin(length(toCursorUv) * 22.0 - t * 2.5);
-    vec2 rippleDir = normalize(toCursorUv + vec2(0.0001));
-    float rippleFalloff = exp(-length(toCursorUv) * 8.0);
-    vec2 rippleOffset = rippleDir * ripplePhase * rippleFalloff * uRippleStrength * water;
-
-    vec2 sampleUV = uvZoomed + parallax + rippleOffset;
+    vec2 sampleUV = uv + parallax;
     vec3 color = texture2D(uVideo, sampleUV).rgb * uBrightness;
     color = grade(color);
 
     float shimmer = caustic * uShimmer * water;
     float cursorLight = exp(-cursorDist * 3.2) * uCursorLight;
     color += shimmer + cursorLight;
-
-    // Optional luxe vignette — softer corners and darker bottom edge.
-    // Helps the page copy land cleanly over busy footage.
-    if (uVignette > 0.001) {
-      float dx = vuv.x - 0.5;
-      float dy = vuv.y - 0.5;
-      float r = sqrt(dx * dx + dy * dy);
-      float vig = smoothstep(0.30, 0.85, r);
-      // Extra darken on the lower portion so the copy column reads.
-      float bottomDarken = smoothstep(0.45, 1.0, vuv.y);
-      float total = max(vig * 0.75, bottomDarken * 0.55);
-      color *= mix(1.0, 1.0 - total, uVignette);
-    }
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -208,21 +144,15 @@ export function HomeVideoCanvas({
   maskSrc,
   videoAspect,
   posterSrc,
-  cursorLightStrength = 0.18,
-  shimmerStrength = 0.10,
-  brightnessLift = 1.18,
+  scrubScopeRef,
+  cursorLightStrength = 0.14,
+  shimmerStrength = 0.08,
+  brightnessLift = 1.10,
   tint = [1, 1, 1],
   saturation = 1.0,
   contrast = 1.0,
-  parallaxX = 0.010,
-  parallaxY = 0.005,
-  zoomEnd = 0.55,
-  zoomCenter = [0.5, 0.5],
-  zoomStartVh = 0.05,
-  zoomEndVh = 0.55,
-  rippleStrength = 0,
-  vignette = 0,
-  scopeRef,
+  parallaxX = 0.008,
+  parallaxY = 0.004,
 }: HomeVideoCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -230,13 +160,13 @@ export function HomeVideoCanvas({
     const container = containerRef.current;
     if (!container) return;
 
-    // --- Video element --------------------------------------------------
+    // --- Video — paused, scroll-driven currentTime --------------------
     const video = document.createElement("video");
     video.crossOrigin = "anonymous";
     video.muted = true;
-    video.loop = true;
+    video.loop = false;
     video.playsInline = true;
-    video.autoplay = true;
+    video.autoplay = false;
     video.setAttribute("webkit-playsinline", "true");
     video.preload = "auto";
     if (posterSrc) video.poster = posterSrc;
@@ -244,14 +174,18 @@ export function HomeVideoCanvas({
     const isMobile = typeof window !== "undefined" && window.innerWidth < 900;
     video.src = isMobile && videoSrcMobile ? videoSrcMobile : videoSrc;
     video.load();
-    const tryPlay = () => video.play().catch(() => { /* will retry on user gesture */ });
-    tryPlay();
-    // Some browsers (Safari) need a small kick before they autoplay
-    // even with muted; retry on first pointer.
-    const onceUserKick = () => { tryPlay(); window.removeEventListener("pointerdown", onceUserKick); };
-    window.addEventListener("pointerdown", onceUserKick, { once: true });
+    // Some browsers need a moment to compute duration; play+pause once
+    // primes the pipeline so seeking responds immediately afterward.
+    let duration = 0;
+    const onMeta = () => {
+      duration = isFinite(video.duration) ? video.duration : 0;
+      // Prime decode: a 0-duration play+pause kicks Safari into
+      // decoding without ever showing the frame to the user.
+      video.play().then(() => video.pause()).catch(() => { /* noop */ });
+    };
+    video.addEventListener("loadedmetadata", onMeta);
 
-    // --- Renderer + textures -------------------------------------------
+    // --- WebGL setup --------------------------------------------------
     const renderer = new THREE.WebGLRenderer({
       antialias: false,
       alpha: false,
@@ -290,8 +224,6 @@ export function HomeVideoCanvas({
       uMask: { value: maskTex },
       uCursor: { value: new THREE.Vector2(0.5, 0.5) },
       uTime: { value: 0 },
-      uPan: { value: 0 },
-      uZoom: { value: 0 },
       uAspectViewport: { value: 1 },
       uAspectVideo: { value: videoAspect },
       uCursorLight: { value: cursorLightStrength },
@@ -302,10 +234,6 @@ export function HomeVideoCanvas({
       uContrast: { value: contrast },
       uParallaxX: { value: parallaxX },
       uParallaxY: { value: parallaxY },
-      uZoomEnd: { value: zoomEnd },
-      uZoomCenter: { value: new THREE.Vector2(zoomCenter[0], zoomCenter[1]) },
-      uRippleStrength: { value: rippleStrength },
-      uVignette: { value: vignette },
     };
 
     const material = new THREE.ShaderMaterial({
@@ -319,11 +247,9 @@ export function HomeVideoCanvas({
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
 
-    // --- Pointer + scroll plumbing -------------------------------------
+    // --- Pointer ------------------------------------------------------
     const targetCursor: [number, number] = [0.5, 0.5];
     const smoothCursor: [number, number] = [0.5, 0.5];
-    const smoothPan: [number] = [0];
-    const smoothZoom: [number] = [0];
 
     const onPointer = (e: PointerEvent) => {
       const x = e.clientX / window.innerWidth;
@@ -344,55 +270,72 @@ export function HomeVideoCanvas({
     ro.observe(container);
 
     let visible = !document.hidden;
-    const onVis = () => {
-      visible = !document.hidden;
-      if (visible) tryPlay();
-      else video.pause();
-    };
+    const onVis = () => { visible = !document.hidden; };
     document.addEventListener("visibilitychange", onVis);
 
     const loseCtx = renderer.getContext().getExtension("WEBGL_lose_context");
 
+    // --- Scroll → currentTime mapping --------------------------------
+    // Smooth the target time so very fast scrolls don't flood the
+    // decoder with seek requests it can't keep up with. The lerp also
+    // gives the impression of momentum.
+    let targetTime = 0;
+    let currentSmoothTime = 0;
+    let lastSeekAt = 0;
+    const MIN_SEEK_INTERVAL = 16; // ms — about one frame
+
+    const computeProgress = (): number => {
+      const scope = scrubScopeRef.current;
+      if (!scope) return 0;
+      const rect = scope.getBoundingClientRect();
+      // Total scrollable distance inside this scope (height - one viewport).
+      const total = Math.max(1, scope.offsetHeight - window.innerHeight);
+      // How far the top of the scope has scrolled past the top of the viewport.
+      const scrolled = Math.max(0, -rect.top);
+      return Math.min(1, scrolled / total);
+    };
+
     let raf = 0;
-    let last = performance.now();
+    let lastFrame = performance.now();
     const tick = () => {
       raf = requestAnimationFrame(tick);
       if (!visible) {
-        last = performance.now();
+        lastFrame = performance.now();
         return;
       }
       const now = performance.now();
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
+      const dt = Math.min(0.05, (now - lastFrame) / 1000);
+      lastFrame = now;
 
-      const vh = window.innerHeight;
-      const sy = window.scrollY;
-      const start = vh * zoomStartVh;
-      const end = vh * zoomEndVh;
-      const targetPan = clamp01(sy / (vh * 0.5));
-      const targetZoom = clamp01((sy - start) / Math.max(1, end - start));
+      // Update target time from scroll
+      if (duration > 0) {
+        const p = computeProgress();
+        // Leave a tiny epsilon at the end so the last frame is reachable.
+        targetTime = p * Math.max(0, duration - 0.02);
 
-      let opacity = 1;
-      const scopeEl = scopeRef?.current;
-      if (scopeEl) {
-        const rect = scopeEl.getBoundingClientRect();
-        const fadeStart = vh * 0.5;
-        const fadeEnd = -vh * 0.1;
-        if (rect.bottom < fadeStart) {
-          opacity = clamp01((rect.bottom - fadeEnd) / (fadeStart - fadeEnd));
+        // Smooth — heavier damping when scrolling fast so the video
+        // doesn't tear; lighter when the user is barely moving.
+        currentSmoothTime += (targetTime - currentSmoothTime) * 0.18;
+
+        // Throttle the actual currentTime assignment; some browsers
+        // throw if it's set every frame during heavy decode.
+        if (
+          Math.abs(video.currentTime - currentSmoothTime) > 0.005 &&
+          now - lastSeekAt > MIN_SEEK_INTERVAL
+        ) {
+          try {
+            video.currentTime = currentSmoothTime;
+            lastSeekAt = now;
+          } catch {
+            /* seek not ready yet */
+          }
         }
       }
-      container.style.opacity = String(opacity);
 
       smoothCursor[0] += (targetCursor[0] - smoothCursor[0]) * 0.12;
       smoothCursor[1] += (targetCursor[1] - smoothCursor[1]) * 0.12;
-      smoothPan[0] += (targetPan - smoothPan[0]) * 0.18;
-      smoothZoom[0] += (targetZoom - smoothZoom[0]) * 0.18;
-
       (uniforms.uCursor as { value: THREE.Vector2 }).value.set(smoothCursor[0], smoothCursor[1]);
       (uniforms.uTime as { value: number }).value += dt;
-      (uniforms.uPan as { value: number }).value = smoothPan[0];
-      (uniforms.uZoom as { value: number }).value = smoothZoom[0];
 
       renderer.render(scene, camera);
     };
@@ -402,7 +345,7 @@ export function HomeVideoCanvas({
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVis);
-      window.removeEventListener("pointerdown", onceUserKick);
+      video.removeEventListener("loadedmetadata", onMeta);
       ro.disconnect();
       try { loseCtx?.loseContext(); } catch { /* hmr */ }
       video.pause();
@@ -417,8 +360,6 @@ export function HomeVideoCanvas({
         container.removeChild(renderer.domElement);
       }
     };
-    // We intentionally use a stringified prop signature to avoid re-running
-    // the effect on every render — values change rarely (route mount).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     videoSrc,
@@ -426,6 +367,7 @@ export function HomeVideoCanvas({
     maskSrc,
     videoAspect,
     posterSrc,
+    scrubScopeRef,
     cursorLightStrength,
     shimmerStrength,
     brightnessLift,
@@ -434,24 +376,16 @@ export function HomeVideoCanvas({
     contrast,
     parallaxX,
     parallaxY,
-    zoomEnd,
-    zoomCenter[0], zoomCenter[1],
-    zoomStartVh,
-    zoomEndVh,
-    rippleStrength,
-    vignette,
-    scopeRef,
   ]);
 
+  // The canvas is rendered INSIDE the scroll runway (not fixed). The
+  // page makes the runway's inner div sticky so the canvas stays
+  // pinned to the viewport while scroll advances the runway.
   return (
     <div
       ref={containerRef}
-      className="pointer-events-none fixed inset-0 z-0"
+      className="pointer-events-none absolute inset-0 z-0"
       aria-hidden
     />
   );
-}
-
-function clamp01(v: number) {
-  return Math.max(0, Math.min(1, v));
 }
