@@ -60,16 +60,14 @@ interface Props {
 export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) {
   const reduced = useReducedMotion();
   const lp = (path: string) => localePath(locale, path);
-  // Scope: the canvas is visible only while this wrapper is in view.
-  // Past its bottom edge, the canvas fades out so the journey block /
-  // footer aren't covered by the sea image.
-  const scopeRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
       {/* Fixed page backdrop. Sits at z-0 with the page main background
           made transparent on the host page; content sections layer at
-          z-10 so they sit above the canvas. */}
+          z-10 so they sit above the canvas. The canvas stays at full
+          opacity for the entire page — the footer's own background
+          takes over visually once the user scrolls into it. */}
       {reduced ? (
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
           <Image
@@ -83,10 +81,10 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
           />
         </div>
       ) : (
-        <HomeImmersiveCanvas scopeRef={scopeRef} />
+        <HomeImmersiveCanvas />
       )}
 
-      <div ref={scopeRef}>
+      <div>
       {/* ---------- HERO — natural flow, scrolls away normally. ----------
           No dark legibility overlay: the user wants the photo to read
           unobstructed. The brand-headline text-shadow already gives

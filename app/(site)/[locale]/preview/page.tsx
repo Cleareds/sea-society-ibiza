@@ -45,11 +45,11 @@ export default async function HomePreviewPage({
         locale={lc}
       />
 
-      {/* Journey block continues on the dark canvas surface. The grid
-          tiles themselves are full-bleed photos, so the only place the
-          dark background reads through is the title row — which we
-          render in the dark-tone variant for contrast. */}
-      <div id="after-hero" className="relative z-10 bg-[#06141a]">
+      {/* Journey block — NO background. The canvas (sea) keeps reading
+          through; the footer's own background takes over only when the
+          user scrolls into it. Dark tone so the title reads white over
+          the sea. */}
+      <div id="after-hero" className="relative z-10">
         <div className="pt-16 md:pt-24">
           <InstagramGrid
             handle={settings.instagramHandle}
