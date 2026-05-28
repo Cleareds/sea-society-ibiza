@@ -59,13 +59,11 @@ export default async function ContactPage({
       />
 
       <PageHero
-        eyebrow="Talk to us"
         title={
           <>
             Have a <span className="brand-accent">question</span>?
           </>
         }
-        sub="Pricing, routes, group sizes, special-occasion requests — read the most-asked questions below, or send us a WhatsApp directly."
         imageSrc="/sea-society/site/contact-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },

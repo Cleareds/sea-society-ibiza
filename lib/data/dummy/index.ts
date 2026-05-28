@@ -36,6 +36,10 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
   return experiences.find((e) => e.id === id) ?? null;
 }
 
+export async function getExperienceBySlug(slug: string): Promise<Experience | null> {
+  return experiences.find((e) => e.slug === slug && e.isPublished) ?? null;
+}
+
 export async function getDestinations(): Promise<Destination[]> {
   return destinations.filter((d) => d.isPublished);
 }

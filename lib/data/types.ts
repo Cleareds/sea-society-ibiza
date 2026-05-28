@@ -73,6 +73,13 @@ export interface Experience {
   title: string;
   intro: string;
   body: string;
+  longDescription: string;
+  gallery: BoatGalleryImage[];
+  duration?: string;
+  groupSize?: string;
+  priceFrom?: number;
+  metaTitle?: string;
+  metaDescription?: string;
   heroImage: string;
   sortOrder: number;
   isPublished: boolean;

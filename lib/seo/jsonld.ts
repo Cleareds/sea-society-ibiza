@@ -1,4 +1,4 @@
-import type { Boat, Faq, Settings } from "@/lib/data/types";
+import type { Boat, Experience, Faq, Settings } from "@/lib/data/types";
 import { absoluteUrl, SITE_NAME } from "./metadata";
 
 export function organizationLd(settings: Settings) {
@@ -78,6 +78,30 @@ export function fleetItemListLd(boats: Boat[]) {
       url: absoluteUrl(`/fleet/${b.slug}`),
       name: b.name,
     })),
+  };
+}
+
+export function experienceTripLd(experience: Experience) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    name: experience.title,
+    description: experience.intro || experience.body.slice(0, 200),
+    url: absoluteUrl(`/experiences/${experience.slug}`),
+    image: experience.heroImage
+      ? [experience.heroImage, ...experience.gallery.map((g) => g.src)]
+      : undefined,
+    touristType: "Luxury",
+    provider: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+    offers: experience.priceFrom
+      ? {
+          "@type": "Offer",
+          priceCurrency: "EUR",
+          price: experience.priceFrom,
+          url: absoluteUrl(`/experiences/${experience.slug}`),
+          availability: "https://schema.org/InStock",
+        }
+      : undefined,
   };
 }
 

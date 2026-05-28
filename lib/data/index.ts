@@ -39,6 +39,8 @@ export const getAllExperiences = () =>
   supabaseEnabled() ? supa.getAllExperiences() : dummy.getAllExperiences();
 export const getExperienceById = (id: string) =>
   supabaseEnabled() ? supa.getExperienceById(id) : dummy.getExperienceById(id);
+export const getExperienceBySlug = (slug: string) =>
+  supabaseEnabled() ? supa.getExperienceBySlug(slug) : dummy.getExperienceBySlug(slug);
 export const getDestinations = () =>
   supabaseEnabled() ? supa.getDestinations() : dummy.getDestinations();
 export const getAllDestinations = () =>

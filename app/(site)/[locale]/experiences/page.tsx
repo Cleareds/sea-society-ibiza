@@ -54,9 +54,7 @@ export default async function ExperiencesPage({
       />
 
       <PageHero
-        eyebrow="What you can do at sea"
         title={t("nav.experiences")}
-        sub="From a three-hour sunset cruise to a week across the Balearics — every charter is yours."
         imageSrc="/sea-society/site/experiences-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
@@ -69,23 +67,34 @@ export default async function ExperiencesPage({
           {experiences.map((x, i) => (
             <li key={x.id} className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
               <div className={i % 2 === 1 ? "md:order-2" : ""}>
-                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl">
-                  <Image
-                    src={x.heroImage}
-                    alt={`${x.title} — ${x.intro}`}
-                    fill
-                    sizes="(min-width: 768px) 45vw, 90vw"
-                    loading={i > 0 ? "lazy" : "eager"}
-                    className="object-cover"
-                  />
-                </div>
+                <Link
+                  href={lp(`/experiences/${x.slug}`)}
+                  className="group block"
+                  aria-label={`Read about ${x.title}`}
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-3xl">
+                    <Image
+                      src={x.heroImage}
+                      alt={`${x.title} — ${x.intro}`}
+                      fill
+                      sizes="(min-width: 768px) 45vw, 90vw"
+                      loading={i > 0 ? "lazy" : "eager"}
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                </Link>
               </div>
               <div className={i % 2 === 1 ? "md:order-1" : ""}>
                 <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
                   0{i + 1}
                 </p>
                 <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-                  {x.title}
+                  <Link
+                    href={lp(`/experiences/${x.slug}`)}
+                    className="transition-colors hover:text-[var(--color-primary)]"
+                  >
+                    {x.title}
+                  </Link>
                 </h2>
                 <p className="mt-4 font-serif text-xl italic text-[var(--color-on-surface-variant)]">
                   {x.intro}
@@ -94,7 +103,7 @@ export default async function ExperiencesPage({
                   <MarkdownBody source={x.body} />
                 </div>
                 <Button asChild className="mt-8" size="md">
-                  <Link href={lp("/contact")}>{t("nav.contact")}</Link>
+                  <Link href={lp(`/experiences/${x.slug}`)}>Read more</Link>
                 </Button>
               </div>
             </li>

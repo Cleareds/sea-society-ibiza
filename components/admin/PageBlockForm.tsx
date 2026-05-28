@@ -48,6 +48,13 @@ export function PageBlockForm({ block, editable }: Props) {
       ? ((initial as Destination | null | undefined)?.highlights ?? []).join("\n")
       : "";
 
+  const exp = block.kind === "experience"
+    ? (initial as Experience | null | undefined)
+    : undefined;
+  const galleryDefault = exp?.gallery
+    ?.map((g) => (g.alt ? `${g.src} :: ${g.alt}` : g.src))
+    .join("\n") ?? "";
+
   return (
     <form action={formAction} className="space-y-6">
       {initial?.id && <input type="hidden" name="id" value={initial.id} />}
@@ -78,6 +85,42 @@ export function PageBlockForm({ block, editable }: Props) {
           />
         </label>
         <MarkdownField name="body" defaultValue={initial?.body ?? ""} rows={14} />
+        {block.kind === "experience" && (
+          <>
+            <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
+              Long description (markdown) — body of the detail page
+              <MarkdownField
+                name="longDescription"
+                defaultValue={exp?.longDescription ?? ""}
+                rows={10}
+              />
+            </label>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Field label="Duration (e.g. 3 hours)" name="duration" defaultValue={exp?.duration ?? ""} />
+              <Field label="Group size (e.g. Up to 12)" name="groupSize" defaultValue={exp?.groupSize ?? ""} />
+              <Field
+                label="From price (EUR)"
+                name="priceFrom"
+                type="number"
+                defaultValue={exp?.priceFrom ?? ""}
+              />
+            </div>
+            <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
+              Gallery — one per line as <code className="normal-case">{`path :: alt`}</code>
+              <textarea
+                name="gallery"
+                rows={4}
+                defaultValue={galleryDefault}
+                className="mt-2 w-full rounded-2xl border border-[var(--color-outline)] bg-transparent p-3 text-sm normal-case tracking-normal focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
+                placeholder={"/sea-society/site/exp-day-trips-2.webp :: Anchored off Es Vedra\n/sea-society/site/exp-day-trips-3.webp :: Lunch on board"}
+              />
+            </label>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field label="Meta title (SEO)" name="metaTitle" defaultValue={exp?.metaTitle ?? ""} />
+              <Field label="Meta description (SEO)" name="metaDescription" defaultValue={exp?.metaDescription ?? ""} />
+            </div>
+          </>
+        )}
         {block.kind === "destination" && (
           <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
             Highlights (one per line)

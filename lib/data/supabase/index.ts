@@ -8,6 +8,13 @@ interface ExperienceRow {
   title: string;
   intro: string | null;
   body: string | null;
+  long_description: string | null;
+  gallery: Array<{ src: string; alt: string }> | null;
+  duration: string | null;
+  group_size: string | null;
+  price_from: number | null;
+  meta_title: string | null;
+  meta_description: string | null;
   hero_image: string | null;
   sort_order: number;
   is_published: boolean;
@@ -187,6 +194,13 @@ function mapExperience(r: ExperienceRow): Experience {
     title: r.title,
     intro: r.intro ?? "",
     body: r.body ?? "",
+    longDescription: r.long_description ?? "",
+    gallery: (r.gallery ?? []).map((g) => ({ src: g.src, alt: g.alt })),
+    duration: r.duration ?? undefined,
+    groupSize: r.group_size ?? undefined,
+    priceFrom: r.price_from ?? undefined,
+    metaTitle: r.meta_title ?? undefined,
+    metaDescription: r.meta_description ?? undefined,
     heroImage: r.hero_image ?? "",
     sortOrder: r.sort_order,
     isPublished: r.is_published,
@@ -222,6 +236,19 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
     .from("experiences")
     .select("*")
     .eq("id", id)
+    .returns<ExperienceRow[]>()
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapExperience(data) : null;
+}
+
+export async function getExperienceBySlug(slug: string): Promise<Experience | null> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase
+    .from("experiences")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_published", true)
     .returns<ExperienceRow[]>()
     .maybeSingle();
   if (error) throw error;

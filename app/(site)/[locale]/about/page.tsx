@@ -71,9 +71,7 @@ export default async function AboutPage({
       />
 
       <PageHero
-        eyebrow="The story"
         title="Built on twenty years at the dock."
-        sub="Sea Society Ibiza is the customer-facing layer of Ibimar — the family operation that has run Botafoc Marina charters since 2005."
         imageSrc="/sea-society/site/about-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },

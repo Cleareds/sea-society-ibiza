@@ -164,7 +164,44 @@ export async function saveExperience(
   prev: SavePageBlockState,
   formData: FormData,
 ): Promise<SavePageBlockState> {
-  return savePageBlock("experiences", "/experiences", undefined, prev, formData);
+  const longDescription = String(formData.get("longDescription") ?? "");
+  const duration = String(formData.get("duration") ?? "").trim();
+  const groupSize = String(formData.get("groupSize") ?? "").trim();
+  const priceFromRaw = String(formData.get("priceFrom") ?? "").trim();
+  const metaTitle = String(formData.get("metaTitle") ?? "").trim();
+  const metaDescription = String(formData.get("metaDescription") ?? "").trim();
+  const galleryRaw = String(formData.get("gallery") ?? "").trim();
+
+  // Gallery is a textarea, one image per line as `path :: alt-text`.
+  // Lines without `::` are accepted with empty alt — keeps the editor
+  // forgiving while letting power users supply alt text.
+  const gallery = galleryRaw
+    ? galleryRaw
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [src, ...rest] = line.split("::");
+          return { src: (src ?? "").trim(), alt: rest.join("::").trim() };
+        })
+        .filter((g) => g.src)
+    : [];
+
+  return savePageBlock(
+    "experiences",
+    "/experiences",
+    {
+      long_description: longDescription || null,
+      duration: duration || null,
+      group_size: groupSize || null,
+      price_from: priceFromRaw ? Number(priceFromRaw) : null,
+      meta_title: metaTitle || null,
+      meta_description: metaDescription || null,
+      gallery,
+    },
+    prev,
+    formData,
+  );
 }
 
 export async function deleteExperience(formData: FormData) {
