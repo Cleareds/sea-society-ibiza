@@ -88,14 +88,17 @@ fg_rocks = ndimage.binary_fill_holes(fg_rocks)
 
 # ----------------------------------------------------------------------
 # 5) Lady silhouette. Right side, dark, mid-lower band.
+#    Wider band so the new hero photo's whole figure (hat + arm + leg)
+#    is included — the old thresholds left edges of the silhouette
+#    out of the mask, which then moved with parallax.
 # ----------------------------------------------------------------------
 lady = (
-    (xx > 0.42) &
-    (yy > 0.40) & (yy < 0.96) &
-    (lum < 0.34)
+    (xx > 0.40) &
+    (yy > 0.32) & (yy < 0.99) &
+    (lum < 0.42)
 )
-lady = ndimage.binary_dilation(lady, iterations=2)
-lady = ndimage.binary_closing(lady, iterations=8)
+lady = ndimage.binary_dilation(lady, iterations=4)
+lady = ndimage.binary_closing(lady, iterations=12)
 lady = ndimage.binary_fill_holes(lady)
 labels, n = ndimage.label(lady)
 if n > 0:
@@ -141,7 +144,17 @@ depth = np.clip(depth, 0, 255).astype(np.uint8)
 # Water mask uses a *boosted* sea feather so the shader sees a near-
 # binary gate and never lands in a soft mid-grey "blind spot".
 water = np.clip(np.power(sea_f, 0.6) * 255.0, 0, 255).astype(np.uint8)
-static_fg = np.clip(np.maximum(lady_f, fg_f) * 255.0, 0, 255).astype(np.uint8)
+# Static = everything that must NOT move with cursor parallax:
+#   - the mountain (Es Vedra rock — user feedback: it was wobbling
+#     with the parallax and shouldn't)
+#   - lady silhouette
+#   - foreground rocks she sits on
+# Sky / horizon stays OUT of static — it *should* swing with cursor X
+# so the parallax has somewhere to read against.
+static_fg = np.clip(
+    np.maximum(np.maximum(lady_f, fg_f), rock_f) * 255.0,
+    0, 255,
+).astype(np.uint8)
 
 packed = np.stack([depth, water, static_fg], axis=-1)
 out = Image.fromarray(packed, mode="RGB")

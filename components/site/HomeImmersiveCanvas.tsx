@@ -181,8 +181,8 @@ const FRAGMENT = /* glsl */ `
     vec2 cursorOffset = uCursor - vec2(0.5);             // -0.5..0.5
     float horizonWeight = 1.0 - vuv.y;                   // 1 at viewport top, 0 at bottom
     vec2 parallax = vec2(
-      cursorOffset.x * horizonWeight * 0.045,
-      cursorOffset.y * 0.015
+      cursorOffset.x * horizonWeight * 0.018,
+      cursorOffset.y * 0.008
     ) * (1.0 - staticMask);
 
     vec2 displacement = vec2(wave) * 0.0027 * water;
