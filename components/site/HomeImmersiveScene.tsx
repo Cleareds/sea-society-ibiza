@@ -105,17 +105,28 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
             <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.25rem)] z-10 flex justify-center">
+          {/* Scroll cue — just an arrow chevron that gently bobs.
+              Anchored to the fleet section so a click smooth-scrolls
+              the user past the hero in one motion. The 'Scroll' label
+              is gone (user feedback). */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
             <a
               href="#fleet-cards"
               aria-label="Scroll to the fleet"
-              className="motion-safe:animate-scroll-cue group pointer-events-auto inline-flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-white/85 hover:text-white"
+              className="pointer-events-auto inline-flex items-center justify-center text-white/80 transition-opacity hover:text-white"
             >
-              Scroll
-              <span aria-hidden className="block h-10 w-px bg-white/60" />
-              <svg aria-hidden viewBox="0 0 12 8" className="h-2 w-3 fill-none stroke-white/80" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M1 1 L6 6 L11 1" />
-              </svg>
+              <span className="home-cue-arrow inline-block" aria-hidden>
+                <svg
+                  viewBox="0 0 16 24"
+                  className="h-6 w-4 fill-none stroke-white/85"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M8 1 L8 19" />
+                  <path d="M2 14 L8 21 L14 14" />
+                </svg>
+              </span>
             </a>
           </div>
         </div>

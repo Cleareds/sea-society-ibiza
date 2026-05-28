@@ -71,7 +71,7 @@ export function InstagramGrid({ handle, href, tone = "light" }: Props) {
         {tiles.map((src, i) => (
           <li
             key={src + i}
-            className={`relative aspect-square overflow-hidden ${
+            className={`brand-img-hover relative aspect-square overflow-hidden ${
               i >= 6 ? "hidden md:block" : ""
             }`}
           >
