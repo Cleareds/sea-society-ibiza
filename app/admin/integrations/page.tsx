@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getInstagramConfig } from "@/lib/integrations";
 import { oauthConfigured, getOauthEnv } from "@/lib/instagram-oauth";
 import {
@@ -6,6 +7,27 @@ import {
   refreshInstagramToken,
   disconnectInstagram,
 } from "./actions";
+
+// Developer escape-hatch — emails that can see the destructive
+// Connect / Reconnect / Disconnect actions. Everyone else sees the
+// status + "Refresh now" only. Empty list means nobody is gated and
+// the dangerous buttons are hidden universally — only the database
+// (or env var change) can reset the integration.
+function developerEmails(): string[] {
+  return (process.env.DEVELOPER_EMAILS ?? "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+async function isDeveloper(): Promise<boolean> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getUser();
+  const email = data.user?.email?.toLowerCase();
+  if (!email) return false;
+  const allowed = developerEmails();
+  return allowed.includes(email);
+}
 
 export const metadata: Metadata = {
   title: "Integrations — Admin",
@@ -38,6 +60,7 @@ export default async function IntegrationsPage({
   const { appId, redirectUri } = getOauthEnv();
   const connected = Boolean(cfg?.accessToken && cfg?.userId);
   const days = daysUntil(cfg?.expiresAt);
+  const dev = await isDeveloper();
 
   return (
     <div className="space-y-8">
@@ -63,7 +86,7 @@ export default async function IntegrationsPage({
 
         {!oauthOk && <EnvMissingNotice appId={appId} redirectUri={redirectUri} />}
 
-        {oauthOk && !connected && (
+        {oauthOk && !connected && dev && (
           <div className="mt-6 space-y-4">
             <p className="text-sm">
               Click <strong>Connect Instagram</strong> below, log in to the
@@ -79,6 +102,13 @@ export default async function IntegrationsPage({
               </button>
             </form>
           </div>
+        )}
+        {oauthOk && !connected && !dev && (
+          <p className="mt-6 text-sm text-[var(--color-on-surface-variant)]">
+            Instagram isn&rsquo;t connected yet. The developer team needs
+            to do the initial connection — once they have, this page will
+            show the live status.
+          </p>
         )}
 
         {connected && (
@@ -104,22 +134,26 @@ export default async function IntegrationsPage({
                   Refresh token now
                 </button>
               </form>
-              <form action={startInstagramConnect}>
-                <button
-                  type="submit"
-                  className="rounded-full border border-[var(--color-outline)] px-5 py-2 text-sm hover:bg-[var(--color-surface-container)]"
-                >
-                  Reconnect (different account)
-                </button>
-              </form>
-              <form action={disconnectInstagram}>
-                <button
-                  type="submit"
-                  className="rounded-full border border-[var(--color-outline)] px-5 py-2 text-sm text-[var(--color-secondary)] hover:bg-[var(--color-surface-container)]"
-                >
-                  Disconnect
-                </button>
-              </form>
+              {dev && (
+                <>
+                  <form action={startInstagramConnect}>
+                    <button
+                      type="submit"
+                      className="rounded-full border border-[var(--color-outline)] px-5 py-2 text-sm hover:bg-[var(--color-surface-container)]"
+                    >
+                      Reconnect (different account)
+                    </button>
+                  </form>
+                  <form action={disconnectInstagram}>
+                    <button
+                      type="submit"
+                      className="rounded-full border border-[var(--color-outline)] px-5 py-2 text-sm text-[var(--color-secondary)] hover:bg-[var(--color-surface-container)]"
+                    >
+                      Disconnect
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         )}

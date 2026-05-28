@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { randomBytes } from "node:crypto";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   authorizeUrl,
   oauthConfigured,
@@ -18,7 +19,24 @@ import {
 
 const STATE_COOKIE = "ssi-ig-oauth-state";
 
+// Gated server-side: Connect / Reconnect / Disconnect require a
+// DEVELOPER_EMAILS match. Refresh is safe and stays open to any
+// admin so the client can keep the token healthy without us.
+async function requireDeveloper() {
+  const allowed = (process.env.DEVELOPER_EMAILS ?? "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getUser();
+  const email = data.user?.email?.toLowerCase();
+  if (!email || !allowed.includes(email)) {
+    redirect("/admin/integrations?status=error&detail=developer_only");
+  }
+}
+
 export async function startInstagramConnect() {
+  await requireDeveloper();
   if (!oauthConfigured()) {
     redirect("/admin/integrations?status=error&detail=oauth_env_missing");
   }
@@ -55,6 +73,7 @@ export async function refreshInstagramToken() {
 }
 
 export async function disconnectInstagram() {
+  await requireDeveloper();
   await clearInstagramConfig();
   revalidatePath("/admin/integrations");
   revalidatePath("/");
