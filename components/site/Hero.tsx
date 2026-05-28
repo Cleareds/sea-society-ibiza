@@ -76,27 +76,29 @@ export function Hero({
         </div>
       </div>
 
-      {/* Scroll cue — points TOWARDS the next section (the sea), centred
-          along the bottom edge. Arrow chevron rotates pointer-down. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.25rem)] z-10 flex justify-center">
+      {/* Scroll cue — "Scroll" label + a gently bobbing arrow
+          (.home-cue-arrow). Same treatment as the preview hero. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
         <a
           href="#after-hero"
           aria-label="Scroll to next section"
-          className="motion-safe:animate-scroll-cue group pointer-events-auto inline-flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.35em] text-white/85 hover:text-white"
+          className="pointer-events-auto inline-flex flex-col items-center gap-3 text-white/80 transition-opacity hover:text-white"
         >
-          {scrollLabel}
-          <span aria-hidden className="block h-10 w-px bg-white/60" />
-          {/* Tiny chevron pointing down — toward the sea section below */}
-          <svg
-            aria-hidden
-            viewBox="0 0 12 8"
-            className="h-2 w-3 fill-none stroke-white/80"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M1 1 L6 6 L11 1" />
-          </svg>
+          <span className="text-[10px] uppercase tracking-[0.35em] text-white/85">
+            {scrollLabel}
+          </span>
+          <span className="home-cue-arrow inline-block" aria-hidden>
+            <svg
+              viewBox="0 0 16 24"
+              className="h-6 w-4 fill-none stroke-white/85"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M8 1 L8 19" />
+              <path d="M2 14 L8 21 L14 14" />
+            </svg>
+          </span>
         </a>
       </div>
     </section>

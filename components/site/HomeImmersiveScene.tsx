@@ -105,16 +105,18 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
             <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
           </div>
 
-          {/* Scroll cue — just an arrow chevron that gently bobs.
-              Anchored to the fleet section so a click smooth-scrolls
-              the user past the hero in one motion. The 'Scroll' label
-              is gone (user feedback). */}
+          {/* Scroll cue — "Scroll" label above a gently bobbing arrow.
+              Anchored to #fleet-cards so a click smooth-scrolls past
+              the hero in one motion. */}
           <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
             <a
               href="#fleet-cards"
               aria-label="Scroll to the fleet"
-              className="pointer-events-auto inline-flex items-center justify-center text-white/80 transition-opacity hover:text-white"
+              className="pointer-events-auto inline-flex flex-col items-center gap-3 text-white/80 transition-opacity hover:text-white"
             >
+              <span className="text-[10px] uppercase tracking-[0.35em] text-white/85">
+                Scroll
+              </span>
               <span className="home-cue-arrow inline-block" aria-hidden>
                 <svg
                   viewBox="0 0 16 24"
@@ -136,8 +138,11 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
           No backdrop block, no overlay text on the cards. The cards
           have their own bg-black/45 + backdrop-blur on each tile for
           legibility; the rest of the section reads the sea straight. */}
-      <section id="fleet-cards" className="relative z-10 w-full text-white">
-        <div className="relative z-10 mx-auto max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
+      <section
+        id="fleet-cards"
+        className="relative z-10 flex w-full items-center text-white md:min-h-screen"
+      >
+        <div className="relative z-10 mx-auto w-full max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
           <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
             {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
               <li
