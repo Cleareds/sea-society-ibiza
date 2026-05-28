@@ -72,7 +72,7 @@ export default async function AboutPage({
 
       <PageHero
         eyebrow="The story"
-        title="Twenty years at the dock."
+        title="Built on twenty years at the dock."
         sub="Sea Society Ibiza is the customer-facing layer of Ibimar — the family operation that has run Botafoc Marina charters since 2005."
         imageSrc="/sea-society/site/about-hero.webp"
         breadcrumbs={[
@@ -108,8 +108,8 @@ export default async function AboutPage({
           </div>
           <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
             <Image
-              src="/sea-society/site/dest-ibiza.webp"
-              alt="Looking out at Es Vedra rock from a quiet anchorage off Ibiza."
+              src="/sea-society/site/dest-formentera.webp"
+              alt="Yacht anchored off a Formentera sandbank in clear turquoise water."
               fill
               sizes="(min-width: 768px) 40vw, 90vw"
               className="object-cover"

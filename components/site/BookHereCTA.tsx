@@ -90,7 +90,9 @@ export function StickyBookHere({
   return (
     <div
       className={cn(
-        "pointer-events-none fixed inset-x-4 bottom-[max(env(safe-area-inset-bottom),0.75rem)] z-40 flex justify-center transition-all duration-300 md:hidden",
+        // Mobile: stretches edge-to-edge inset-x-4. Desktop: shrinks to
+        // a centred pill (auto width via w-auto on the anchor below).
+        "pointer-events-none fixed inset-x-4 bottom-[max(env(safe-area-inset-bottom),0.75rem)] z-40 flex justify-center transition-all duration-300 md:inset-x-0 md:bottom-6",
         show
           ? "pointer-events-auto translate-y-0 opacity-100"
           : "translate-y-4 opacity-0",
@@ -100,7 +102,7 @@ export function StickyBookHere({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex h-12 w-full max-w-md items-center justify-center gap-3 rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-sm font-medium tracking-wide text-white shadow-2xl backdrop-blur-md transition-all hover:bg-[#06141a]"
+        className="group inline-flex h-12 w-full max-w-md items-center justify-center gap-3 rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-sm font-medium tracking-wide text-white shadow-2xl backdrop-blur-md transition-all hover:bg-[#06141a] md:h-14 md:w-auto md:px-10 md:text-base"
       >
         {label}
         <ArrowRight
