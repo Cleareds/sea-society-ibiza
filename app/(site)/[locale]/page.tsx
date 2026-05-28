@@ -81,7 +81,7 @@ export default async function HomePage({
                   {t("home.featured.eyebrow")}
                 </p>
                 <h2 className="mt-3 max-w-3xl font-serif text-4xl text-[var(--color-on-surface)] md:text-6xl">
-                  Three yachts. <span className="brand-accent">One</span> Mediterranean.
+                  A <span className="brand-accent">fleet</span>. One Mediterranean.
                 </h2>
               </div>
             </div>
