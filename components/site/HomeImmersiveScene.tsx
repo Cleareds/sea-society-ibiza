@@ -60,6 +60,10 @@ interface Props {
 export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) {
   const reduced = useReducedMotion();
   const lp = (path: string) => localePath(locale, path);
+  // Scope: the canvas is visible only while this wrapper is in view.
+  // Past its bottom edge, the canvas fades out so the journey block /
+  // footer aren't covered by the sea image.
+  const scopeRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -79,12 +83,15 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
           />
         </div>
       ) : (
-        <HomeImmersiveCanvas />
+        <HomeImmersiveCanvas scopeRef={scopeRef} />
       )}
 
-      {/* ---------- HERO — natural flow, scrolls away normally. ---------- */}
+      <div ref={scopeRef}>
+      {/* ---------- HERO — natural flow, scrolls away normally. ----------
+          No dark legibility overlay: the user wants the photo to read
+          unobstructed. The brand-headline text-shadow already gives
+          the title enough contrast against the sky region. */}
       <section className="relative z-10 w-full text-white" style={{ height: "100svh" }}>
-        <div className="pointer-events-none absolute inset-0 brand-image-overlay" />
         <div className="relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 pt-28 md:px-10 md:pb-40 md:pt-40">
           <p className="brand-eyebrow">Sea Society Ibiza</p>
           <h1 className="brand-headline mt-5 max-w-4xl text-[clamp(2.75rem,9vw,6rem)]">
@@ -115,14 +122,10 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
       </section>
 
       {/* ---------- FLEET CARDS — natural flow on top of the canvas. ----------
-          No "A fleet. One Mediterranean." overlay text on top of the
-          cards (per design feedback). Cards drift up through the canvas
-          while the canvas is still finishing its zoom into the sea. */}
+          No backdrop block, no overlay text on the cards. The cards
+          have their own bg-black/45 + backdrop-blur on each tile for
+          legibility; the rest of the section reads the sea straight. */}
       <section id="fleet-cards" className="relative z-10 w-full text-white">
-        {/* Soft veil for legibility — light enough that the sea still
-            reads as the dominant background. */}
-        <div className="pointer-events-none absolute inset-0 bg-[#06141a]/35" />
-
         <div className="relative z-10 mx-auto max-w-(--spacing-container-max) px-5 py-20 md:px-10 md:py-32">
           <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
             {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
@@ -161,6 +164,7 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
           </div>
         </div>
       </section>
+      </div>
     </>
   );
 }

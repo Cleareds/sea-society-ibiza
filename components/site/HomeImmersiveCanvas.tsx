@@ -27,10 +27,17 @@ export interface HomeImmersiveCanvasProps {
   maskSrc?: string;
   /** Strength of cursor-driven refraction in the sea. */
   cursorRippleStrength?: number;
-  /** Scroll Y where the zoom STARTS (px). Default = viewport height. */
+  /** Scroll Y where the zoom STARTS (px). Default = 0.2 × viewport. */
   zoomStartPx?: number;
-  /** Scroll Y where the zoom ENDS (px). Default = 2 × viewport height. */
+  /** Scroll Y where the zoom ENDS (px). Default = 1.0 × viewport. The
+   *  zoom intentionally completes around the time the user reaches the
+   *  yacht cards — the canvas should already be in its locked sea
+   *  state by then. */
   zoomEndPx?: number;
+  /** When the bottom of this element is above the bottom of the
+   *  viewport, the canvas fades out (so the footer / next section is
+   *  visible underneath rather than the sea image covering it). */
+  scopeRef?: React.RefObject<HTMLElement | null>;
 }
 
 const DEFAULT_IMAGE = "/sea-society/site/home-hero.webp";
@@ -109,11 +116,14 @@ const FRAGMENT = /* glsl */ `
     vec2 base = coverUV(vuv, uAspectViewport, uAspectImage);
 
     // 2. Pan phase — slide the visible window down through a portrait
-    //    image inside a landscape (or any) viewport. We do this only
-    //    if the source image is taller than the cover-fit crop, i.e.
-    //    when image aspect < viewport aspect.
+    //    image inside a landscape (or any) viewport. Only meaningful
+    //    when the source image is taller than the cover-fit crop allows.
+    //    At uPan=0 the camera is BIASED UPWARD so the opening frame
+    //    shows a sliver of sky + the mountain in clear view (not the
+    //    cover-fit centre, which would land on the lady's eye-level).
+    //    At uPan=1 it has drifted further down.
     float panRange = max(0.0, 0.5 - 0.5 * (uAspectImage / uAspectViewport));
-    base.y -= (uPan - 0.5) * 2.0 * panRange;
+    base.y += (uPan - 0.4) * panRange * 1.2;
 
     // 3. Zoom phase — once the pan completes, zoom into the sea band.
     //    Sea sits left-of-centre + slightly above the lady. At peak we
@@ -184,6 +194,7 @@ export function HomeImmersiveCanvas({
   cursorRippleStrength = 0.006,
   zoomStartPx,
   zoomEndPx,
+  scopeRef,
 }: HomeImmersiveCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -301,16 +312,36 @@ export function HomeImmersiveCanvas({
 
       // Compute pan + zoom from the page scroll position. The canvas is
       // a fixed backdrop behind the whole page — its visual state is
-      // entirely driven by where the user is in the document.
+      // entirely driven by where the user is in the document. The
+      // image is intentionally allowed to move FASTER than the
+      // surrounding content (parallax-like): by the time the user has
+      // scrolled to the yacht cards (~1 viewport down) the zoom is
+      // almost done, so the cards already sit on the sea-only crop.
       const vh = window.innerHeight;
-      const start = zoomStartPx ?? vh;       // default 1 viewport
-      const end = zoomEndPx ?? vh * 2;       // default 2 viewports
+      const start = zoomStartPx ?? vh * 0.2;
+      const end = zoomEndPx ?? vh * 1.0;
       const sy = window.scrollY;
-      // Pan runs across the first viewport — gives a slight vertical
-      // drift of the camera through the portrait image while the hero
-      // is still in view.
-      const targetPan = clamp01(sy / start);
+      // Pan completes over the first ~0.6 viewport — a small downward
+      // camera drift on the hero image while the user reads the copy.
+      const targetPan = clamp01(sy / (vh * 0.6));
       const targetZoom = clamp01((sy - start) / Math.max(1, end - start));
+
+      // Opacity fade — if the page scope has been provided, fade the
+      // canvas out as the scope's bottom edge approaches the viewport
+      // top. Keeps the footer / journey section visible without the sea
+      // bleeding into them.
+      let targetOpacity = 1;
+      const scopeEl = scopeRef?.current;
+      if (scopeEl) {
+        const rect = scopeEl.getBoundingClientRect();
+        // bottom is distance from viewport top to scope's bottom edge
+        const fadeStart = vh * 0.5;
+        const fadeEnd = -vh * 0.1;
+        if (rect.bottom < fadeStart) {
+          targetOpacity = clamp01((rect.bottom - fadeEnd) / (fadeStart - fadeEnd));
+        }
+      }
+      container.style.opacity = String(targetOpacity);
 
       // Damp inputs so they don't twitch on jittery scroll/touch events
       smoothCursor[0] += (targetCursor[0] - smoothCursor[0]) * 0.12;
@@ -344,7 +375,7 @@ export function HomeImmersiveCanvas({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [imageSrc, maskSrc, cursorRippleStrength, zoomStartPx, zoomEndPx]);
+  }, [imageSrc, maskSrc, cursorRippleStrength, zoomStartPx, zoomEndPx, scopeRef]);
 
   // Fixed full-viewport backdrop. Sits at z-0 so it appears in front of
   // the body/main background but BEHIND every flow section (which must
