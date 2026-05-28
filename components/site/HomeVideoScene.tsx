@@ -52,6 +52,14 @@ export interface HomeVideoSceneProps {
   variantTag?: string;
   scrubViewports?: number;
   panMode?: "none" | "vertical";
+  /** Optional Instagram slot — rendered as the third phase (after the
+   *  yacht cards) over the still-scrubbing video. Pass <InstagramFeed />
+   *  from the page. */
+  instagramSlot?: React.ReactNode;
+  /** Instagram handle + URL — used for a small "follow" link inside the
+   *  glass panel. Optional; falls back to nothing if omitted. */
+  instagramHandle?: string;
+  instagramHref?: string;
 }
 
 function useReducedMotion(): boolean {
@@ -139,6 +147,9 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     variantTag,
     scrubViewports = 4,
     panMode = "none",
+    instagramSlot,
+    instagramHandle,
+    instagramHref,
   } = props;
   const reduced = useReducedMotion();
   const lp = (p: string) => localePath(locale, p);
@@ -147,16 +158,27 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
   const [runwayRef, progressRef] = useScrollProgress();
   const heroRef = React.useRef<HTMLDivElement>(null);
   const cardsRef = React.useRef<HTMLDivElement>(null);
+  const igRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     let raf = 0;
+    const hasIg = Boolean(instagramSlot);
+    // Phase windows — three when IG slot is given, two without it.
+    // Hero:  0.00–0.30, fade out 0.30–0.45
+    // Cards: 0.30–0.45 fade in,   0.55–0.70 fade out  (if IG)
+    //                              stay to 1.0       (if no IG)
+    // IG:    0.65–0.80 fade in,   stay to 1.0
     const tick = () => {
       raf = requestAnimationFrame(tick);
       const p = progressRef.current;
-      // Hero copy — full opacity to 0.30, fully gone by 0.50
-      const heroOpacity = clamp01(1 - (p - 0.30) / 0.20);
-      // Yacht cards — start fading in at 0.35, fully in by 0.55
-      const cardsOpacity = clamp01((p - 0.35) / 0.20);
+      const heroOpacity = clamp01(1 - (p - 0.30) / 0.15);
+      const cardsOpacity = hasIg
+        ? Math.min(
+            clamp01((p - 0.30) / 0.15),
+            clamp01(1 - (p - 0.60) / 0.15),
+          )
+        : clamp01((p - 0.30) / 0.15);
+      const igOpacity = hasIg ? clamp01((p - 0.65) / 0.15) : 0;
       if (heroRef.current) {
         heroRef.current.style.opacity = String(heroOpacity);
         heroRef.current.style.pointerEvents = heroOpacity < 0.05 ? "none" : "";
@@ -165,10 +187,14 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
         cardsRef.current.style.opacity = String(cardsOpacity);
         cardsRef.current.style.pointerEvents = cardsOpacity < 0.05 ? "none" : "";
       }
+      if (igRef.current) {
+        igRef.current.style.opacity = String(igOpacity);
+        igRef.current.style.pointerEvents = igOpacity < 0.05 ? "none" : "";
+      }
     };
     tick();
     return () => cancelAnimationFrame(raf);
-  }, [progressRef]);
+  }, [progressRef, instagramSlot]);
 
   return (
     <div
@@ -291,6 +317,24 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
             )}
           </div>
         </div>
+
+        {/* PHASE C — Instagram grid over the video. Same frosted-glass
+            treatment. Optional — only rendered when instagramSlot is
+            passed in by the page. */}
+        {instagramSlot && (
+          <div
+            ref={igRef}
+            className="absolute inset-0 z-10 flex items-center opacity-0 transition-opacity duration-300"
+          >
+            <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 md:px-10">
+              <div className="overflow-hidden rounded-3xl border border-white/20 bg-black/35 p-5 backdrop-blur-xl backdrop-saturate-150 md:p-6">
+                {/* InstagramFeed brings its own title + handle link;
+                    we just give it a glass frame to live inside. */}
+                {instagramSlot}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

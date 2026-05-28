@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { HomeVideoScene } from "@/components/site/HomeVideoScene";
+import { InstagramFeed } from "@/components/site/InstagramFeed";
 import { getFeaturedBoats, getSettings } from "@/lib/data";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -70,6 +71,15 @@ export default async function PreviewVideoVariantPage({
         variantTag={variant.tag}
         scrubViewports={variant.scrubViewports}
         panMode={variant.panMode}
+        instagramHandle={settings.instagramHandle}
+        instagramHref={settings.instagramUrl}
+        instagramSlot={
+          <InstagramFeed
+            handle={settings.instagramHandle}
+            href={settings.instagramUrl}
+            tone="dark"
+          />
+        }
       />
     </main>
   );
