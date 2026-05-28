@@ -37,20 +37,32 @@ const tiles = [
 interface Props {
   handle: string;
   href: string;
+  /** "light" (default) renders the title in on-surface dark on light
+   *  backgrounds. "dark" renders white text + brand-shadow for use over
+   *  the sea-coloured canvas on the home preview. */
+  tone?: "light" | "dark";
 }
 
-export function InstagramGrid({ handle, href }: Props) {
+export function InstagramGrid({ handle, href, tone = "light" }: Props) {
+  const headlineCls =
+    tone === "dark"
+      ? "brand-headline text-3xl text-white md:text-5xl"
+      : "font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl";
+  const handleCls =
+    tone === "dark"
+      ? "text-sm font-medium text-white/85 hover:text-white"
+      : "text-sm font-medium text-[var(--color-primary)] hover:underline";
   return (
     <section aria-labelledby="ig-h" className="w-full">
       <div className="mx-auto mb-8 flex w-full max-w-(--spacing-container-max) flex-col items-baseline justify-between gap-2 px-5 md:flex-row md:px-10">
-        <h2 id="ig-h" className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+        <h2 id="ig-h" className={headlineCls}>
           Follow the journey
         </h2>
         <a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-[var(--color-primary)] hover:underline"
+          className={handleCls}
         >
           {handle}
         </a>
