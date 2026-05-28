@@ -19,7 +19,7 @@ export function BoatCard({ boat, locale = "en", priority = false, fromLabel }: B
       href={href}
       className="group block overflow-hidden rounded-2xl bg-[var(--color-surface-container-low)] transition-shadow hover:shadow-xl focus-visible:shadow-xl"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden">
+      <div className="brand-img-hover relative aspect-[4/3] w-full overflow-hidden">
         <Image
           src={imageVariant(boat.heroImage, 900)}
           alt={`${boat.name} — ${boat.tagline}`}

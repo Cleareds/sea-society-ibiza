@@ -54,14 +54,14 @@ export default async function HomePage({
       <JsonLd data={[websiteLd(), fleetItemListLd(featured)]} />
 
       <Hero
-        eyebrow="Sea Society Ibiza"
+        eyebrow=""
         headline={
           <>
             Ibiza is <span className="brand-accent">different</span>
             <br className="hidden md:block" /> from the sea.
           </>
         }
-        sub={settings.heroSub}
+        sub="From the moment you step aboard at Botafoc Marina to the moment you watch the sun dissolve into the Mediterranean, every detail is handled."
         imageSrc={HOME_HERO}
         imageAlt="Looking out at Es Vedra rock at golden hour from a quiet anchorage off Ibiza's south coast."
         whatsappNumber={settings.whatsappNumber}
@@ -81,7 +81,7 @@ export default async function HomePage({
                   {t("home.featured.eyebrow")}
                 </p>
                 <h2 className="mt-3 max-w-3xl font-serif text-4xl text-[var(--color-on-surface)] md:text-6xl">
-                  A <span className="brand-accent">fleet</span>. One Mediterranean.
+                  Explore the <span className="brand-accent">fleet</span>
                 </h2>
               </div>
             </div>
