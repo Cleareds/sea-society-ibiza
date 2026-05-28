@@ -3,8 +3,10 @@
  *
  * Two ways to call this route:
  *   1. From the admin UI — authenticated admin user (cookie-based).
- *   2. From Vercel cron — call with `?secret=$CRON_SECRET` (the secret
- *      lives only in Vercel env, never in the codebase).
+ *   2. From Vercel cron — Vercel automatically injects
+ *      `Authorization: Bearer $CRON_SECRET` on each invocation when the
+ *      env var is set. We also accept `?secret=` as a manual escape
+ *      hatch for one-off curl tests.
  *
  * Returns 200 with the new expiry on success, or 4xx/5xx with a
  * machine-readable error code on failure.
@@ -18,10 +20,14 @@ import {
 import { getInstagramConfig, setInstagramConfig } from "@/lib/integrations";
 
 async function handle(req: NextRequest) {
-  // Auth: cron secret OR authenticated admin.
-  const secret = req.nextUrl.searchParams.get("secret");
+  // Auth: Vercel cron bearer header, manual `?secret=`, or authenticated admin.
   const cronSecret = process.env.CRON_SECRET;
-  const fromCron = Boolean(cronSecret && secret === cronSecret);
+  const headerAuth = req.headers.get("authorization");
+  const querySecret = req.nextUrl.searchParams.get("secret");
+  const fromCron = Boolean(
+    cronSecret &&
+      (headerAuth === `Bearer ${cronSecret}` || querySecret === cronSecret),
+  );
   if (!fromCron) {
     const blocked = await requireAdminRequest();
     if (blocked) return blocked;
