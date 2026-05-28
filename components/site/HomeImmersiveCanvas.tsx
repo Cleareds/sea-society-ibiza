@@ -323,21 +323,19 @@ export function HomeImmersiveCanvas({
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
 
-      // Compute pan + zoom from the page scroll position. The canvas is
-      // a fixed backdrop behind the whole page — its visual state is
-      // entirely driven by where the user is in the document. The
-      // image is intentionally allowed to move FASTER than the
-      // surrounding content (parallax-like): by the time the user has
-      // scrolled to the yacht cards the zoom is mostly done, so the
-      // cards already sit on a sea-only crop.
+      // Compute pan + zoom from the page scroll position. The image
+      // intentionally moves FASTER than the surrounding content — by
+      // the time the user is halfway through the first viewport the
+      // zoom is already mostly complete, so the cards arrive on a
+      // sea-locked frame.
       const vh = window.innerHeight;
-      const start = zoomStartPx ?? vh * 0.55;
-      const end = zoomEndPx ?? vh * 1.20;
+      const start = zoomStartPx ?? vh * 0.05;   // zoom kicks in almost immediately
+      const end = zoomEndPx ?? vh * 0.55;       // and completes by 55% of viewport 1
       const sy = window.scrollY;
-      // Pan runs across roughly the first viewport — gives the camera
-      // enough scroll to slide top-to-bottom through the entire image
-      // before the zoom narrows in.
-      const targetPan = clamp01(sy / (vh * 0.95));
+      // Pan + zoom run in parallel so the camera both slides down and
+      // narrows in. Pan still completes by ~mid-viewport so the
+      // framing reaches its target before the zoom finishes.
+      const targetPan = clamp01(sy / (vh * 0.50));
       const targetZoom = clamp01((sy - start) / Math.max(1, end - start));
 
       // Opacity fade — if the page scope has been provided, fade the
