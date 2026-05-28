@@ -83,7 +83,7 @@ export default async function FleetPage({
         ]}
       />
 
-      <section className="relative isolate h-[55vh] min-h-[420px] w-full overflow-hidden bg-[#06141a]">
+      <section className="relative isolate h-[52vh] min-h-[400px] w-full overflow-hidden bg-[#06141a]">
         <Image
           src="/sea-society/site/fleet-hero.webp"
           alt=""
@@ -104,7 +104,7 @@ export default async function FleetPage({
                 onImage
               />
             </div>
-            <h1 className="brand-headline mt-5 max-w-3xl text-5xl md:text-7xl">
+            <h1 className="brand-headline mt-5 max-w-3xl text-[clamp(2.25rem,7vw,4.5rem)] md:text-6xl">
               {t("fleet.title")}
             </h1>
             <p className="brand-sub mt-4 max-w-xl text-base md:text-lg">{t("fleet.subtitle")}</p>

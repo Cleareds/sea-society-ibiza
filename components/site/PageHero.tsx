@@ -58,7 +58,7 @@ export function PageHero({
           {eyebrow && (
             <p className="brand-eyebrow mt-6">{eyebrow}</p>
           )}
-          <h1 className="brand-headline mt-4 max-w-3xl text-[clamp(2.25rem,7.5vw,5rem)] md:text-7xl">{title}</h1>
+          <h1 className="brand-headline mt-4 max-w-3xl text-[clamp(2.25rem,7vw,4.5rem)] md:text-6xl">{title}</h1>
           {sub && <p className="brand-sub mt-5 max-w-xl text-base md:text-lg">{sub}</p>}
         </div>
       </div>
