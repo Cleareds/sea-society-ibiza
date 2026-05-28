@@ -162,23 +162,25 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
 
   React.useEffect(() => {
     let raf = 0;
-    const hasIg = Boolean(instagramSlot);
-    // Phase windows — three when IG slot is given, two without it.
-    // Hero:  0.00–0.30, fade out 0.30–0.45
-    // Cards: 0.30–0.45 fade in,   0.55–0.70 fade out  (if IG)
-    //                              stay to 1.0       (if no IG)
-    // IG:    0.65–0.80 fade in,   stay to 1.0
+    // Hero + yacht cards remain absolute-overlay phases on top of the
+    // sticky canvas (they're "screen-based" by design — they sell the
+    // pinned video). IG is the exception — it lives in normal flow at
+    // the bottom of the runway so it scrolls naturally over the
+    // already-pinned video, with sea visible around it.
+    //
+    // Phase windows:
+    //   Hero:  visible 0.00–0.30, fades out by 0.45
+    //   Cards: fade in 0.30–0.45, fade out 0.65–0.75
+    //   (IG opacity is driven by its OWN intersection — see useEffect
+    //    below — so it has nothing to do with this RAF.)
     const tick = () => {
       raf = requestAnimationFrame(tick);
       const p = progressRef.current;
       const heroOpacity = clamp01(1 - (p - 0.30) / 0.15);
-      const cardsOpacity = hasIg
-        ? Math.min(
-            clamp01((p - 0.30) / 0.15),
-            clamp01(1 - (p - 0.60) / 0.15),
-          )
-        : clamp01((p - 0.30) / 0.15);
-      const igOpacity = hasIg ? clamp01((p - 0.65) / 0.15) : 0;
+      const cardsOpacity = Math.min(
+        clamp01((p - 0.30) / 0.15),
+        clamp01(1 - (p - 0.65) / 0.10),
+      );
       if (heroRef.current) {
         heroRef.current.style.opacity = String(heroOpacity);
         heroRef.current.style.pointerEvents = heroOpacity < 0.05 ? "none" : "";
@@ -187,14 +189,31 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
         cardsRef.current.style.opacity = String(cardsOpacity);
         cardsRef.current.style.pointerEvents = cardsOpacity < 0.05 ? "none" : "";
       }
-      if (igRef.current) {
-        igRef.current.style.opacity = String(igOpacity);
-        igRef.current.style.pointerEvents = igOpacity < 0.05 ? "none" : "";
-      }
     };
     tick();
     return () => cancelAnimationFrame(raf);
-  }, [progressRef, instagramSlot]);
+  }, [progressRef]);
+
+  // IG block fade-in based on its OWN scroll position (intersection
+  // with the viewport) so it appears 1–2 viewports before the runway
+  // ends, regardless of how long the runway is.
+  React.useEffect(() => {
+    if (!instagramSlot) return;
+    const el = igRef.current;
+    if (!el) return;
+    let raf = 0;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // Fade in as the top of the block enters the lower half of the
+      // viewport; fully visible by the time it's centred.
+      const t = (vh - rect.top) / (vh * 0.7);
+      el.style.opacity = String(clamp01(t));
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [instagramSlot]);
 
   return (
     <div
@@ -318,24 +337,40 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
           </div>
         </div>
 
-        {/* PHASE C — Instagram grid over the video. Same frosted-glass
-            treatment. Optional — only rendered when instagramSlot is
-            passed in by the page. */}
-        {instagramSlot && (
+      </div>
+
+      {/* Spacer — pushes the IG block down toward the end of the
+          runway so it enters the viewport around scroll progress 0.80
+          (i.e. ~1–2s before the video reaches its last frame). The
+          sticky inner takes the first 100svh; this spacer fills the
+          gap so the IG block sits near the runway tail. */}
+      {instagramSlot && (
+        <>
+          <div
+            aria-hidden
+            className="pointer-events-none w-full"
+            style={{
+              // Take all but ~1.2 viewports of the remaining runway
+              // (sticky already consumed 1; we want IG to start ~80%
+              // through). The math is: runway-1 (sticky already
+              // consumed 1vh) minus the IG block's own ~1.2vh height.
+              height: `${Math.max(0, (scrubViewports - 1) * 100 - 120)}svh`,
+            }}
+          />
+          {/* IG — normal flow, scrolls over the sticky video. No
+              glass frame, just side + bottom padding so the sea is
+              visible around it. Fade-in driven by viewport
+              intersection. */}
           <div
             ref={igRef}
-            className="absolute inset-0 z-10 flex items-center opacity-0 transition-opacity duration-300"
+            className="pointer-events-auto relative z-10 w-full px-5 pb-[14svh] pt-[4svh] opacity-0 transition-opacity duration-500 md:px-10"
           >
-            <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 md:px-10">
-              <div className="overflow-hidden rounded-3xl border border-white/20 bg-black/35 p-5 backdrop-blur-xl backdrop-saturate-150 md:p-6">
-                {/* InstagramFeed brings its own title + handle link;
-                    we just give it a glass frame to live inside. */}
-                {instagramSlot}
-              </div>
+            <div className="mx-auto w-full max-w-(--spacing-container-max)">
+              {instagramSlot}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }
