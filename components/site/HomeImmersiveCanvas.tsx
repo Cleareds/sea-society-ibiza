@@ -91,50 +91,49 @@ const FRAGMENT = /* glsl */ `
     return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
   }
 
-  // Cover-fit UV mapping: given viewport aspect + image aspect, return
-  // the image UV for the current fragment, biased to keep the centre of
-  // interest visible. We can also zoom + recentre based on uProgress.
-  vec2 coverUV(vec2 uv, float vpAspect, float imgAspect) {
-    vec2 result = uv;
-    if (imgAspect > vpAspect) {
-      // image is wider than vp — crop horizontally
-      float scale = vpAspect / imgAspect;
-      result.x = (uv.x - 0.5) * scale + 0.5;
-    } else {
-      // image is taller than vp — crop vertically
-      float scale = imgAspect / vpAspect;
-      result.y = (uv.y - 0.5) * scale + 0.5;
-    }
-    return result;
-  }
-
   // Smoothstep helper
   float ss(float a, float b, float x) { return smoothstep(a, b, x); }
 
   void main() {
-    // 1. Base UV after cover-fit
-    vec2 base = coverUV(vuv, uAspectViewport, uAspectImage);
+    // 1. Map the viewport to the FULL image, sized so the image fills
+    //    the dominant axis and overflows the other. We then pan the
+    //    visible window across the overflow axis as the user scrolls.
+    //
+    //    Two cases:
+    //      - vpAspect > imgAspect  → image is "narrower" than the
+    //        viewport. Scale it to fill width; image overflows
+    //        VERTICALLY (taller than viewport). Pan = vertical.
+    //      - vpAspect < imgAspect  → image is "wider". Scale to fill
+    //        height; image overflows HORIZONTALLY. No pan needed —
+    //        we just centre horizontally.
+    //
+    //    Either way, the user eventually sees the WHOLE image (not a
+    //    cover-fit-cropped slice).
+    float ar = uAspectImage / uAspectViewport;
+    vec2 visibleFraction = (ar < 1.0)
+        ? vec2(1.0, ar)      // image overflows vertically (desktop case)
+        : vec2(1.0 / ar, 1.0); // image overflows horizontally (mobile case)
+    vec2 startPos = vec2(0.0);
+    if (ar < 1.0) {
+      // Vertical-overflow case. uPan=0 → window at image top
+      // (sky+mountain). uPan=1 → window slid further down (sea+lady).
+      // We DON'T pan all the way to the image bottom; we stop with
+      // sea well in view so the zoom can take over cleanly.
+      float maxPanY = 1.0 - visibleFraction.y;
+      startPos.y = uPan * maxPanY * 0.95;
+    } else {
+      startPos.x = (1.0 - visibleFraction.x) * 0.5;
+    }
+    vec2 base = startPos + vuv * visibleFraction;
 
-    // 2. Pan phase — slide the visible window down through a portrait
-    //    image inside a landscape (or any) viewport. Only meaningful
-    //    when the source image is taller than the cover-fit crop allows
-    //    (i.e. on landscape desktop viewports with this portrait hero).
-    //    Hand-tuned offsets so the framing is correct end-to-end:
-    //      uPan = 0  → image y ≈ 0.40 centre  (sky strip + FULL mountain)
-    //      uPan = 1  → image y ≈ 0.70 centre  (mid-sea + lady)
-    //    On mobile the source image already fills the viewport vertically
-    //    (cover-fit crops horizontally), so we skip the pan entirely —
-    //    base.y stays as cover-fit gave it.
-    bool pannable = uAspectImage / uAspectViewport < 1.0;
-    float panOffset = pannable ? mix(-0.10, 0.20, uPan) : 0.0;
-    base.y += panOffset;
-
-    // 3. Zoom phase — by uZoom = 1 the visible window should sit on
-    //    the SEA, not the mountain. Zoom centre slides slightly RIGHT
-    //    (away from the mountain at image x≈0.18) and DOWN (image y
-    //    ≈0.70 = mid-sea) so the locked sea frame reads as open water.
-    float zoom = mix(1.0, 0.50, uZoom);
-    vec2 zoomCenter = mix(vec2(0.5, 0.5), vec2(0.55, 0.50), uZoom);
+    // 2. Zoom phase — narrows the visible window down to the sea region.
+    //    zoomCenter is in IMAGE UV space (0=top-left of source,
+    //    1=bottom-right). Target: image x ≈ 0.45 (right of mountain),
+    //    y ≈ 0.65 (mid-sea) → at peak zoom the visible window crops
+    //    to sea, with the mountain off-frame to the left and the
+    //    lady off-frame to the right.
+    float zoom = mix(1.0, 0.45, uZoom);
+    vec2 zoomCenter = vec2(0.45, 0.65);
     vec2 uvZoomed = (base - zoomCenter) * zoom + zoomCenter;
 
     // 3. Sample the mask AFTER zoom so subject pixels stay subject pixels
@@ -320,15 +319,16 @@ export function HomeImmersiveCanvas({
       // entirely driven by where the user is in the document. The
       // image is intentionally allowed to move FASTER than the
       // surrounding content (parallax-like): by the time the user has
-      // scrolled to the yacht cards (~1 viewport down) the zoom is
-      // almost done, so the cards already sit on the sea-only crop.
+      // scrolled to the yacht cards the zoom is mostly done, so the
+      // cards already sit on a sea-only crop.
       const vh = window.innerHeight;
-      const start = zoomStartPx ?? vh * 0.2;
-      const end = zoomEndPx ?? vh * 1.0;
+      const start = zoomStartPx ?? vh * 0.55;
+      const end = zoomEndPx ?? vh * 1.20;
       const sy = window.scrollY;
-      // Pan completes over the first ~0.6 viewport — a small downward
-      // camera drift on the hero image while the user reads the copy.
-      const targetPan = clamp01(sy / (vh * 0.6));
+      // Pan runs across roughly the first viewport — gives the camera
+      // enough scroll to slide top-to-bottom through the entire image
+      // before the zoom narrows in.
+      const targetPan = clamp01(sy / (vh * 0.95));
       const targetZoom = clamp01((sy - start) / Math.max(1, end - start));
 
       // Opacity fade — if the page scope has been provided, fade the
