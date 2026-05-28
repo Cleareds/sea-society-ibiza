@@ -32,7 +32,7 @@ interface FooterProps {
 export function Footer({ settings, locale, t }: FooterProps) {
   const lp = (path: string) => localePath(locale, path);
   return (
-    <footer className="border-t border-[var(--color-outline-variant)]/40 bg-[var(--color-surface-container-low)]">
+    <footer className="relative z-20 border-t border-[var(--color-outline-variant)]/40 bg-[var(--color-surface-container-low)]">
       <div className="mx-auto max-w-(--spacing-container-max) px-5 py-16 md:px-10 md:py-20">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
