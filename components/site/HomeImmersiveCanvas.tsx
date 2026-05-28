@@ -22,9 +22,12 @@ import * as THREE from "three";
  * absolutely crisp + static — only the sea moves.
  */
 export interface HomeImmersiveCanvasProps {
-  /** Shared ref written by the parent's scroll handler. 0..1 across the
-   *  sticky pin. */
-  progressRef: React.RefObject<number>;
+  /** Vertical pan progress (0 = look at top of image, 1 = look at
+   *  bottom). Lets the camera pan through the portrait Es Vedra image
+   *  on a landscape desktop viewport before any zoom happens. */
+  panRef: React.RefObject<number>;
+  /** Zoom progress (0 = full frame after pan, 1 = sea-only crop). */
+  zoomRef: React.RefObject<number>;
   /** Color photo. */
   imageSrc?: string;
   /** RGB mask (R depth · G water · B static-foreground). */
@@ -62,7 +65,8 @@ const FRAGMENT = /* glsl */ `
   uniform sampler2D uMask;
   uniform vec2  uCursor;
   uniform float uTime;
-  uniform float uProgress;     // 0 = hero framing, 1 = sea framing
+  uniform float uPan;          // 0 = look top of image, 1 = look bottom
+  uniform float uZoom;         // 0 = full frame, 1 = sea-only crop
   uniform float uRippleStrength;
   uniform float uAspectViewport;   // viewport w / h
   uniform float uAspectImage;      // image natural w / h
@@ -107,74 +111,79 @@ const FRAGMENT = /* glsl */ `
     // 1. Base UV after cover-fit
     vec2 base = coverUV(vuv, uAspectViewport, uAspectImage);
 
-    // 2. Scroll-driven zoom into the sea region.
-    //    Source sea sits left-of-centre + slightly above the lady. We
-    //    push the zoom centre leftward at peak to crop the lady out and
-    //    fill the frame with sea + rock-base.
-    float zoom = mix(1.0, 0.45, uProgress);
-    vec2 zoomCenter = mix(vec2(0.5, 0.5), vec2(0.32, 0.55), uProgress);
+    // 2. Pan phase — slide the visible window down through a portrait
+    //    image inside a landscape (or any) viewport. We do this only
+    //    if the source image is taller than the cover-fit crop, i.e.
+    //    when image aspect < viewport aspect.
+    float panRange = max(0.0, 0.5 - 0.5 * (uAspectImage / uAspectViewport));
+    base.y -= (uPan - 0.5) * 2.0 * panRange;
+
+    // 3. Zoom phase — once the pan completes, zoom into the sea band.
+    //    Sea sits left-of-centre + slightly above the lady. At peak we
+    //    push the zoom centre leftward to crop the lady out.
+    float zoom = mix(1.0, 0.45, uZoom);
+    vec2 zoomCenter = mix(vec2(0.5, 0.6), vec2(0.32, 0.55), uZoom);
     vec2 uvZoomed = (base - zoomCenter) * zoom + zoomCenter;
 
     // 3. Sample the mask AFTER zoom so subject pixels stay subject pixels
     //    regardless of crop.
     vec3 mask = texture2D(uMask, uvZoomed).rgb;
-    float depth      = mask.r;
     float waterMask  = mask.g;
     float staticMask = mask.b;
 
-    // 4. Cursor refraction — sea only. Direction = away from cursor, so
-    //    the water "responds" to where the user hovers.
+    // Hard-threshold the water gate so we never sit in a soft mid-grey
+    // "halfway" zone that looks like a blind spot mid-sea.
+    float water = smoothstep(0.30, 0.55, waterMask) * (1.0 - staticMask);
+
+    // 4. Cursor refraction — sea only.
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);
-    float cursorFalloff = exp(-cursorDist * 8.0);
+    float cursorFalloff = exp(-cursorDist * 7.0);
     vec2 cursorDir = normalize(toCursor + 1e-4);
 
-    // 5. Animated ripple — phase rolls forward, gentle amplitude.
+    // 5. Animated ripple — smaller amplitude + lower spatial frequency so
+    //    the sea reads as a calm body of water rather than a corrugated
+    //    pond. Two phases combined for natural-looking motion.
     float wave =
-        sin(uvZoomed.x * 18.0 + uTime * 0.55) *
-        cos(uvZoomed.y * 14.0 - uTime * 0.42);
-    // Soft caustic shimmer — band-limited value noise.
+        sin(uvZoomed.x *  8.0 + uTime * 0.42) * 0.55 +
+        sin(uvZoomed.y * 11.0 - uTime * 0.31) * 0.45;
+
+    // Soft caustic shimmer — band-limited value noise, gentler than
+    // before. Re-centred so it darkens AND brightens (water shimmer).
     float caustic =
-        vnoise(uvZoomed * 6.0 + vec2(uTime * 0.13, -uTime * 0.09)) +
-        vnoise(uvZoomed * 12.0 - vec2(uTime * 0.18, uTime * 0.07)) * 0.5;
-    caustic = (caustic - 1.0) * 0.5;   // recentre around 0
+        vnoise(uvZoomed * 5.0 + vec2(uTime * 0.08, -uTime * 0.05)) +
+        vnoise(uvZoomed * 9.0 - vec2(uTime * 0.11, uTime * 0.04)) * 0.5;
+    caustic = (caustic - 0.75) * 0.45;
 
-    // 6. Combined displacement (sea only). Static foreground locked
-    //    absolutely (lady + foreground rocks); rock gets a tiny depth
-    //    parallax but no water.
-    float effect = waterMask * (1.0 - staticMask);
-
+    // 6. Displacement — gated entirely by water. Sky + rock + lady
+    //    get ZERO movement (no parallax either — they're set in stone).
     vec2 displacement = (
-      vec2(wave) * 0.0030 +
+      vec2(wave) * 0.0018 +
       cursorDir * cursorFalloff * uRippleStrength
-    ) * effect;
+    ) * water;
 
-    // Tiny background parallax for sky+rock — depth maps far→0, near→1
-    // Static fg gets ZERO parallax.
-    vec2 parallax =
-      (uCursor - vec2(0.5)) * 0.012 * (1.0 - depth) * (1.0 - staticMask);
-
-    vec2 sampleUV = uvZoomed + displacement + parallax;
+    vec2 sampleUV = uvZoomed + displacement;
 
     // 7. Sample the color image
     vec3 color = texture2D(uColor, sampleUV).rgb;
 
-    // 8. Brighten the water with the caustic shimmer + a soft cursor spot
-    float shimmer = caustic * 0.08 * effect;
-    float spot = exp(-cursorDist * 3.5) * 0.05 * effect;
+    // 8. Add caustic + cursor spot — both gated by water.
+    float shimmer = caustic * 0.06 * water;
+    float spot = exp(-cursorDist * 3.5) * 0.04 * water;
     color += shimmer + spot;
 
     // 9. Edge vignette tied to zoom — darken corners more as we zoom in
-    //    so the sea framing feels cinematic at p ≈ 1.
+    //    so the sea framing feels cinematic at uZoom ≈ 1.
     float vig = ss(0.95, 0.45, length(vuv - vec2(0.5)));
-    color *= mix(1.0, 0.88, (1.0 - vig) * uProgress);
+    color *= mix(1.0, 0.88, (1.0 - vig) * uZoom);
 
     gl_FragColor = vec4(color, 1.0);
   }
 `;
 
 export function HomeImmersiveCanvas({
-  progressRef,
+  panRef,
+  zoomRef,
   imageSrc = DEFAULT_IMAGE,
   maskSrc = DEFAULT_MASK,
   cursorRippleStrength = 0.006,
@@ -226,7 +235,8 @@ export function HomeImmersiveCanvas({
       uMask: { value: maskTex },
       uCursor: { value: new THREE.Vector2(0.5, 0.45) },
       uTime: { value: 0 },
-      uProgress: { value: 0 },
+      uPan: { value: 0 },
+      uZoom: { value: 0 },
       uRippleStrength: { value: cursorRippleStrength },
       uAspectViewport: { value: 1 },
       uAspectImage: { value: 1600 / 2400 },
@@ -246,7 +256,8 @@ export function HomeImmersiveCanvas({
     // Cursor + scroll plumbing -----------------------------------------
     const targetCursor: [number, number] = [0.5, 0.45];
     const smoothCursor: [number, number] = [0.5, 0.45];
-    const smoothProgress: [number] = [0];
+    const smoothPan: [number] = [0];
+    const smoothZoom: [number] = [0];
 
     const onPointer = (e: PointerEvent) => {
       const x = e.clientX / window.innerWidth;
@@ -298,14 +309,16 @@ export function HomeImmersiveCanvas({
       // Damp inputs so they don't twitch on jittery scroll/touch events
       smoothCursor[0] += (targetCursor[0] - smoothCursor[0]) * 0.12;
       smoothCursor[1] += (targetCursor[1] - smoothCursor[1]) * 0.12;
-      smoothProgress[0] += (progressRef.current - smoothProgress[0]) * 0.18;
+      smoothPan[0] += (panRef.current - smoothPan[0]) * 0.18;
+      smoothZoom[0] += (zoomRef.current - smoothZoom[0]) * 0.18;
 
       (uniforms.uCursor as { value: THREE.Vector2 }).value.set(
         smoothCursor[0],
         smoothCursor[1],
       );
       (uniforms.uTime as { value: number }).value += dt;
-      (uniforms.uProgress as { value: number }).value = smoothProgress[0];
+      (uniforms.uPan as { value: number }).value = smoothPan[0];
+      (uniforms.uZoom as { value: number }).value = smoothZoom[0];
       renderer.render(scene, camera);
     };
     tick();
@@ -325,7 +338,7 @@ export function HomeImmersiveCanvas({
         container.removeChild(renderer.domElement);
       }
     };
-  }, [imageSrc, maskSrc, cursorRippleStrength, progressRef]);
+  }, [imageSrc, maskSrc, cursorRippleStrength, panRef, zoomRef]);
 
   return <div ref={containerRef} className="absolute inset-0 -z-10" />;
 }

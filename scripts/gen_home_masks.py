@@ -103,10 +103,16 @@ if n > 0:
     lady = labels == (int(np.argmax(sizes)) + 1)
 
 # ----------------------------------------------------------------------
-# 6) Compose: foreground wins over sea + rock.
+# 6) Compose: foreground wins over sea + rock. Then DILATE the sea
+#    before feathering so the bumpy rock-edge boundary doesn't leave a
+#    notched "blind spot" inside the sea (the earlier pass had a hole
+#    where the shader switched off water effects mid-band).
 # ----------------------------------------------------------------------
 foreground = fg_rocks | lady
 sea = sea_raw & ~foreground
+sea = ndimage.binary_closing(sea, iterations=10)
+sea = ndimage.binary_fill_holes(sea)
+sea &= ~foreground  # foreground still wins
 rock = rock & ~foreground
 
 # ----------------------------------------------------------------------
@@ -132,7 +138,9 @@ depth = (
 ) / np.maximum(0.001, sky_f + rock_f + sea_f + fg_f + lady_f)
 depth = np.clip(depth, 0, 255).astype(np.uint8)
 
-water = np.clip(sea_f * 255.0, 0, 255).astype(np.uint8)
+# Water mask uses a *boosted* sea feather so the shader sees a near-
+# binary gate and never lands in a soft mid-grey "blind spot".
+water = np.clip(np.power(sea_f, 0.6) * 255.0, 0, 255).astype(np.uint8)
 static_fg = np.clip(np.maximum(lady_f, fg_f) * 255.0, 0, 255).astype(np.uint8)
 
 packed = np.stack([depth, water, static_fg], axis=-1)
