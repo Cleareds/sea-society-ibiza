@@ -129,14 +129,15 @@ const FRAGMENT = /* glsl */ `
     }
     vec2 base = startPos + vuv * visibleFraction;
 
-    // 2. Zoom phase — narrows the visible window down to the sea region.
-    //    zoomCenter is in TEXTURE-V space (with flipY, v=0 is image
-    //    bottom and v=1 is image top). To target sea (image y ≈ 0.65)
-    //    set zoomCenter.y = 1 - 0.65 = 0.35. x is unflipped, so 0.50
-    //    targets the open sea to the right of the mountain (image
-    //    x ≈ 0.18).
+    // 2. Zoom phase — narrows the visible window onto the LEFT-MIDDLE
+    //    of the image: open sea to the left of the rock, below the
+    //    horizon and above the lady. zoomCenter in TEXTURE-V space
+    //    (with flipY, texture-v = 1 - image-y).
+    //      image x ≈ 0.25 (left third — open sea)
+    //      image y ≈ 0.55 (mid-vertical — below rock, above lady)
+    //      → zoomCenter = vec2(0.25, 1 - 0.55) = vec2(0.25, 0.45)
     float zoom = mix(1.0, 0.35, uZoom);
-    vec2 zoomCenter = vec2(0.50, 0.35);
+    vec2 zoomCenter = vec2(0.25, 0.45);
     vec2 uvZoomed = (base - zoomCenter) * zoom + zoomCenter;
 
     // 3. Sample the mask AFTER zoom so subject pixels stay subject pixels
@@ -259,7 +260,7 @@ export function HomeImmersiveCanvas({
       uZoom: { value: 0 },
       uRippleStrength: { value: cursorRippleStrength },
       uAspectViewport: { value: 1 },
-      uAspectImage: { value: 1600 / 2400 },
+      uAspectImage: { value: 1541 / 1660 },
     };
 
     const material = new THREE.ShaderMaterial({
