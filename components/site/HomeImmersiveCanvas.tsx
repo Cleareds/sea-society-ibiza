@@ -117,19 +117,24 @@ const FRAGMENT = /* glsl */ `
 
     // 2. Pan phase — slide the visible window down through a portrait
     //    image inside a landscape (or any) viewport. Only meaningful
-    //    when the source image is taller than the cover-fit crop allows.
-    //    At uPan=0 the camera is BIASED UPWARD so the opening frame
-    //    shows a sliver of sky + the mountain in clear view (not the
-    //    cover-fit centre, which would land on the lady's eye-level).
-    //    At uPan=1 it has drifted further down.
-    float panRange = max(0.0, 0.5 - 0.5 * (uAspectImage / uAspectViewport));
-    base.y += (uPan - 0.4) * panRange * 1.2;
+    //    when the source image is taller than the cover-fit crop allows
+    //    (i.e. on landscape desktop viewports with this portrait hero).
+    //    Hand-tuned offsets so the framing is correct end-to-end:
+    //      uPan = 0  → image y ≈ 0.40 centre  (sky strip + FULL mountain)
+    //      uPan = 1  → image y ≈ 0.70 centre  (mid-sea + lady)
+    //    On mobile the source image already fills the viewport vertically
+    //    (cover-fit crops horizontally), so we skip the pan entirely —
+    //    base.y stays as cover-fit gave it.
+    bool pannable = uAspectImage / uAspectViewport < 1.0;
+    float panOffset = pannable ? mix(-0.10, 0.20, uPan) : 0.0;
+    base.y += panOffset;
 
-    // 3. Zoom phase — once the pan completes, zoom into the sea band.
-    //    Sea sits left-of-centre + slightly above the lady. At peak we
-    //    push the zoom centre leftward to crop the lady out.
-    float zoom = mix(1.0, 0.45, uZoom);
-    vec2 zoomCenter = mix(vec2(0.5, 0.6), vec2(0.32, 0.55), uZoom);
+    // 3. Zoom phase — by uZoom = 1 the visible window should sit on
+    //    the SEA, not the mountain. Zoom centre slides slightly RIGHT
+    //    (away from the mountain at image x≈0.18) and DOWN (image y
+    //    ≈0.70 = mid-sea) so the locked sea frame reads as open water.
+    float zoom = mix(1.0, 0.50, uZoom);
+    vec2 zoomCenter = mix(vec2(0.5, 0.5), vec2(0.55, 0.50), uZoom);
     vec2 uvZoomed = (base - zoomCenter) * zoom + zoomCenter;
 
     // 3. Sample the mask AFTER zoom so subject pixels stay subject pixels
