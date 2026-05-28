@@ -158,16 +158,21 @@ const FRAGMENT = /* glsl */ `
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);
 
-    // 5. Animated ripple — purely time-driven, runs whether the cursor
-    //    moves or not so the sea is always alive. Speed AND amplitude
-    //    bumped ~50% over the previous calm pass — sea now reads as a
-    //    body of water with visible motion, not a still mirror.
-    float wave =
-        sin(uvZoomed.x *  8.0 + uTime * 0.63) * 0.55 +
-        sin(uvZoomed.y * 11.0 - uTime * 0.47) * 0.45;
+    // 5. Two-octave sea motion — a slow long-period SWELL plus a faster
+    //    short-period CHOP, cross-mixed on both axes so the pattern
+    //    doesn't read as a regular grid. Together they look like real
+    //    ocean texture rather than a sine wave.
+    //      swell: 3.5/2.8 freq, period ~1s — gentle rolling undulation
+    //      chop:  18-22 freq, period ~0.5s — surface ripple texture
+    float swellX = sin(uvZoomed.x * 3.5 + uvZoomed.y * 1.2 - uTime * 0.18);
+    float swellY = sin(uvZoomed.y * 2.8 - uvZoomed.x * 0.8 + uTime * 0.14);
+    float chopX  = sin(uvZoomed.x * 18.0 + uTime * 0.95) * 0.55 +
+                   sin(uvZoomed.y * 22.0 - uTime * 0.75) * 0.45;
+    float chopY  = cos(uvZoomed.y * 18.0 + uTime * 0.82) * 0.55 +
+                   cos(uvZoomed.x * 22.0 - uTime * 0.62) * 0.45;
 
     // Caustic shimmer — band-limited value noise. Brightens + darkens
-    // the sea so it shimmers naturally.
+    // the sea so it shimmers naturally even with the small wave.
     float caustic =
         vnoise(uvZoomed * 5.0 + vec2(uTime * 0.12, -uTime * 0.08)) +
         vnoise(uvZoomed * 9.0 - vec2(uTime * 0.17, uTime * 0.06)) * 0.5;
@@ -180,12 +185,21 @@ const FRAGMENT = /* glsl */ `
     //    foreground rocks) doesn't move with the cursor.
     vec2 cursorOffset = uCursor - vec2(0.5);             // -0.5..0.5
     float horizonWeight = 1.0 - vuv.y;                   // 1 at viewport top, 0 at bottom
+    // Parallax halved again. With the wider static-fg feather, the
+    // motion tapers smoothly into the locked subjects instead of
+    // creating a hard edge mismatch.
     vec2 parallax = vec2(
-      cursorOffset.x * horizonWeight * 0.018,
-      cursorOffset.y * 0.008
+      cursorOffset.x * horizonWeight * 0.009,
+      cursorOffset.y * 0.004
     ) * (1.0 - staticMask);
 
-    vec2 displacement = vec2(wave) * 0.0027 * water;
+    // Sea displacement — composite swell + chop, gated by water.
+    // Total max ≈ 0.0014 vs previous 0.0027. Sea reads as moving water
+    // but doesn't distort the underlying composition.
+    vec2 displacement = (
+      vec2(swellX, swellY) * 0.00085 +
+      vec2(chopX,  chopY ) * 0.00055
+    ) * water;
     vec2 sampleUV = uvZoomed + displacement + parallax;
 
     // 7. Sample the color image. Slight brightness boost (×1.10) so

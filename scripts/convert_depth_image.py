@@ -100,15 +100,23 @@ static_fg = subject | rock
 def feather(mask, sigma):
     return ndimage.gaussian_filter(mask.astype(np.float32), sigma=sigma)
 
-# Strong feather on the static fg so the boundary doesn't read as a hard
-# pixel jump when the parallax engages near the silhouette edge.
-static_f = feather(static_fg, sigma=3.0)
-sea_f    = feather(sea,       sigma=4.0)
+# WIDE feather on the static-fg so the parallax tapers smoothly across
+# tens of pixels around the silhouette edge — eliminates the visible
+# "cardboard cutout" mismatch where the locked mountain meets the
+# moving sea. The cost is that pixels close to the mountain shift a
+# little even though they're really sea, but at the parallax
+# magnitudes we use (sub-pixel near the edge) that's imperceptible.
+static_f = feather(static_fg, sigma=14.0)
+# Water boundary stays moderate — the wave amplitude is small enough
+# that a sigma=5 transition at the mountain edge is unnoticeable.
+sea_f    = feather(sea,       sigma=5.0)
 
 # Pack R/G/B
 depth_u8 = np.clip(depth * 255.0, 0, 255).astype(np.uint8)
 water_u8 = np.clip(np.power(sea_f, 0.6) * 255.0, 0, 255).astype(np.uint8)
-static_u8 = np.clip(np.power(static_f, 0.7) * 255.0, 0, 255).astype(np.uint8)
+# Slightly gentler curve on static (0.7 → 0.85) so the soft halo around
+# the mountain holds its gradient instead of being crushed to white.
+static_u8 = np.clip(np.power(static_f, 0.85) * 255.0, 0, 255).astype(np.uint8)
 
 packed = np.stack([depth_u8, water_u8, static_u8], axis=-1)
 Image.fromarray(packed, mode="RGB").save(OUT, optimize=True)
