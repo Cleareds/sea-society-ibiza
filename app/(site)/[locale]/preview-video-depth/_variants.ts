@@ -25,6 +25,12 @@ export interface DepthVariant {
    *  treated as sea. Outside the band = static foreground. Tune per
    *  scene to match the dominant sea depth in the source. */
   depthRange: [number, number];
+  /** Depth value above which a pixel is treated as yacht (static).
+   *  Tuned per source from the actual depth distribution. */
+  yachtDepth?: number;
+  /** Screen-Y (0 bottom, 1 top) where the horizon sits. Top of viewport
+   *  above this stays static. */
+  horizonY?: number;
   scrubViewports?: number;
   panMode?: "none" | "vertical";
 }
@@ -75,15 +81,21 @@ const COPY = {
     layout: "bottom-left" as Layout,
     canvas: {
       cursorLightStrength: 0.20,
-      shimmerStrength: 0.18,
+      shimmerStrength: 0.22,
       brightnessLift: 1.10,
       saturation: 1.06,
       contrast: 1.02,
       parallaxX: 0.012,
       parallaxY: 0.006,
-      waterMotion: 0.0060,
+      waterMotion: 0.014,        // was 0.006 — 2.3× stronger so the
+                                 // sea visibly breathes on a paused
+                                 // frame
     },
     scrubViewports: 6.0,
+    yachtDepth: 0.88,            // shorten yacht peaks 0.95+, threshold
+                                 // catches it cleanly
+    horizonY: 0.62,              // horizon sits at ~62% from bottom of
+                                 // viewport on landscape clips
   },
   "shorten-hero": {
     headlineParts: { lead: "The Mediterranean, ", accent: "as you should see it", trail: "." },
@@ -91,15 +103,17 @@ const COPY = {
     layout: "bottom-left" as Layout,
     canvas: {
       cursorLightStrength: 0.20,
-      shimmerStrength: 0.20,
+      shimmerStrength: 0.22,
       brightnessLift: 1.10,
       saturation: 1.10,
       contrast: 1.02,
       parallaxX: 0.012,
       parallaxY: 0.006,
-      waterMotion: 0.0070,
+      waterMotion: 0.014,
     },
     scrubViewports: 5.0,
+    yachtDepth: 0.85,
+    horizonY: 0.60,
   },
   "vertical": {
     headlineParts: { lead: "From above the ", accent: "Mediterranean", trail: "." },
@@ -107,16 +121,18 @@ const COPY = {
     layout: "bottom-left" as Layout,
     canvas: {
       cursorLightStrength: 0.20,
-      shimmerStrength: 0.20,
+      shimmerStrength: 0.22,
       brightnessLift: 1.10,
       saturation: 1.10,
       contrast: 1.02,
       parallaxX: 0.010,
       parallaxY: 0.005,
-      waterMotion: 0.0080,
+      waterMotion: 0.014,
     },
     scrubViewports: 5.0,
     panMode: "vertical" as const,
+    yachtDepth: 0.85,
+    horizonY: 0.55,
   },
 };
 
@@ -153,6 +169,8 @@ for (const source of sources) {
       layout: copy.layout,
       canvas: copy.canvas,
       depthRange: DEPTH_RANGE[source],
+      yachtDepth: "yachtDepth" in copy ? copy.yachtDepth : 0.85,
+      horizonY: "horizonY" in copy ? copy.horizonY : 0.65,
       scrubViewports: copy.scrubViewports,
       panMode: "panMode" in copy ? copy.panMode : "none",
     });

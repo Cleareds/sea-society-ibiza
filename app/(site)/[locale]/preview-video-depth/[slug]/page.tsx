@@ -71,6 +71,8 @@ export default async function PreviewVideoDepthVariantPage({
         depthVideoSrcMobile={depthExists ? depthRel : undefined}
         depthWaterLo={variant.depthRange[0]}
         depthWaterHi={variant.depthRange[1]}
+        yachtDepthThreshold={variant.yachtDepth ?? 0.85}
+        horizonY={variant.horizonY ?? 0.65}
         videoAspect={color.aspect}
         posterSrc={color.poster}
         whatsappNumber={settings.whatsappNumber}

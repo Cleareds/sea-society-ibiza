@@ -41,6 +41,12 @@ export interface HomeVideoCanvasProps {
    *  [0.30, 0.70] — middle of normalized depth. */
   depthWaterLo?: number;
   depthWaterHi?: number;
+  /** Pixels whose depth is above this are treated as yacht (static). */
+  yachtDepthThreshold?: number;
+  /** Screen-Y position of the horizon — above this Y is static
+   *  (no waves, no parallax). Range [0, 1] with 0 = bottom-of-screen,
+   *  1 = top-of-screen (texture-flipY space). */
+  horizonY?: number;
   videoAspect: number;
   posterSrc?: string;
 
@@ -115,8 +121,10 @@ const FRAGMENT = /* glsl */ `
   uniform float uPanY;         // [0..1] vertical pan progress; only used in vertical mode
   uniform float uHasDepth;     // 1 = use uDepth video, 0 = use uMask PNG
   uniform sampler2D uDepth;    // depth video texture (grayscale)
-  uniform float uDepthLo;      // depth band lower bound — water
-  uniform float uDepthHi;      // depth band upper bound — water
+  uniform float uDepthLo;      // (legacy) lower bound of water band
+  uniform float uDepthHi;      // (legacy) upper bound of water band
+  uniform float uYachtDepth;   // pixels above this depth are yacht/static
+  uniform float uHorizonY;     // screen Y where horizon sits — above is static
 
   uniform float uSyntheticSea; // 1 = replace sea pixels with shader output
   uniform vec3  uSeaShallow;   // turquoise top
@@ -244,15 +252,27 @@ const FRAGMENT = /* glsl */ `
     float waterMask;
     float staticMask;
     if (uHasDepth > 0.5) {
-      // Per-frame depth video. We derive water as a depth-band: pixels
-      // whose depth value sits between uDepthLo and uDepthHi are sea;
-      // anything brighter (near = yacht/foreground rocks) or darker
-      // (far = sky) is static-fg.
+      // Per-frame depth video. Static foreground = yacht (very high
+      // depth, i.e. very close to camera) UNION the horizon strip
+      // at the top of the screen (no waves can roll behind the
+      // horizon — that strip is sky + distant land). Everything else
+      // is sea and gets wave / shimmer / parallax treatment.
+      //
+      // Two reasons to use vuv (screen Y) instead of depth alone for
+      // the horizon:
+      //   - DA-V2 gives the sky AND distant sea similar low-depth
+      //     values, so a pure depth threshold can't tell them apart.
+      //   - Putting the horizon mask in screen space anchors it
+      //     visually — waves never cross the horizon line.
       float d = texture2D(uDepth, uv).r;
-      float inBand = smoothstep(uDepthLo, uDepthLo + 0.05, d)
-                   * (1.0 - smoothstep(uDepthHi - 0.05, uDepthHi, d));
-      waterMask = inBand;
-      staticMask = 1.0 - inBand;
+      float yachtStatic = smoothstep(uYachtDepth - 0.04, uYachtDepth + 0.04, d);
+      // horizonStatic = 1 in the top strip of the viewport, 0 below
+      // the horizon line. PlaneGeometry UVs put vuv.y=1 at the TOP of
+      // the viewport. uHorizonY is the screen-Y where the horizon
+      // sits (0 = bottom of viewport, 1 = top).
+      float horizonStatic = smoothstep(uHorizonY - 0.05, uHorizonY + 0.05, vuv.y);
+      staticMask = max(yachtStatic, horizonStatic);
+      waterMask = 1.0 - staticMask;
     } else {
       vec3 mask = texture2D(uMask, uv).rgb;
       waterMask = mask.g;
@@ -351,6 +371,8 @@ export function HomeVideoCanvas({
   depthVideoSrcMobile,
   depthWaterLo = 0.30,
   depthWaterHi = 0.70,
+  yachtDepthThreshold = 0.85,
+  horizonY = 0.82,
   seaMode = "photo",
   seaShallowColor = [0.18, 0.55, 0.65],
   seaDeepColor = [0.02, 0.10, 0.18],
@@ -467,6 +489,8 @@ export function HomeVideoCanvas({
       uHasDepth: { value: depthTex ? 1 : 0 },
       uDepthLo: { value: depthWaterLo },
       uDepthHi: { value: depthWaterHi },
+      uYachtDepth: { value: yachtDepthThreshold },
+      uHorizonY: { value: horizonY },
       uCursor: { value: new THREE.Vector2(0.5, 0.5) },
       uTime: { value: 0 },
       uAspectViewport: { value: 1 },
@@ -647,6 +671,8 @@ export function HomeVideoCanvas({
     depthVideoSrcMobile,
     depthWaterLo,
     depthWaterHi,
+    yachtDepthThreshold,
+    horizonY,
     seaMode,
     seaShallowColor[0], seaShallowColor[1], seaShallowColor[2],
     seaDeepColor[0], seaDeepColor[1], seaDeepColor[2],

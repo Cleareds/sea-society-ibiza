@@ -59,6 +59,8 @@ export interface HomeVideoSceneProps {
   depthVideoSrcMobile?: string;
   depthWaterLo?: number;
   depthWaterHi?: number;
+  yachtDepthThreshold?: number;
+  horizonY?: number;
   /** Synthetic-sea mode — fully replace sea pixels with shader output. */
   seaMode?: "photo" | "synthetic";
   seaShallowColor?: [number, number, number];
@@ -165,6 +167,8 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     depthVideoSrcMobile,
     depthWaterLo,
     depthWaterHi,
+    yachtDepthThreshold,
+    horizonY,
     seaMode,
     seaShallowColor,
     seaDeepColor,
@@ -261,6 +265,8 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
             depthVideoSrcMobile={depthVideoSrcMobile}
             depthWaterLo={depthWaterLo}
             depthWaterHi={depthWaterHi}
+            yachtDepthThreshold={yachtDepthThreshold}
+            horizonY={horizonY}
             seaMode={seaMode}
             seaShallowColor={seaShallowColor}
             seaDeepColor={seaDeepColor}
