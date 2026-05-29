@@ -225,12 +225,17 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
     const tick = () => {
       raf = requestAnimationFrame(tick);
       const p = progressRef.current;
+      // Desktop = full progress-driven cross-fade. Mobile = sections
+      // flow naturally past the sticky sea video, so we don't
+      // animate opacity below md (which would otherwise leave IG
+      // stuck at 0 until the user has scrolled past 65% of runway).
+      const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
       const heroOpacity = clamp01(1 - (p - 0.30) / 0.15);
       const cardsOpacity = Math.min(
         clamp01((p - 0.30) / 0.15),
         clamp01(1 - (p - 0.65) / 0.15),
       );
-      const igOpacity = clamp01((p - 0.65) / 0.15);
+      const igOpacity = isDesktop ? clamp01((p - 0.65) / 0.15) : 1;
       if (heroRef.current) {
         heroRef.current.style.opacity = String(heroOpacity);
         heroRef.current.style.pointerEvents = heroOpacity < 0.05 ? "none" : "";
@@ -249,15 +254,15 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
   }, [progressRef]);
 
   return (
-    <>
     <div
       ref={runwayRef}
-      // Runway height: SHORT on mobile (just hero + a touch of scrub),
-      // tall on desktop (full hero → cards → IG → icon cross-fade
-      // choreography). Mobile renders cards/IG/icon AFTER this
-      // runway in normal flow, so the runway only owns the pinned
-      // video hero.
-      className="relative z-10 w-full h-[150svh] md:h-[var(--runway-h-desktop)]"
+      // Runway height — desktop uses an exact svh count to drive the
+      // progress-based cross-fade choreography. Mobile lets the box
+      // size to its in-flow children (cards / IG / brand icon), so
+      // the sticky pin (canvas backdrop) stays glued to the top of
+      // the viewport across the entire runway and every block reads
+      // on the sea video, not on white.
+      className="relative z-10 w-full md:h-[var(--runway-h-desktop)]"
       data-cursor-bg="dark"
       style={{ ['--runway-h-desktop' as string]: `${scrubViewports * 100}svh` } as React.CSSProperties}
     >
@@ -363,75 +368,61 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
 
       </div>
 
-      {/* DESKTOP-ONLY inside-runway content: the spacer + IG + brand
-          close that cross-fade with the cards via the runway's
-          progress-driven RAF. Hidden on mobile — those sections
-          live as normal-flow blocks AFTER the runway instead, since
-          a tall runway with all this content stuffed in flow doesn't
-          fit on phones. */}
-      <div className="hidden md:contents">
-        {instagramSlot && (
-          <>
-            <div
-              aria-hidden
-              className="pointer-events-none w-full"
-              style={{
-                // IG must enter the viewport while runway-progress p
-                // is around 0.65. For a 6×100svh runway, p=0.65 maps
-                // to scrollY ≈ 3.25vh, so IG's doc position should
-                // sit at ≈ 4.25vh. Sticky pin owns the first 1vh, so
-                // spacer ≈ 3.25vh = 325svh on the default 6vh runway.
-                height: `${Math.max(0, (scrubViewports - 1) * 100 - 175)}svh`,
-              }}
-            />
-            <div
-              ref={igRef}
-              className={`pointer-events-auto relative z-10 w-full px-5 pt-[4svh] opacity-0 transition-opacity duration-500 md:px-10 ${
-                brandCloseSlot ? "pb-[3svh]" : "pb-[14svh]"
-              }`}
-            >
-              <div className="mx-auto w-full max-w-(--spacing-container-max)">
-                {instagramSlot}
-              </div>
-            </div>
-          </>
-        )}
-
-        {brandCloseSlot && (
-          <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[8svh] pt-[2svh] md:px-10">
-            {brandCloseSlot}
-          </div>
-        )}
-      </div>
-    </div>
-
-    {/* MOBILE-ONLY sections, AFTER the runway. The runway is short on
-        mobile (150svh) so the user pins through hero + a touch of
-        scrub, then the canvas un-pins and the rest of the page flows
-        normally. Generous vertical padding so each section reads as
-        its own moment, not a rush. */}
-    <div className="md:hidden">
-      <div className="relative z-10 w-full bg-[var(--color-surface)] text-[var(--color-on-surface)] px-5 pt-[16svh] pb-[14svh]">
+      {/* PHASE B (mobile) — yacht cards in NORMAL FLOW after the
+          sticky pin, scrolling past the still-pinned sea video.
+          Hidden on desktop (absolute-pinned version inside the pin
+          takes over). Generous vertical padding for a slower
+          scroll-in feel. */}
+      <div className="relative z-10 w-full px-5 pt-[10svh] pb-[8svh] md:hidden">
         <div className="mx-auto w-full max-w-(--spacing-container-max)">
           {renderCardsContent({ featured, lp, variantTag, accentClassName })}
         </div>
       </div>
 
+      {/* Spacer — DESKTOP ONLY. Pushes IG to its cross-fade window
+          inside the runway. On mobile we don't need it since each
+          block flows naturally past the sticky video. */}
       {instagramSlot && (
-        <div className="relative z-10 w-full bg-[var(--color-surface)] px-5 pt-[6svh] pb-[14svh]">
+        <div
+          aria-hidden
+          className="pointer-events-none hidden w-full md:block"
+          style={{
+            // IG must enter the viewport while runway-progress p is
+            // around 0.65. For a 6×100svh runway, p=0.65 maps to
+            // scrollY ≈ 3.25vh, so IG's doc position should sit at
+            // ≈ 4.25vh. Sticky pin owns 1vh, so spacer ≈ 3.25vh =
+            // 325svh on the default 6vh runway.
+            height: `${Math.max(0, (scrubViewports - 1) * 100 - 175)}svh`,
+          }}
+        />
+      )}
+
+      {/* IG — normal flow, scrolls over the sticky video. Same block
+          on both breakpoints; desktop opacity is animated via the
+          progress-driven RAF, mobile renders at full opacity since
+          opacity hits 1.0 the moment scroll progress hits the IG
+          window. */}
+      {instagramSlot && (
+        <div
+          ref={igRef}
+          className={`pointer-events-auto relative z-10 w-full px-5 pt-[4svh] md:px-10 md:opacity-0 md:transition-opacity md:duration-500 ${
+            brandCloseSlot ? "pb-[3svh]" : "pb-[14svh]"
+          }`}
+        >
           <div className="mx-auto w-full max-w-(--spacing-container-max)">
             {instagramSlot}
           </div>
         </div>
       )}
 
+      {/* Brand close — sits below IG, still inside the runway so the
+          pinned sea video continues underneath. */}
       {brandCloseSlot && (
-        <div className="relative z-10 flex w-full items-center justify-center bg-[var(--color-surface)] px-5 pb-[14svh] pt-[4svh]">
+        <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[8svh] pt-[2svh] md:px-10">
           {brandCloseSlot}
         </div>
       )}
     </div>
-    </>
   );
 }
 
