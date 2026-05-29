@@ -66,9 +66,11 @@ export default async function PreviewSeaVariantPage({
   );
   const sub = (
     <>
-      From the moment you step aboard at Botafoc Marina,<br />
-      to the moment you watch the sun dissolve into the<br />
-      Mediterranean, every detail is handled.
+      From the moment you step aboard at Botafoc Marina,
+      <br className="hidden md:inline" />
+      {" "}to the moment you watch the sun dissolve into the
+      <br className="hidden md:inline" />
+      {" "}Mediterranean, every detail is handled.
     </>
   );
 
@@ -95,6 +97,7 @@ export default async function PreviewSeaVariantPage({
         locale={lc}
         headline={headline}
         accentClassName={useWave ? "wave-accent" : undefined}
+        headlineClassName="md:max-w-[1600px]"
         sub={sub}
         typography="editorial-serif"
         layout="bottom-left"
@@ -121,23 +124,18 @@ export default async function PreviewSeaVariantPage({
             accentClassName={useWave ? "wave-accent" : undefined}
           />
         }
+        brandCloseSlot={
+          variant.slug === "open-sea" ? (
+            <Image
+              src="/brand/icon-light-512.webp"
+              alt="Sea Society Ibiza"
+              width={140}
+              height={140}
+              className="h-28 w-28 object-contain opacity-90 md:h-36 md:w-36"
+            />
+          ) : undefined
+        }
       />
-
-      {/* Branded close — large white SS icon centred between the IG
-          feed and the footer. Same vertical padding as the IG block
-          so the rhythm continues from the IG section. Only on the
-          open-sea route. */}
-      {variant.slug === "open-sea" && (
-        <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[14svh] pt-[4svh] md:px-10">
-          <Image
-            src="/brand/icon-light-512.webp"
-            alt="Sea Society Ibiza"
-            width={140}
-            height={140}
-            className="h-28 w-28 object-contain opacity-90 md:h-36 md:w-36"
-          />
-        </div>
-      )}
     </main>
   );
 }

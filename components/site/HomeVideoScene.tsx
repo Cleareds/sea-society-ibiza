@@ -83,6 +83,10 @@ export interface HomeVideoSceneProps {
    *  glass panel. Optional; falls back to nothing if omitted. */
   instagramHandle?: string;
   instagramHref?: string;
+  /** Optional content rendered after the IG block, still inside the
+   *  scroll runway so it sits on the same pinned video backdrop.
+   *  Used for the open-sea page's branded SS-icon close. */
+  brandCloseSlot?: React.ReactNode;
 }
 
 function useReducedMotion(): boolean {
@@ -185,6 +189,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     instagramSlot,
     instagramHandle,
     instagramHref,
+    brandCloseSlot,
   } = props;
   const reduced = useReducedMotion();
   const lp = (p: string) => localePath(locale, p);
@@ -381,13 +386,25 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
               intersection. */}
           <div
             ref={igRef}
-            className="pointer-events-auto relative z-10 w-full px-5 pb-[14svh] pt-[4svh] opacity-0 transition-opacity duration-500 md:px-10"
+            className={`pointer-events-auto relative z-10 w-full px-5 pt-[4svh] opacity-0 transition-opacity duration-500 md:px-10 ${
+              brandCloseSlot ? "pb-[3svh]" : "pb-[14svh]"
+            }`}
           >
             <div className="mx-auto w-full max-w-(--spacing-container-max)">
               {instagramSlot}
             </div>
           </div>
         </>
+      )}
+
+      {/* Brand close — sits below IG, still inside the runway so the
+          pinned video backdrop continues underneath it. Padded to
+          flow tight with the IG block above and the page footer
+          below. */}
+      {brandCloseSlot && (
+        <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[8svh] pt-[2svh] md:px-10">
+          {brandCloseSlot}
+        </div>
       )}
     </div>
   );
