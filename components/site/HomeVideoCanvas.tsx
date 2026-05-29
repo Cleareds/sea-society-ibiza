@@ -77,6 +77,12 @@ export interface HomeVideoCanvasProps {
   seaDeepColor?: [number, number, number];    // deep underbelly (dark teal)
   seaFoamColor?: [number, number, number];    // wave crests, light foam
   seaSunDir?: [number, number, number];       // sun direction in shader space
+  /** Photo-vs-synth blend in the sea region.
+   *    0.0 = photo only
+   *    0.4 = subtle wave-light enhancement (recommended)
+   *    1.0 = pure synthetic sea
+   */
+  seaBlend?: number;
 }
 
 const VERTEX = /* glsl */ `
@@ -117,6 +123,11 @@ const FRAGMENT = /* glsl */ `
   uniform vec3  uSeaDeep;      // dark teal underbelly
   uniform vec3  uSeaFoam;      // crest highlight
   uniform vec3  uSunDir;       // sun direction (world-space, normalised)
+  uniform sampler2D uOceanNormal; // tileable Phillips-spectrum normal map
+  uniform float uSeaBlend;     // [0..1] photo vs synth blend in sea region
+                               //   0   = photo only (no effect)
+                               //   0.4 = subtle enhancement (recommended)
+                               //   1.0 = pure synth (replaces sea)
 
   varying vec2 vuv;
 
@@ -137,107 +148,73 @@ const FRAGMENT = /* glsl */ `
     return c;
   }
 
-  // ---- Synthetic sea (Gerstner waves) ---------------------------------
-  // Returns vec4(rgb, foamMix). Six wave components: three big swells +
-  // three smaller chop layers, propagating in slightly different
-  // directions. Normal is derived from the sum of per-wave gradients;
-  // shading combines a depth-graded base colour, Fresnel-driven sky
-  // reflection, sun-direction specular, and foam on the highest crests.
-  struct Wave { vec2 dir; float amp; float wlen; float speed; };
+  // ---- Synthetic sea (normal-map driven) ------------------------------
+  // We sample a Phillips-spectrum ocean normal map TWICE at different
+  // scales and scroll speeds, blend the normals, and use the result
+  // for Fresnel + sun-spec lighting. This is the standard hybrid PBR
+  // technique — closer to real ocean rendering than pure procedural
+  // Gerstner because the texture already contains all the
+  // small-frequency detail.
 
-  vec3 gerstnerSurface(vec2 p, float t) {
-    // Six waves — directions tuned for "rolling toward camera" feel.
-    Wave w0 = Wave(vec2( 0.10,  1.00), 0.060, 1.60, 0.18);  // big primary swell
-    Wave w1 = Wave(vec2( 0.40,  0.92), 0.045, 1.20, 0.22);  // secondary swell
-    Wave w2 = Wave(vec2(-0.30,  0.95), 0.030, 0.90, 0.27);  // cross-swell
-    Wave w3 = Wave(vec2( 0.20,  0.98), 0.018, 0.40, 0.45);  // chop A
-    Wave w4 = Wave(vec2( 0.80,  0.60), 0.012, 0.28, 0.55);  // chop B
-    Wave w5 = Wave(vec2(-0.55,  0.85), 0.008, 0.18, 0.70);  // micro chop
-
-    Wave waves[6];
-    waves[0] = w0; waves[1] = w1; waves[2] = w2;
-    waves[3] = w3; waves[4] = w4; waves[5] = w5;
-
-    float height = 0.0;
-    vec2 grad = vec2(0.0);
-    for (int i = 0; i < 6; i++) {
-      Wave w = waves[i];
-      vec2 d = normalize(w.dir);
-      float k = 6.2831853 / w.wlen;
-      float phase = k * dot(d, p) - w.speed * t * k;
-      float s = sin(phase);
-      float c = cos(phase);
-      height += w.amp * s;
-      grad += d * (w.amp * k * c);
-    }
-    return vec3(height, grad.x, grad.y);
+  vec3 sampleOceanNormal(vec2 uvN) {
+    vec3 n = texture2D(uOceanNormal, uvN).rgb * 2.0 - 1.0;
+    return n;
   }
 
-  vec3 synthSeaColor(vec2 p, vec2 vuvIn, float t, vec2 cursorOffset, vec3 skyColor) {
-    // Perspective foreshortening — far parts of the sea (top of frame,
-    // low vuv.y on flipped video texture) need tighter, smaller waves;
-    // foreground (bottom of frame) needs larger waves. We use a
-    // perspective scale that compresses the wave domain near the
-    // horizon. vuvIn.y here is the SCREEN-SPACE Y (0 at top, 1 at
-    // bottom), so we directly use it.
-    float depthScale = mix(0.4, 2.5, vuvIn.y);  // tiny waves at the
-                                                // horizon, big waves up
-                                                // close
-    vec2 seaP = p / depthScale + vec2(0.0, t * 0.04);
+  vec3 synthSeaColor(vec2 p, vec2 vuvIn, float t, vec2 cursorOffset, vec3 skyColor, vec3 photoColor) {
+    // Perspective foreshortening — the visible sea is a plane angled
+    // away from the camera. UV unwrap: divide by (1 - y) so the rows
+    // near the horizon (vuvIn.y near 0) get sampled at small scale,
+    // foreground rows (vuvIn.y near 1) at large scale.
+    //
+    // Two scrolling layers: a big swell + a smaller chop, each in
+    // different directions / speeds. Sample the normal map at both
+    // scales and blend.
+    float perspY = max(0.05, 1.0 - vuvIn.y);    // tighter at horizon
+    vec2 uv1 = vec2(vuvIn.x, vuvIn.y) / perspY * 1.4 + vec2(t * 0.010, t * 0.040);
+    vec2 uv2 = vec2(vuvIn.x, vuvIn.y) / perspY * 4.5 + vec2(t * -0.018, t * 0.075);
 
-    // Sample THREE octaves and blend — the small-octave gives roughness
-    // that breaks up the visible striping of pure Gerstner.
-    vec3 s0 = gerstnerSurface(seaP * 2.5, t);
-    vec3 s1 = gerstnerSurface(seaP * 6.0 + vec2(13.7, 4.2), t * 1.4);
-    float n2 = vnoise(seaP * 18.0 + vec2(0.0, t * 0.6));
-    float h = s0.x * 0.65 + s1.x * 0.30 + (n2 - 0.5) * 0.10;
-    vec2 g = vec2(s0.y * 0.65 + s1.y * 0.30, s0.z * 0.65 + s1.z * 0.30);
+    vec3 n1 = sampleOceanNormal(uv1);
+    vec3 n2 = sampleOceanNormal(uv2);
+    // Blend normals — big swell dominates, chop adds bumpiness.
+    vec3 n = normalize(n1 + n2 * 0.55);
 
-    vec3 n = normalize(vec3(-g.x, -g.y, 1.0));
-
-    // View direction — looking forward + slightly down, weighted by the
-    // pixel's vertical position (near the horizon = grazing angle,
-    // foreground = steeper).
-    vec3 view = normalize(vec3(0.0, mix(-0.85, -0.20, vuvIn.y), 1.0));
+    // View direction — grazing near horizon, steeper in foreground.
+    vec3 view = normalize(vec3(0.0, mix(-0.95, -0.25, vuvIn.y), 1.0));
 
     float NdotV = max(0.0, dot(n, view));
-    float fresnel = mix(0.04, 1.0, pow(1.0 - NdotV, 5.0));
+    float fresnel = mix(0.05, 0.90, pow(1.0 - NdotV, 5.0));
 
     vec3 sunDir = normalize(uSunDir);
     vec3 halfDir = normalize(sunDir + view);
-    float spec = pow(max(0.0, dot(n, halfDir)), 140.0);   // narrower
-                                                          // highlight,
-                                                          // less smeared
+    float spec = pow(max(0.0, dot(n, halfDir)), 220.0);     // tight glint
 
-    // Base colour gradient — vertical (horizon = shallow tint pushed
-    // by sky, foreground = deep). Less driven by per-pixel height,
-    // more by perspective position, so the result reads as a real sea
-    // plane instead of a stripy texture.
-    float verticalGrade = smoothstep(0.0, 0.7, vuvIn.y);
+    // Base sea colour — vertical gradient, biased by sky tint
+    // (warmer light at horizon, cooler depth in foreground).
+    float verticalGrade = smoothstep(0.0, 0.85, vuvIn.y);
     vec3 baseCol = mix(uSeaDeep, uSeaShallow, verticalGrade);
 
-    // Reflection: predominantly the sky colour from the video, lightly
-    // brightened toward white where the sun hits.
-    vec3 reflCol = mix(skyColor, vec3(1.0), 0.18);
-    vec3 col = mix(baseCol, reflCol, fresnel);
+    vec3 reflCol = mix(skyColor, vec3(1.0), 0.15);
+    vec3 synthCol = mix(baseCol, reflCol, fresnel);
+    synthCol += vec3(1.0, 0.95, 0.82) * spec * 0.25;
 
-    // Sun glint — much tighter and dimmer than before.
-    col += vec3(1.0, 0.96, 0.86) * spec * 0.30;
+    // Foam — only where the normal points sharply (steep crests) AND
+    // in the foreground.
+    float steepness = 1.0 - n.z;          // 0 = flat, ~1 = sharp crest
+    float crest = smoothstep(0.45, 0.70, steepness)
+                * smoothstep(0.30, 1.00, vuvIn.y);
+    synthCol = mix(synthCol, uSeaFoam, crest * 0.30);
 
-    // Subtle wave-height shading: peaks read a touch brighter, troughs
-    // slightly darker. Avoids striping by mixing only ±5%.
-    col *= 1.0 + h * 0.20;
-
-    // Foam — only on the very tallest crests, AND only in the
-    // foreground (perspective-aware).
-    float crest = smoothstep(0.060, 0.110, h) * smoothstep(0.30, 1.00, vuvIn.y);
-    col = mix(col, uSeaFoam, crest * 0.35);
-
-    // Soft cursor brightening for hover feedback.
+    // Cursor light tap.
     float cdist = length(cursorOffset);
-    col += exp(-cdist * 3.0) * 0.06;
+    synthCol += exp(-cdist * 3.0) * 0.05;
 
-    return col;
+    // Final mix: keep MOST of the real photo and overlay the
+    // shader-driven lighting. This is the "minimised + incorporated"
+    // approach — the shader contributes lighting, sky reflection,
+    // foam highlights; the photo provides the colour and texture.
+    // Tunable via uSeaBlend per-variant.
+    return mix(photoColor, synthCol, uSeaBlend);
   }
 
   void main() {
@@ -342,9 +319,10 @@ const FRAGMENT = /* glsl */ `
       // Position used for wave-domain sampling. Stretching X by aspect
       // keeps the waves square regardless of viewport ratio.
       vec2 seaP = vec2(vuv.x * uAspectViewport, vuv.y) + vec2(0.0, uTime * 0.005);
-      vec3 synthCol = synthSeaColor(seaP, vuv, uTime, cursorOffset, skySample);
-      // Blend factor — uses water mask so we follow yacht edges
-      // exactly. Pure synth on full water, pure photo on yacht.
+      vec3 synthCol = synthSeaColor(seaP, vuv, uTime, cursorOffset, skySample, photoColor);
+      // Mask-driven blend — the synth function already does the
+      // photo/synth mix internally via uSeaBlend, so here we just
+      // gate by the water mask so yacht edges stay pure photo.
       finalColor = mix(finalColor, synthCol, water);
     }
 
@@ -378,6 +356,7 @@ export function HomeVideoCanvas({
   seaDeepColor = [0.02, 0.10, 0.18],
   seaFoamColor = [0.95, 0.98, 1.00],
   seaSunDir = [0.45, 0.30, 0.85],
+  seaBlend = 0.40,
 }: HomeVideoCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -444,6 +423,15 @@ export function HomeVideoCanvas({
     maskTex.magFilter = THREE.LinearFilter;
     maskTex.colorSpace = THREE.NoColorSpace;
 
+    // Tileable ocean normal map (Phillips-spectrum, pre-baked).
+    const oceanNormalTex = loader.load("/sea-society/video/ocean-normal.png");
+    oceanNormalTex.minFilter = THREE.LinearMipmapLinearFilter;
+    oceanNormalTex.magFilter = THREE.LinearFilter;
+    oceanNormalTex.wrapS = THREE.RepeatWrapping;
+    oceanNormalTex.wrapT = THREE.RepeatWrapping;
+    oceanNormalTex.colorSpace = THREE.NoColorSpace;
+    oceanNormalTex.generateMipmaps = true;
+
     // Optional per-frame depth video — runs in lock-step with the
     // colour video. When provided, the shader derives the water +
     // static masks from this each frame instead of the static PNG,
@@ -498,6 +486,8 @@ export function HomeVideoCanvas({
       uSeaDeep: { value: new THREE.Vector3(seaDeepColor[0], seaDeepColor[1], seaDeepColor[2]) },
       uSeaFoam: { value: new THREE.Vector3(seaFoamColor[0], seaFoamColor[1], seaFoamColor[2]) },
       uSunDir: { value: new THREE.Vector3(seaSunDir[0], seaSunDir[1], seaSunDir[2]) },
+      uOceanNormal: { value: oceanNormalTex },
+      uSeaBlend: { value: seaBlend },
     };
 
     const material = new THREE.ShaderMaterial({
@@ -629,6 +619,7 @@ export function HomeVideoCanvas({
       geometry.dispose();
       videoTex.dispose();
       maskTex.dispose();
+      oceanNormalTex.dispose();
       depthTex?.dispose();
       if (renderer.domElement.parentElement === container) {
         container.removeChild(renderer.domElement);
@@ -661,6 +652,7 @@ export function HomeVideoCanvas({
     seaDeepColor[0], seaDeepColor[1], seaDeepColor[2],
     seaFoamColor[0], seaFoamColor[1], seaFoamColor[2],
     seaSunDir[0], seaSunDir[1], seaSunDir[2],
+    seaBlend,
   ]);
 
   // The canvas is rendered INSIDE the scroll runway (not fixed). The

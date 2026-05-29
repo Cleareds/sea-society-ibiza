@@ -65,6 +65,7 @@ export interface HomeVideoSceneProps {
   seaDeepColor?: [number, number, number];
   seaFoamColor?: [number, number, number];
   seaSunDir?: [number, number, number];
+  seaBlend?: number;
   /** Optional Instagram slot — rendered as the third phase (after the
    *  yacht cards) over the still-scrubbing video. Pass <InstagramFeed />
    *  from the page. */
@@ -169,6 +170,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     seaDeepColor,
     seaFoamColor,
     seaSunDir,
+    seaBlend,
     instagramSlot,
     instagramHandle,
     instagramHref,
@@ -264,6 +266,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
             seaDeepColor={seaDeepColor}
             seaFoamColor={seaFoamColor}
             seaSunDir={seaSunDir}
+            seaBlend={seaBlend}
             videoAspect={videoAspect}
             posterSrc={posterSrc}
             scrubScopeRef={runwayRef}

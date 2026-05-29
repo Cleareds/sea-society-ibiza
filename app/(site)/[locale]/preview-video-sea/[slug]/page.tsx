@@ -74,6 +74,7 @@ export default async function PreviewSeaVariantPage({
         seaDeepColor={variant.deep}
         seaFoamColor={variant.foam}
         seaSunDir={variant.sunDir}
+        seaBlend={0.40}
         videoAspect={color.aspect}
         posterSrc={color.poster}
         whatsappNumber={settings.whatsappNumber}
