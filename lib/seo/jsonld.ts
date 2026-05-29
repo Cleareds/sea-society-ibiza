@@ -4,10 +4,19 @@ import { absoluteUrl, SITE_NAME } from "./metadata";
 export function organizationLd(settings: Settings) {
   return {
     "@context": "https://schema.org",
-    "@type": "TravelAgency",
+    // Multiple @type values are valid JSON-LD — Google treats this as
+    // a hybrid TravelAgency + LocalBusiness, which unlocks the
+    // Knowledge Panel + map results for branded searches like
+    // "Sea Society Ibiza".
+    "@type": ["TravelAgency", "LocalBusiness"],
+    "@id": absoluteUrl("/#org"),
     name: SITE_NAME,
     url: absoluteUrl("/"),
     logo: absoluteUrl("/og/logo.png"),
+    image: absoluteUrl("/og/default.jpg"),
+    description:
+      "Luxury yacht charter agency based at Botafoc Marina, Ibiza. Day, sunset and multi-day charters across the Balearic Islands aboard a curated fleet of motor yachts from Pershing, Sunseeker, Mangusta, Princess, Riva and more.",
+    priceRange: "€€€€",
     sameAs: settings.instagramUrl ? [settings.instagramUrl] : undefined,
     email: settings.email,
     telephone: settings.phone,
@@ -19,6 +28,33 @@ export function organizationLd(settings: Settings) {
       addressRegion: "Balearic Islands",
       addressCountry: "ES",
     },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 38.9156,
+      longitude: 1.4493,
+    },
+    areaServed: [
+      { "@type": "Place", name: "Ibiza" },
+      { "@type": "Place", name: "Formentera" },
+      { "@type": "Place", name: "Mallorca" },
+      { "@type": "Place", name: "Balearic Islands" },
+    ],
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "09:00",
+        closes: "21:00",
+      },
+    ],
   };
 }
 
