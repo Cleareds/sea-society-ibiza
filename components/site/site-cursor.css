@@ -1,6 +1,6 @@
-/* Site-wide custom cursor. Same visual language as the immersive hero
-   ring-dot: turquoise glass with a centred dot, expands & brightens
-   over interactive elements. Hidden on touch / reduced-motion. */
+/* Site-wide custom cursor — soft white glass ring with a centred dot.
+   Expands and brightens over interactive elements. Hidden on touch /
+   reduced-motion. */
 
 @media (hover: hover) and (pointer: fine) {
   /* Only hide the OS pointer on fine-pointer devices that have a real
@@ -23,16 +23,16 @@
   pointer-events: none;
   z-index: 100;
   transform: translate3d(-50%, -50%, 0);
-  border: 1.5px solid rgba(126, 234, 226, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(126, 234, 226, 0.16) 0%,
-    rgba(126, 234, 226, 0.05) 45%,
-    rgba(126, 234, 226, 0) 70%
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0) 70%
   );
   box-shadow:
-    0 0 22px rgba(126, 234, 226, 0.30),
-    inset 0 0 10px rgba(126, 234, 226, 0.20);
+    0 0 22px rgba(255, 255, 255, 0.28),
+    inset 0 0 10px rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   opacity: 0;
@@ -53,23 +53,23 @@
   width: 4px;
   height: 4px;
   margin: -2px;
-  background: rgba(186, 244, 240, 1);
+  background: rgba(255, 255, 255, 1);
   border-radius: 9999px;
-  box-shadow: 0 0 6px rgba(126, 234, 226, 0.9);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
 }
 .site-cursor[data-hover="true"] {
   width: 72px;
   height: 72px;
-  border-color: rgba(186, 244, 240, 1);
+  border-color: rgba(255, 255, 255, 1);
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(126, 234, 226, 0.26) 0%,
-    rgba(126, 234, 226, 0.10) 50%,
-    rgba(126, 234, 226, 0) 75%
+    rgba(255, 255, 255, 0.30) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0) 75%
   );
   box-shadow:
-    0 0 32px rgba(126, 234, 226, 0.50),
-    inset 0 0 16px rgba(126, 234, 226, 0.30);
+    0 0 32px rgba(255, 255, 255, 0.50),
+    inset 0 0 16px rgba(255, 255, 255, 0.30);
 }
 
 /* Touch devices / coarse pointer — never show the custom cursor and

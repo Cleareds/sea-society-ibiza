@@ -43,7 +43,7 @@ export async function InstagramFeed({ handle, href, tone = "light", accentClassN
     <section aria-labelledby="ig-h" className="w-full">
       <div className="mx-auto mb-8 flex w-full max-w-(--spacing-container-max) flex-col items-baseline justify-between gap-2 px-5 md:flex-row md:px-10">
         <h2 id="ig-h" className={headlineCls}>
-          <span className={accentCls}>Follow</span> the journey
+          <span className={accentCls}>Follow</span> our society
         </h2>
         <a
           href={href}
