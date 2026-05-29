@@ -59,6 +59,12 @@ export interface HomeVideoSceneProps {
   depthVideoSrcMobile?: string;
   depthWaterLo?: number;
   depthWaterHi?: number;
+  /** Synthetic-sea mode — fully replace sea pixels with shader output. */
+  seaMode?: "photo" | "synthetic";
+  seaShallowColor?: [number, number, number];
+  seaDeepColor?: [number, number, number];
+  seaFoamColor?: [number, number, number];
+  seaSunDir?: [number, number, number];
   /** Optional Instagram slot — rendered as the third phase (after the
    *  yacht cards) over the still-scrubbing video. Pass <InstagramFeed />
    *  from the page. */
@@ -158,6 +164,11 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     depthVideoSrcMobile,
     depthWaterLo,
     depthWaterHi,
+    seaMode,
+    seaShallowColor,
+    seaDeepColor,
+    seaFoamColor,
+    seaSunDir,
     instagramSlot,
     instagramHandle,
     instagramHref,
@@ -248,6 +259,11 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
             depthVideoSrcMobile={depthVideoSrcMobile}
             depthWaterLo={depthWaterLo}
             depthWaterHi={depthWaterHi}
+            seaMode={seaMode}
+            seaShallowColor={seaShallowColor}
+            seaDeepColor={seaDeepColor}
+            seaFoamColor={seaFoamColor}
+            seaSunDir={seaSunDir}
             videoAspect={videoAspect}
             posterSrc={posterSrc}
             scrubScopeRef={runwayRef}
@@ -300,58 +316,29 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
           </div>
         </div>
 
-        {/* PHASE B — yacht cards over the live video. Frosted glass tiles
-            so the video reads through them while keeping the type legible. */}
+        {/* PHASE B (desktop) — yacht cards absolute-pinned over the live
+            video, fading in/out via scroll progress. Single-row grid fits
+            in the viewport at ≥ md breakpoints. Hidden on mobile — see
+            the relative-flow version below. */}
         <div
           ref={cardsRef}
-          className="absolute inset-0 z-10 flex items-center opacity-0 transition-opacity duration-300"
+          className="absolute inset-0 z-10 hidden items-center opacity-0 transition-opacity duration-300 md:flex"
         >
           <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 md:px-10">
-            <div className="flex items-baseline justify-between gap-4 pb-6 text-white">
-              <h2 className="font-serif text-2xl md:text-4xl">
-                Explore the <span className="brand-accent">fleet</span>
-              </h2>
-              <Link
-                href={lp("/fleet")}
-                className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-white/90 transition-colors hover:text-white"
-              >
-                See all
-                <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
-            <ul className="grid gap-4 md:grid-cols-3 md:gap-6">
-              {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
-                <li
-                  key={b.id}
-                  className="overflow-hidden rounded-2xl border border-white/20 bg-black/35 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.7)] backdrop-blur-xl backdrop-saturate-150"
-                >
-                  <Link href={lp(`/fleet/${b.slug}`)} className="group block">
-                    <div className="relative aspect-[5/3] overflow-hidden">
-                      <Image
-                        src={b.heroImage}
-                        alt={`${b.name} — ${b.modelName ?? b.brand}`}
-                        fill
-                        sizes="(min-width: 768px) 30vw, 90vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-4 md:p-5">
-                      <p className="brand-eyebrow text-[10px] text-white/75">{b.brand}</p>
-                      <h3 className="mt-1 font-serif text-lg text-white md:text-xl">{b.name}</h3>
-                      <p className="mt-1 text-xs text-white/80">{fromLabel}</p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {variantTag && (
-              <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/55">
-                {variantTag}
-              </p>
-            )}
+            {renderCardsContent({ featured, lp, variantTag })}
           </div>
         </div>
 
+      </div>
+
+      {/* PHASE B (mobile) — cards in NORMAL FLOW after the sticky pin,
+          so 3 stacked cards can scroll past the still-pinned video
+          without overflowing the viewport. Always visible on mobile;
+          the desktop absolute-pinned version above takes over at md. */}
+      <div className="relative z-10 w-full px-5 py-[8svh] md:hidden">
+        <div className="mx-auto w-full max-w-(--spacing-container-max)">
+          {renderCardsContent({ featured, lp, variantTag })}
+        </div>
       </div>
 
       {/* Spacer — pushes the IG block down toward the end of the
@@ -392,4 +379,61 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
 
 function clamp01(v: number) {
   return Math.max(0, Math.min(1, v));
+}
+
+function renderCardsContent({
+  featured,
+  lp,
+  variantTag,
+}: {
+  featured: Array<{ boat: Boat; fromLabel: string }>;
+  lp: (p: string) => string;
+  variantTag?: string;
+}) {
+  return (
+    <>
+      <div className="flex items-baseline justify-between gap-4 pb-6 text-white">
+        <h2 className="font-serif text-2xl md:text-4xl">
+          Explore the <span className="brand-accent">fleet</span>
+        </h2>
+        <Link
+          href={lp("/fleet")}
+          className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-white/90 transition-colors hover:text-white"
+        >
+          See all
+          <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </div>
+      <ul className="grid gap-4 md:grid-cols-3 md:gap-6">
+        {featured.slice(0, 3).map(({ boat: b, fromLabel }) => (
+          <li
+            key={b.id}
+            className="overflow-hidden rounded-2xl border border-white/20 bg-black/35 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.7)] backdrop-blur-xl backdrop-saturate-150"
+          >
+            <Link href={lp(`/fleet/${b.slug}`)} className="group block">
+              <div className="relative aspect-[5/3] overflow-hidden">
+                <Image
+                  src={b.heroImage}
+                  alt={`${b.name} — ${b.modelName ?? b.brand}`}
+                  fill
+                  sizes="(min-width: 768px) 30vw, 90vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="p-4 md:p-5">
+                <p className="brand-eyebrow text-[10px] text-white/75">{b.brand}</p>
+                <h3 className="mt-1 font-serif text-lg text-white md:text-xl">{b.name}</h3>
+                <p className="mt-1 text-xs text-white/80">{fromLabel}</p>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {variantTag && (
+        <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/55">
+          {variantTag}
+        </p>
+      )}
+    </>
+  );
 }
