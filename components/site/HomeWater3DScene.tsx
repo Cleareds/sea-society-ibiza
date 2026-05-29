@@ -249,11 +249,17 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
   }, [progressRef]);
 
   return (
+    <>
     <div
       ref={runwayRef}
-      className="relative z-10 w-full"
+      // Runway height: SHORT on mobile (just hero + a touch of scrub),
+      // tall on desktop (full hero → cards → IG → icon cross-fade
+      // choreography). Mobile renders cards/IG/icon AFTER this
+      // runway in normal flow, so the runway only owns the pinned
+      // video hero.
+      className="relative z-10 w-full h-[150svh] md:h-[var(--runway-h-desktop)]"
       data-cursor-bg="dark"
-      style={{ height: `${scrubViewports * 100}svh` }}
+      style={{ ['--runway-h-desktop' as string]: `${scrubViewports * 100}svh` } as React.CSSProperties}
     >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
         {/* LCP poster — Next/Image marked priority + fetchPriority="high".
@@ -357,63 +363,75 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
 
       </div>
 
-      {/* PHASE B (mobile) — cards in NORMAL FLOW after the sticky pin,
-          so 3 stacked cards can scroll past the still-pinned video
-          without overflowing the viewport. Always visible on mobile;
-          the desktop absolute-pinned version above takes over at md. */}
-      <div className="relative z-10 w-full px-5 py-[8svh] md:hidden">
+      {/* DESKTOP-ONLY inside-runway content: the spacer + IG + brand
+          close that cross-fade with the cards via the runway's
+          progress-driven RAF. Hidden on mobile — those sections
+          live as normal-flow blocks AFTER the runway instead, since
+          a tall runway with all this content stuffed in flow doesn't
+          fit on phones. */}
+      <div className="hidden md:contents">
+        {instagramSlot && (
+          <>
+            <div
+              aria-hidden
+              className="pointer-events-none w-full"
+              style={{
+                // IG must enter the viewport while runway-progress p
+                // is around 0.65. For a 6×100svh runway, p=0.65 maps
+                // to scrollY ≈ 3.25vh, so IG's doc position should
+                // sit at ≈ 4.25vh. Sticky pin owns the first 1vh, so
+                // spacer ≈ 3.25vh = 325svh on the default 6vh runway.
+                height: `${Math.max(0, (scrubViewports - 1) * 100 - 175)}svh`,
+              }}
+            />
+            <div
+              ref={igRef}
+              className={`pointer-events-auto relative z-10 w-full px-5 pt-[4svh] opacity-0 transition-opacity duration-500 md:px-10 ${
+                brandCloseSlot ? "pb-[3svh]" : "pb-[14svh]"
+              }`}
+            >
+              <div className="mx-auto w-full max-w-(--spacing-container-max)">
+                {instagramSlot}
+              </div>
+            </div>
+          </>
+        )}
+
+        {brandCloseSlot && (
+          <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[8svh] pt-[2svh] md:px-10">
+            {brandCloseSlot}
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* MOBILE-ONLY sections, AFTER the runway. The runway is short on
+        mobile (150svh) so the user pins through hero + a touch of
+        scrub, then the canvas un-pins and the rest of the page flows
+        normally. Generous vertical padding so each section reads as
+        its own moment, not a rush. */}
+    <div className="md:hidden">
+      <div className="relative z-10 w-full bg-[var(--color-surface)] text-[var(--color-on-surface)] px-5 pt-[16svh] pb-[14svh]">
         <div className="mx-auto w-full max-w-(--spacing-container-max)">
           {renderCardsContent({ featured, lp, variantTag, accentClassName })}
         </div>
       </div>
 
-      {/* Spacer — pushes the IG block down toward the end of the
-          runway so it enters the viewport around scroll progress 0.80
-          (i.e. ~1–2s before the video reaches its last frame). The
-          sticky inner takes the first 100svh; this spacer fills the
-          gap so the IG block sits near the runway tail. */}
       {instagramSlot && (
-        <>
-          <div
-            aria-hidden
-            className="pointer-events-none w-full"
-            style={{
-              // IG must enter the viewport while runway-progress p is
-              // around 0.65 (when cards begin fading out). For a
-              // 6×100svh runway, p=0.65 maps to scrollY ≈ 3.25vh.
-              // IG's document-position must therefore be at ≈ 4.25vh
-              // (= scrollY + one viewport above). Sticky pin occupies
-              // 1vh, so spacer ≈ 3.25vh = 325svh for default runway.
-              height: `${Math.max(0, (scrubViewports - 1) * 100 - 175)}svh`,
-            }}
-          />
-          {/* IG — normal flow, scrolls over the sticky video. No
-              glass frame, just side + bottom padding so the sea is
-              visible around it. Fade-in driven by viewport
-              intersection. */}
-          <div
-            ref={igRef}
-            className={`pointer-events-auto relative z-10 w-full px-5 pt-[4svh] opacity-0 transition-opacity duration-500 md:px-10 ${
-              brandCloseSlot ? "pb-[3svh]" : "pb-[14svh]"
-            }`}
-          >
-            <div className="mx-auto w-full max-w-(--spacing-container-max)">
-              {instagramSlot}
-            </div>
+        <div className="relative z-10 w-full bg-[var(--color-surface)] px-5 pt-[6svh] pb-[14svh]">
+          <div className="mx-auto w-full max-w-(--spacing-container-max)">
+            {instagramSlot}
           </div>
-        </>
+        </div>
       )}
 
-      {/* Brand close — sits below IG, still inside the runway so the
-          pinned video backdrop continues underneath it. Padded to
-          flow tight with the IG block above and the page footer
-          below. */}
       {brandCloseSlot && (
-        <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[8svh] pt-[2svh] md:px-10">
+        <div className="relative z-10 flex w-full items-center justify-center bg-[var(--color-surface)] px-5 pb-[14svh] pt-[4svh]">
           {brandCloseSlot}
         </div>
       )}
     </div>
+    </>
   );
 }
 
