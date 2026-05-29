@@ -145,16 +145,11 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 )}
               />
             </a>
-            {/* SS brand mark — sits next to the pill, nudged 2px down
-                via position:relative + bottom:-2px so it reads
-                optically centred against the CTA baseline (the oval
-                has more visual weight near its top so a small offset
-                balances it). */}
+            {/* SS brand mark — sits next to the pill, baseline-aligned. */}
             <Link
               href={lp("/")}
               aria-label="Sea Society Ibiza — home"
-              className="relative inline-flex h-10 w-10 items-center justify-center"
-              style={{ bottom: "-2px" }}
+              className="inline-flex h-10 w-10 items-center justify-center"
             >
               <Image
                 src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}
