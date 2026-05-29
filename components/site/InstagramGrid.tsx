@@ -41,9 +41,12 @@ interface Props {
    *  backgrounds. "dark" renders white text + brand-shadow for use over
    *  the sea-coloured canvas on the home preview. */
   tone?: "light" | "dark";
+  /** Extra class merged into the brand-accent span around "Follow". */
+  accentClassName?: string;
 }
 
-export function InstagramGrid({ handle, href, tone = "light" }: Props) {
+export function InstagramGrid({ handle, href, tone = "light", accentClassName }: Props) {
+  const accentCls = `brand-accent ${accentClassName ?? ""}`.trim();
   const headlineCls =
     tone === "dark"
       ? "brand-headline text-3xl text-white md:text-5xl"
@@ -56,7 +59,7 @@ export function InstagramGrid({ handle, href, tone = "light" }: Props) {
     <section aria-labelledby="ig-h" className="w-full">
       <div className="mx-auto mb-8 flex w-full max-w-(--spacing-container-max) flex-col items-baseline justify-between gap-2 px-5 md:flex-row md:px-10">
         <h2 id="ig-h" className={headlineCls}>
-          Follow the journey
+          <span className={accentCls}>Follow</span> the journey
         </h2>
         <a
           href={href}

@@ -413,7 +413,7 @@ function renderCardsContent({
     <>
       <div className="flex items-baseline justify-between gap-4 pb-6 text-white">
         <h2 className="font-serif text-2xl md:text-4xl">
-          Explore the <span className={accentCls}>fleet</span>
+          <span className={accentCls}>Explore</span> the fleet
         </h2>
         <Link
           href={lp("/fleet")}

@@ -8,6 +8,8 @@ interface Props {
   href: string;
   /** "light" renders dark title on light bg; "dark" renders white over canvas. */
   tone?: "light" | "dark";
+  /** Extra class merged into the brand-accent span around "Follow". */
+  accentClassName?: string;
 }
 
 /**
@@ -21,11 +23,12 @@ interface Props {
  *
  * Cached via fetchInstagramFeed (Next data cache, revalidate 1h).
  */
-export async function InstagramFeed({ handle, href, tone = "light" }: Props) {
+export async function InstagramFeed({ handle, href, tone = "light", accentClassName }: Props) {
   const media = await fetchInstagramFeed(18);
   if (!media || media.length === 0) {
-    return <InstagramGrid handle={handle} href={href} tone={tone} />;
+    return <InstagramGrid handle={handle} href={href} tone={tone} accentClassName={accentClassName} />;
   }
+  const accentCls = `brand-accent ${accentClassName ?? ""}`.trim();
 
   const headlineCls =
     tone === "dark"
@@ -40,7 +43,7 @@ export async function InstagramFeed({ handle, href, tone = "light" }: Props) {
     <section aria-labelledby="ig-h" className="w-full">
       <div className="mx-auto mb-8 flex w-full max-w-(--spacing-container-max) flex-col items-baseline justify-between gap-2 px-5 md:flex-row md:px-10">
         <h2 id="ig-h" className={headlineCls}>
-          Follow the journey
+          <span className={accentCls}>Follow</span> the journey
         </h2>
         <a
           href={href}

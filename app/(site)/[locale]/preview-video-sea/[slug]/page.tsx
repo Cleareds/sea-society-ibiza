@@ -111,6 +111,7 @@ export default async function PreviewSeaVariantPage({
             handle={settings.instagramHandle}
             href={settings.instagramUrl}
             tone="dark"
+            accentClassName={useWave ? "wave-accent" : undefined}
           />
         }
       />
