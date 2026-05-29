@@ -210,28 +210,34 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
 
   React.useEffect(() => {
     let raf = 0;
-    // Hero + yacht cards remain absolute-overlay phases on top of the
-    // sticky canvas (they're "screen-based" by design — they sell the
-    // pinned video). IG is the exception — it lives in normal flow at
-    // the bottom of the runway so it scrolls naturally over the
-    // already-pinned video, with sea visible around it.
+    // All three phases (hero / cards / IG) are now driven by the same
+    // runway-progress RAF so the cross-fades happen at matching
+    // intervals. Each transition takes 0.15 of runway scroll.
     //
     // Phase windows:
-    //   Hero:  visible 0.00–0.30, fades out by 0.45
-    //   Cards: fade in 0.30–0.45, fade out 0.65–0.75
-    //   (IG opacity is driven by its OWN intersection — see useEffect
-    //    below — so it has nothing to do with this RAF.)
+    //   Hero:  visible 0.00–0.30, fades out 0.30–0.45
+    //   Cards: fade in 0.30–0.45, visible 0.45–0.65, fade out 0.65–0.80
+    //   IG:    fade in 0.65–0.80, stays to 1.00
+    //
+    // The 0.30→0.45 transition (hero→cards) and the 0.65→0.80
+    // transition (cards→IG) are identical 0.15-wide cross-fades — what
+    // the user asked for.
     const tick = () => {
       raf = requestAnimationFrame(tick);
       const p = progressRef.current;
       const heroOpacity = clamp01(1 - (p - 0.30) / 0.15);
       const cardsOpacity = Math.min(
         clamp01((p - 0.30) / 0.15),
-        clamp01(1 - (p - 0.65) / 0.10),
+        clamp01(1 - (p - 0.65) / 0.15),
       );
+      const igOpacity = clamp01((p - 0.65) / 0.15);
       if (heroRef.current) {
         heroRef.current.style.opacity = String(heroOpacity);
         heroRef.current.style.pointerEvents = heroOpacity < 0.05 ? "none" : "";
+      }
+      if (igRef.current) {
+        igRef.current.style.opacity = String(igOpacity);
+        igRef.current.style.pointerEvents = igOpacity < 0.05 ? "none" : "";
       }
       if (cardsRef.current) {
         cardsRef.current.style.opacity = String(cardsOpacity);
@@ -241,27 +247,6 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
     tick();
     return () => cancelAnimationFrame(raf);
   }, [progressRef]);
-
-  // IG block fade-in based on its OWN scroll position (intersection
-  // with the viewport) so it appears 1–2 viewports before the runway
-  // ends, regardless of how long the runway is.
-  React.useEffect(() => {
-    if (!instagramSlot) return;
-    const el = igRef.current;
-    if (!el) return;
-    let raf = 0;
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      // Fade in as the top of the block enters the lower half of the
-      // viewport; fully visible by the time it's centred.
-      const t = (vh - rect.top) / (vh * 0.7);
-      el.style.opacity = String(clamp01(t));
-    };
-    tick();
-    return () => cancelAnimationFrame(raf);
-  }, [instagramSlot]);
 
   return (
     <div
@@ -393,11 +378,13 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
             aria-hidden
             className="pointer-events-none w-full"
             style={{
-              // Take all but ~1.2 viewports of the remaining runway
-              // (sticky already consumed 1; we want IG to start ~80%
-              // through). The math is: runway-1 (sticky already
-              // consumed 1vh) minus the IG block's own ~1.2vh height.
-              height: `${Math.max(0, (scrubViewports - 1) * 100 - 120)}svh`,
+              // IG must enter the viewport while runway-progress p is
+              // around 0.65 (when cards begin fading out). For a
+              // 6×100svh runway, p=0.65 maps to scrollY ≈ 3.25vh.
+              // IG's document-position must therefore be at ≈ 4.25vh
+              // (= scrollY + one viewport above). Sticky pin occupies
+              // 1vh, so spacer ≈ 3.25vh = 325svh for default runway.
+              height: `${Math.max(0, (scrubViewports - 1) * 100 - 175)}svh`,
             }}
           />
           {/* IG — normal flow, scrolls over the sticky video. No

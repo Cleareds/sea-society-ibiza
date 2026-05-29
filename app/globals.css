@@ -155,6 +155,16 @@ h1, h2, h3, h4 {
    horizontally. Same technique as the GeeksforGeeks demo, scoped
    to the brand's accent class so it only marks the load-bearing
    word in each headline (e.g. "different", "fleet"). */
+/* .wave-accent — paused for now. The animated turquoise wave fill on
+   .brand-accent words was reading busy on the new homepage; the
+   class is kept as a no-op so we can re-enable later without
+   touching every page that references it. Original CSS lives in
+   the commented block below — restore those rules to bring it back. */
+.wave-accent {
+  /* no-op — accent words render with their parent's fill */
+}
+
+/*
 .wave-accent {
   display: inline-block;
   background-image:
@@ -170,15 +180,14 @@ h1, h2, h3, h4 {
   text-shadow: none !important;
   animation: wave-headline-flow 7s linear infinite;
 }
-
 @keyframes wave-headline-flow {
   from { background-position: 0 0, 0 0; }
   to   { background-position: -400px 0, 0 0; }
 }
-
 @media (prefers-reduced-motion: reduce) {
   .wave-accent { animation: none; }
 }
+*/
 
 /* `.brand-img-hover` — apply to wrappers (or directly to images) on
  *  content cards / tile grids so the cursor brightens the image as it

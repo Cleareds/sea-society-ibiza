@@ -129,38 +129,81 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
   }, [params]);
 
   // ---- Facet helpers ------------------------------------------------
-  // Count of boats that would remain if `value` were added to
-  // dimension `dim` in the current draft, with all other dimensions
-  // applied. Returns 0 when option leads to a dead-end.
+  // Standard Airbnb-style faceting: count = "how many boats match
+  // THIS SPECIFIC value, given the current selections in the OTHER
+  // dimensions". Stable as the user toggles within the same dim —
+  // selecting one type doesn't change the type facets, only the
+  // brand/guests/budget facets shift because those dimensions are
+  // now narrower. This is what stops the counts going crazy on
+  // multi-select.
   const facetCount = React.useCallback(
     (dim: keyof Draft, value: string): number => {
-      const trial: Draft = {
-        types: new Set(draft.types),
-        brands: new Set(draft.brands),
-        minGuests: draft.minGuests,
-        maxPrice: draft.maxPrice,
+      const inValue = (b: FacetBoat): boolean => {
+        if (dim === "types") return b.type === value;
+        if (dim === "brands") return b.brand.toLowerCase() === value.toLowerCase();
+        if (dim === "minGuests") return b.guests >= Number(value);
+        if (dim === "maxPrice") return b.priceFrom <= Number(value);
+        return false;
       };
-      if (dim === "types") {
-        // Within-dim toggle = OR, so adding the value if not already in.
-        trial.types = new Set(trial.types);
-        if (trial.types.has(value)) trial.types.delete(value);
-        else trial.types.add(value);
-      } else if (dim === "brands") {
-        trial.brands = new Set(trial.brands);
-        const v = value.toLowerCase();
-        if (trial.brands.has(v)) trial.brands.delete(v);
-        else trial.brands.add(v);
-      } else if (dim === "minGuests") {
-        trial.minGuests = trial.minGuests === value ? null : value;
-      } else if (dim === "maxPrice") {
-        trial.maxPrice = trial.maxPrice === value ? null : value;
-      }
-      return applyDraft(boats, trial).length;
+      return boats.filter((b) => {
+        if (dim !== "types" && draft.types.size > 0 && !draft.types.has(b.type))
+          return false;
+        if (
+          dim !== "brands" &&
+          draft.brands.size > 0 &&
+          !draft.brands.has(b.brand.toLowerCase())
+        )
+          return false;
+        if (
+          dim !== "minGuests" &&
+          draft.minGuests &&
+          b.guests < Number(draft.minGuests)
+        )
+          return false;
+        if (
+          dim !== "maxPrice" &&
+          draft.maxPrice &&
+          b.priceFrom > Number(draft.maxPrice)
+        )
+          return false;
+        return inValue(b);
+      }).length;
     },
     [boats, draft],
   );
 
   const matchCount = React.useMemo(() => applyDraft(boats, draft).length, [boats, draft]);
+
+  // Global counts — independent of any draft. Used to suppress rows
+  // that have NO data in the dataset (default state).
+  const presentTypes = React.useMemo(
+    () =>
+      TYPES.filter(
+        (t) => boats.some((b) => b.type === t.value),
+      ),
+    [boats],
+  );
+  const presentBrands = React.useMemo(
+    () =>
+      brands.filter((b) =>
+        boats.some((boat) => boat.brand.toLowerCase() === b.toLowerCase()),
+      ),
+    [boats, brands],
+  );
+  const presentGuests = React.useMemo(
+    () =>
+      GUESTS.filter((g) =>
+        boats.some((b) => b.guests >= Number(g.value)),
+      ),
+    [boats],
+  );
+  const presentPrices = React.useMemo(
+    () =>
+      PRICES.filter((p) =>
+        boats.some((b) => b.priceFrom <= Number(p.value)),
+      ),
+    [boats],
+  );
 
   // ---- Mutators -----------------------------------------------------
   const toggleType = (v: string) =>
@@ -224,87 +267,98 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
 
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md md:max-w-lg"
+        className="flex w-full flex-col p-0 sm:max-w-md md:max-w-lg"
       >
-        <SheetTitle className="text-3xl">Filter the fleet</SheetTitle>
-        <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
-          {matchCount} {matchCount === 1 ? "boat" : "boats"} match
-        </p>
+        {/* Scroll region — header + sections. Footer lives outside so
+            it's anchored to the true bottom of the sheet, never
+            scrolled-under by long filter content. */}
+        <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6">
+          <SheetTitle className="text-3xl">Filter the fleet</SheetTitle>
+          <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
+            {matchCount} {matchCount === 1 ? "boat" : "boats"} match
+          </p>
 
-        <div className="mt-8 flex-1 space-y-10">
-          <Section label="Type">
-            {TYPES.map((t) => {
-              const active = draft.types.has(t.value);
-              const count = facetCount("types", t.value);
-              return (
-                <CheckRow
-                  key={t.value}
-                  label={t.label}
-                  active={active}
-                  count={count}
-                  onClick={() => toggleType(t.value)}
-                />
-              );
-            })}
-          </Section>
+          <div className="mt-8 space-y-10">
+            {presentTypes.length > 0 && (
+              <Section label="Type">
+                {presentTypes.map((t) => {
+                  const active = draft.types.has(t.value);
+                  const count = facetCount("types", t.value);
+                  return (
+                    <CheckRow
+                      key={t.value}
+                      label={t.label}
+                      active={active}
+                      count={count}
+                      onClick={() => toggleType(t.value)}
+                    />
+                  );
+                })}
+              </Section>
+            )}
 
-          {brands.length > 0 && (
-            <Section label="Brand">
-              {brands.map((b) => {
-                const active = draft.brands.has(b.toLowerCase());
-                const count = facetCount("brands", b);
-                return (
-                  <CheckRow
-                    key={b}
-                    label={b}
-                    active={active}
-                    count={count}
-                    onClick={() => toggleBrand(b)}
-                  />
-                );
-              })}
-            </Section>
-          )}
+            {presentBrands.length > 0 && (
+              <Section label="Brand">
+                {presentBrands.map((b) => {
+                  const active = draft.brands.has(b.toLowerCase());
+                  const count = facetCount("brands", b);
+                  return (
+                    <CheckRow
+                      key={b}
+                      label={b}
+                      active={active}
+                      count={count}
+                      onClick={() => toggleBrand(b)}
+                    />
+                  );
+                })}
+              </Section>
+            )}
 
-          <Section label="For">
-            {GUESTS.map((g) => {
-              const active = draft.minGuests === g.value;
-              const count = facetCount("minGuests", g.value);
-              return (
-                <CheckRow
-                  key={g.value}
-                  label={g.label}
-                  active={active}
-                  count={count}
-                  onClick={() => setMinGuests(g.value)}
-                  variant="radio"
-                />
-              );
-            })}
-          </Section>
+            {presentGuests.length > 0 && (
+              <Section label="For">
+                {presentGuests.map((g) => {
+                  const active = draft.minGuests === g.value;
+                  const count = facetCount("minGuests", g.value);
+                  return (
+                    <CheckRow
+                      key={g.value}
+                      label={g.label}
+                      active={active}
+                      count={count}
+                      onClick={() => setMinGuests(g.value)}
+                      variant="radio"
+                    />
+                  );
+                })}
+              </Section>
+            )}
 
-          <Section label="Budget">
-            {PRICES.map((p) => {
-              const active = draft.maxPrice === p.value;
-              const count = facetCount("maxPrice", p.value);
-              return (
-                <CheckRow
-                  key={p.value}
-                  label={p.label}
-                  active={active}
-                  count={count}
-                  onClick={() => setMaxPrice(p.value)}
-                  variant="radio"
-                />
-              );
-            })}
-          </Section>
+            {presentPrices.length > 0 && (
+              <Section label="Budget">
+                {presentPrices.map((p) => {
+                  const active = draft.maxPrice === p.value;
+                  const count = facetCount("maxPrice", p.value);
+                  return (
+                    <CheckRow
+                      key={p.value}
+                      label={p.label}
+                      active={active}
+                      count={count}
+                      onClick={() => setMaxPrice(p.value)}
+                      variant="radio"
+                    />
+                  );
+                })}
+              </Section>
+            )}
+          </div>
         </div>
 
-        {/* Sticky footer — clear + apply. */}
-        <div
-          className="sticky bottom-0 -mx-6 mt-8 flex items-center justify-between gap-4 border-t border-[var(--color-outline-variant)] bg-[var(--color-surface)] px-6 py-4"
-        >
+        {/* Footer — anchored to the bottom edge. Lives outside the
+            scroll container so no filter section ever scrolls under
+            it. */}
+        <div className="flex items-center justify-between gap-4 border-t border-[var(--color-outline-variant)] bg-[var(--color-surface)] px-6 py-4">
           <button
             type="button"
             onClick={reset}
