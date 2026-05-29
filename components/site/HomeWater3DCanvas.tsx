@@ -75,13 +75,17 @@ const COMPOSITE_FRAG = /* glsl */ `
     float keepPhoto = 0.0;
     if (uHasDepth > 0.5) {
       float d = texture2D(uDepth, uv).r;
-      // Wide transition so silhouette edges blend instead of step.
-      float yachtKeep = smoothstep(uYachtDepth - 0.10, uYachtDepth + 0.02, d);
-      float horizonKeep = smoothstep(uHorizonY - 0.10, uHorizonY + 0.02, vuv.y);
+      // VERY wide yacht transition — yacht depth values span 0.80–
+      // 0.98 on DA-V2 vitl-518, and we want every pixel that's
+      // remotely yacht-like to be kept from the photo so the boat
+      // stays visible.
+      float yachtKeep = smoothstep(uYachtDepth - 0.10, uYachtDepth + 0.06, d);
+      // Wide horizon blend — soft fade from 3D water (bottom of
+      // viewport) to photo (top) over ~0.20 of the viewport.
+      // vuv.y=1 is the TOP, so high vuv.y = sky region = keep photo.
+      float horizonKeep = smoothstep(uHorizonY - 0.10, uHorizonY + 0.10, vuv.y);
       keepPhoto = max(yachtKeep, horizonKeep);
     } else {
-      // No depth mask available — keep most of the photo so we don't
-      // blow up the composition.
       keepPhoto = 0.5;
     }
 
@@ -138,25 +142,44 @@ const WATER_FRAG = /* glsl */ `
   uniform vec3  uSunDir;
   uniform vec3  uSkyColor;        // sampled from source video each frame
   uniform vec3  uCameraPosCustom;
+  uniform sampler2D uOceanNormal; // tileable Phillips-spectrum normal
   varying vec2 vUv;
   varying vec3 vNormal;
   varying vec3 vWorldPos;
 
   void main() {
-    vec3 n = normalize(vNormal);
-    vec3 view = normalize(uCameraPosCustom - vWorldPos);
+    // Geometric normal from the Gerstner vertex displacement.
+    vec3 nGeom = normalize(vNormal);
 
-    // Fresnel — Schlick approximation, F0 ~ 0.02 for water
+    // HIGH-FREQUENCY DETAIL — sample the tileable ocean normal map
+    // twice at different scales / scroll directions, blend into the
+    // geometry normal. This is what makes the surface read as real
+    // water instead of plastic. World-space position drives the UVs
+    // so detail stays anchored to the sea, not to the camera.
+    vec2 nuv1 = vWorldPos.xz * 0.04 + vec2(uTime * 0.040, uTime * 0.030);
+    vec2 nuv2 = vWorldPos.xz * 0.12 - vec2(uTime * 0.020, uTime * 0.060);
+    vec3 n1 = texture2D(uOceanNormal, nuv1).rgb * 2.0 - 1.0;
+    vec3 n2 = texture2D(uOceanNormal, nuv2).rgb * 2.0 - 1.0;
+    // Mix big detail + small detail then perturb the geom normal.
+    vec3 nDetail = normalize(n1 + n2 * 0.45);
+    // Reorient normal-map (tangent-space, y up) into world space.
+    // Geom normal is already nearly (0,1,0) for a horizontal water
+    // plane, so we can just lift the detail's xz onto the geom n.
+    vec3 n = normalize(vec3(
+      nGeom.x + nDetail.x * 0.65,
+      nGeom.y,
+      nGeom.z + nDetail.y * 0.65
+    ));
+
+    vec3 view = normalize(uCameraPosCustom - vWorldPos);
     float NdotV = max(0.0, dot(n, view));
     float fresnel = mix(0.02, 1.0, pow(1.0 - NdotV, 5.0));
 
-    // Specular — narrow blinn-phong
     vec3 sunDir = normalize(uSunDir);
     vec3 half_ = normalize(sunDir + view);
-    float spec = pow(max(0.0, dot(n, half_)), 220.0);
+    float spec = pow(max(0.0, dot(n, half_)), 180.0);
 
-    // Base water colour — shallow at the peaks, deep in the troughs.
-    // vWorldPos.y is the wave height.
+    // Base water — peaks shallow, troughs deep.
     float heightT = clamp(0.5 + vWorldPos.y * 0.25, 0.0, 1.0);
     vec3 base = mix(uSeaDeep, uSeaShallow, heightT);
 
@@ -164,14 +187,20 @@ const WATER_FRAG = /* glsl */ `
     vec3 reflCol = mix(uSkyColor, vec3(1.0), 0.15);
     vec3 col = mix(base, reflCol, fresnel);
 
-    // Sun glint
-    col += vec3(1.0, 0.96, 0.86) * spec * 0.35;
+    // Sun glint (sharper + brighter with normal-map detail)
+    col += vec3(1.0, 0.96, 0.86) * spec * 0.55;
 
-    // Foam — where the surface is sharp + tall.
+    // Foam — geometry-driven crests + normal-map steepness
     float steepness = 1.0 - n.y;
     float crest = smoothstep(0.30, 0.55, steepness)
                 * smoothstep(0.5, 2.0, vWorldPos.y);
     col = mix(col, uSeaFoam, crest * 0.30);
+
+    // Sub-pixel sparkle — the normal-map ripple introduces tiny
+    // bright spots when its normal aligns with the sun. Boost them
+    // so the surface glitters.
+    float sparkle = pow(max(0.0, dot(nDetail, sunDir.xyz)), 50.0);
+    col += vec3(1.0, 0.98, 0.92) * sparkle * 0.18;
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -266,6 +295,18 @@ export function HomeWater3DCanvas({
     const waterGeo = new THREE.PlaneGeometry(220, 320, 200, 200);
     waterGeo.rotateX(-Math.PI / 2);
 
+    // Tileable Phillips-spectrum normal map for high-frequency
+    // surface ripple. Same texture used by the 2D synth-sea route.
+    const oceanNormalTex = new THREE.TextureLoader().load(
+      "/sea-society/video/ocean-normal.png",
+    );
+    oceanNormalTex.wrapS = THREE.RepeatWrapping;
+    oceanNormalTex.wrapT = THREE.RepeatWrapping;
+    oceanNormalTex.minFilter = THREE.LinearMipmapLinearFilter;
+    oceanNormalTex.magFilter = THREE.LinearFilter;
+    oceanNormalTex.generateMipmaps = true;
+    oceanNormalTex.colorSpace = THREE.NoColorSpace;
+
     const waterUniforms = {
       uTime: { value: 0 },
       uSeaShallow: { value: new THREE.Vector3(...seaShallow) },
@@ -274,6 +315,7 @@ export function HomeWater3DCanvas({
       uSunDir: { value: new THREE.Vector3(...sunDir) },
       uSkyColor: { value: new THREE.Vector3(0.45, 0.62, 0.78) },
       uCameraPosCustom: { value: waterCamera.position.clone() },
+      uOceanNormal: { value: oceanNormalTex },
     };
     const waterMat = new THREE.ShaderMaterial({
       vertexShader: WATER_VERT,
@@ -441,6 +483,7 @@ export function HomeWater3DCanvas({
       waterGeo.dispose();
       waterMat.dispose();
       compMat.dispose();
+      oceanNormalTex.dispose();
       videoTex.dispose();
       depthTex?.dispose();
       if (renderer.domElement.parentElement === container) {

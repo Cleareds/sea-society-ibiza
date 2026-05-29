@@ -82,8 +82,8 @@ export default async function PreviewVideo3DPage({
         maskSrc={COLOR_SRC.mask}
         depthVideoSrc={depthExists ? DEPTH_REL : undefined}
         depthVideoSrcMobile={depthExists ? DEPTH_REL : undefined}
-        yachtDepthThreshold={0.93}
-        horizonY={0.62}
+        yachtDepthThreshold={0.82}
+        horizonY={0.58}
         seaShallowColor={[0.32, 0.52, 0.62]}
         seaDeepColor={[0.05, 0.15, 0.24]}
         seaFoamColor={[0.95, 0.92, 0.86]}

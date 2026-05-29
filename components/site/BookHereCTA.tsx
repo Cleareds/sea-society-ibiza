@@ -35,14 +35,15 @@ export function BookHereCTA({
   // matches the header CTA so the hover language reads as one system.
   const sizeCls =
     size === "lg" ? "h-14 px-9 text-xs" : "h-12 px-7 text-[11px]";
-  // Outer border / colour. 'dark' tone now wears the brand turquoise
-  // (matches the solid-state header pill) so the body-of-page CTA
-  // reads as prominently as the header. The slide-up fill below
-  // swaps to deep ink on hover for contrast.
+  // Outer border / colour.
+  //   light  — outlined white on dark backdrops (hero pills).
+  //   dark   — FILLED turquoise on light backdrops (body-of-page CTA);
+  //            the slide-up below swaps to deep ink on hover so the
+  //            colour change is the hover signal.
   const toneCls =
     tone === "light"
       ? "border border-white/50 text-white"
-      : "border border-[var(--color-primary)]/55 text-[var(--color-primary)]";
+      : "border border-[var(--color-primary)] bg-[var(--color-primary)] text-white";
   return (
     <a
       href={href}
@@ -56,9 +57,9 @@ export function BookHereCTA({
       )}
     >
       {/* Sliding fill — translates from below on hover. Light tone
-          fills with white (text becomes deep ink); dark tone fills
-          with deep ink (text becomes white) for high-contrast pop
-          against the turquoise resting state. */}
+          fills with white (text becomes deep ink); dark tone (already
+          turquoise-filled) fills with deep ink so the colour change
+          is the hover signal (text stays white throughout). */}
       <span
         aria-hidden
         className={cn(
@@ -69,9 +70,7 @@ export function BookHereCTA({
       <span
         className={cn(
           "relative z-10 transition-colors duration-500",
-          tone === "light"
-            ? "group-hover:text-[#06141a]"
-            : "group-hover:text-white",
+          tone === "light" ? "group-hover:text-[#06141a]" : "",
         )}
       >
         {label}
@@ -80,9 +79,7 @@ export function BookHereCTA({
         aria-hidden
         className={cn(
           "relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
-          tone === "light"
-            ? "group-hover:text-[#06141a]"
-            : "group-hover:text-white",
+          tone === "light" ? "group-hover:text-[#06141a]" : "",
         )}
       />
     </a>
