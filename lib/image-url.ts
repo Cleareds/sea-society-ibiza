@@ -6,6 +6,8 @@
  *   - Supabase Storage URLs have a paired `-thumb.webp` file pre-generated
  *     by the admin upload pipeline (full @ 2400w, thumb @ 900w). When the
  *     caller asks for a width <= 1100 we swap to the thumb.
+ *   - Local /images/boats/*-hero.webp have a paired *-hero-thumb.webp at
+ *     900w sitting next to the full 1800w file; same width gate as above.
  *   - Everything else is returned unchanged.
  *
  * Used by BoatCard, the experiences/destinations teaser cards and the
@@ -14,6 +16,16 @@
  */
 export function imageVariant(src: string, width: number): string {
   if (!src) return src;
+
+  // Local /images/boats/*-hero.webp — relative path, can't be parsed by
+  // URL(). Swap to the 900w thumb when the caller's slot is small.
+  if (
+    src.startsWith("/images/boats/") &&
+    src.endsWith("-hero.webp") &&
+    width <= 1100
+  ) {
+    return src.replace(/-hero\.webp$/, "-hero-thumb.webp");
+  }
 
   try {
     const u = new URL(src);

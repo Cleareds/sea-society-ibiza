@@ -18,7 +18,7 @@ const standardIncluded = [
   "Wifi on board",
 ];
 
-const hero = (slug: string) => `/images/boats/${slug}-hero.jpg`;
+const hero = (slug: string) => `/images/boats/${slug}-hero.webp`;
 
 export const boats: Boat[] = [
   {

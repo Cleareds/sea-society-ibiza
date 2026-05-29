@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
   // CookieBanner, admin forms) with zero source changes.
   reactCompiler: true,
 
+  // Ship source maps in production so Lighthouse + browser devtools can
+  // attribute issues to original source. Maps are .map files served
+  // alongside .js chunks; only fetched when devtools is open, so real
+  // users never download them.
+  productionBrowserSourceMaps: true,
+
   images: {
     // Skip Vercel's image-optimization proxy entirely. Uploaded boat
     // imagery is already pre-encoded to WebP in two sizes by the upload
