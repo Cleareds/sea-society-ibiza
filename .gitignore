@@ -69,3 +69,4 @@ proposal.html
 # DA-V2 batch run logs (verbose ffmpeg / torch warnings, not for repo)
 /logs/
 
+shorten-depth-vitl-1036.mp4
