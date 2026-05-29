@@ -113,7 +113,7 @@ export default async function HomePage({
         typography="editorial-serif"
         layout="bottom-left"
         canvas={{}}
-        scrubViewports={6.0}
+        scrubViewports={4.0}
         panMode="none"
         instagramHandle={settings.instagramHandle}
         instagramHref={settings.instagramUrl}

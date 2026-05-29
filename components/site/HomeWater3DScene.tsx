@@ -210,14 +210,14 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
 
   React.useEffect(() => {
     let raf = 0;
-    // All three phases (hero / cards / IG) are now driven by the same
-    // runway-progress RAF so the cross-fades happen at matching
-    // intervals. Each transition takes 0.15 of runway scroll.
+    // All three phases (hero / cards / IG) are driven by the same
+    // runway-progress RAF. Runway is now 4×100svh = 3 viewports of
+    // scroll, paced so each major arrival is ~1 scroll motion apart.
     //
-    // Phase windows:
-    //   Hero:  visible 0.00–0.30, fades out 0.30–0.45
-    //   Cards: fade in 0.30–0.45, visible 0.45–0.65, fade out 0.65–0.80
-    //   IG:    fade in 0.65–0.80, stays to 1.00
+    // Phase windows (desktop):
+    //   Hero:  visible 0.00–0.05, fades out 0.05–0.20  (1 motion → cards)
+    //   Cards: fade in 0.20–0.35, visible 0.35–0.55, fade out 0.55–0.70
+    //   IG:    fade in 0.55–0.70, stays to 1.00       (1 motion → IG top)
     //
     // The 0.30→0.45 transition (hero→cards) and the 0.65→0.80
     // transition (cards→IG) are identical 0.15-wide cross-fades — what
@@ -235,13 +235,13 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
       // need the hero text gone before cards reach the upper half
       // of the viewport.
       const heroOpacity = isDesktop
-        ? clamp01(1 - (p - 0.30) / 0.15)
+        ? clamp01(1 - (p - 0.05) / 0.15)
         : clamp01(1 - p / 0.10);
       const cardsOpacity = Math.min(
-        clamp01((p - 0.30) / 0.15),
-        clamp01(1 - (p - 0.65) / 0.15),
+        clamp01((p - 0.20) / 0.15),
+        clamp01(1 - (p - 0.55) / 0.15),
       );
-      const igOpacity = isDesktop ? clamp01((p - 0.65) / 0.15) : 1;
+      const igOpacity = isDesktop ? clamp01((p - 0.55) / 0.15) : 1;
       if (heroRef.current) {
         heroRef.current.style.opacity = String(heroOpacity);
         heroRef.current.style.pointerEvents = heroOpacity < 0.05 ? "none" : "";
@@ -393,12 +393,12 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
           aria-hidden
           className="pointer-events-none hidden w-full md:block"
           style={{
-            // IG must enter the viewport while runway-progress p is
-            // around 0.65. For a 6×100svh runway, p=0.65 maps to
-            // scrollY ≈ 3.25vh, so IG's doc position should sit at
-            // ≈ 4.25vh. Sticky pin owns 1vh, so spacer ≈ 3.25vh =
-            // 325svh on the default 6vh runway.
-            height: `${Math.max(0, (scrubViewports - 1) * 100 - 175)}svh`,
+            // IG fades in over p=0.55 → 0.70. Scroll distance =
+            // (scrubViewports - 1) × 100svh, so IG must enter the
+            // viewport from below when scrollY = scroll-distance ×
+            // 0.55. The sticky pin occupies the first 100svh of
+            // flow; the spacer fills the gap to that target.
+            height: `${Math.max(0, (scrubViewports - 1) * 55)}svh`,
           }}
         />
       )}

@@ -106,7 +106,7 @@ export default async function PreviewVideo3DPage({
         layout="bottom-left"
         canvas={{}}
         variantTag={variant.tag}
-        scrubViewports={6.0}
+        scrubViewports={4.0}
         panMode="none"
         instagramHandle={settings.instagramHandle}
         instagramHref={settings.instagramUrl}
