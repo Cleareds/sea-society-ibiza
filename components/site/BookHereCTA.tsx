@@ -35,12 +35,14 @@ export function BookHereCTA({
   // matches the header CTA so the hover language reads as one system.
   const sizeCls =
     size === "lg" ? "h-14 px-9 text-xs" : "h-12 px-7 text-[11px]";
-  // Outer border / colour. The actual hover-fill swap (slide-up
-  // colour change) lives below as a stacked span.
+  // Outer border / colour. 'dark' tone now wears the brand turquoise
+  // (matches the solid-state header pill) so the body-of-page CTA
+  // reads as prominently as the header. The slide-up fill below
+  // swaps to deep ink on hover for contrast.
   const toneCls =
     tone === "light"
       ? "border border-white/50 text-white"
-      : "border border-[var(--color-on-surface)]/30 text-[var(--color-on-surface)]";
+      : "border border-[var(--color-primary)]/55 text-[var(--color-primary)]";
   return (
     <a
       href={href}
@@ -53,9 +55,10 @@ export function BookHereCTA({
         className,
       )}
     >
-      {/* Sliding fill — translates from below on hover. Colour
-          matches the inversion of the tone (light → fills white;
-          dark → fills with the brand surface ink). */}
+      {/* Sliding fill — translates from below on hover. Light tone
+          fills with white (text becomes deep ink); dark tone fills
+          with deep ink (text becomes white) for high-contrast pop
+          against the turquoise resting state. */}
       <span
         aria-hidden
         className={cn(
@@ -68,7 +71,7 @@ export function BookHereCTA({
           "relative z-10 transition-colors duration-500",
           tone === "light"
             ? "group-hover:text-[#06141a]"
-            : "group-hover:text-[var(--color-surface)]",
+            : "group-hover:text-white",
         )}
       >
         {label}
@@ -79,7 +82,7 @@ export function BookHereCTA({
           "relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
           tone === "light"
             ? "group-hover:text-[#06141a]"
-            : "group-hover:text-[var(--color-surface)]",
+            : "group-hover:text-white",
         )}
       />
     </a>
