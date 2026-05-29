@@ -89,7 +89,7 @@ export default async function PreviewSeaVariantPage({
         seaDeepColor={variant.deep}
         seaFoamColor={variant.foam}
         seaSunDir={variant.sunDir}
-        seaBlend={0.40}
+        seaBlend={0.30}
         videoAspect={color.aspect}
         posterSrc={color.poster}
         whatsappNumber={settings.whatsappNumber}
@@ -102,14 +102,14 @@ export default async function PreviewSeaVariantPage({
         typography="editorial-serif"
         layout="bottom-left"
         canvas={{
-          cursorLightStrength: 0.12,
-          shimmerStrength: 0.0,   // shader handles its own sun glint
+          cursorLightStrength: 0.18,
+          shimmerStrength: 0.18,   // procedural caustic on top of synth
           brightnessLift: 1.10,
           saturation: 1.06,
           contrast: 1.02,
-          parallaxX: 0.008,
-          parallaxY: 0.004,
-          waterMotion: 0.0,        // synthetic sea has its own motion
+          parallaxX: 0.010,
+          parallaxY: 0.005,
+          waterMotion: 0.012,      // sea moves under cursor + paused
         }}
         variantTag={variant.tag}
         scrubViewports={variant.scrubViewports}

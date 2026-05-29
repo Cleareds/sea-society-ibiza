@@ -27,16 +27,20 @@ export interface SeaVariant {
 }
 
 const COLORS = {
-  // Turquoise palette — close to Mediterranean afternoon.
+  // Turquoise palette — close to Mediterranean afternoon. 'deep'
+  // lifted from near-black to a mid-teal so the synth blend keeps
+  // the photo's turquoise instead of dragging it dark.
   TURQUOISE: {
-    shallow: [0.32, 0.78, 0.85] as [number, number, number],
-    deep: [0.02, 0.10, 0.22] as [number, number, number],
+    shallow: [0.38, 0.82, 0.87] as [number, number, number],
+    deep: [0.10, 0.32, 0.42] as [number, number, number],
     foam: [0.96, 0.99, 1.00] as [number, number, number],
   },
   // Evening / golden-hour cool palette — for shorten.mov.
+  // 'deep' lifted from near-black so the blend with the photo doesn't
+  // crush the sea pixels to dark.
   EVENING: {
-    shallow: [0.22, 0.42, 0.55] as [number, number, number],
-    deep: [0.02, 0.07, 0.15] as [number, number, number],
+    shallow: [0.32, 0.52, 0.62] as [number, number, number],
+    deep: [0.10, 0.22, 0.32] as [number, number, number],
     foam: [0.95, 0.92, 0.86] as [number, number, number],
   },
 };

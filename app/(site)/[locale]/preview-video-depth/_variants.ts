@@ -92,10 +92,11 @@ const COPY = {
                                  // frame
     },
     scrubViewports: 6.0,
-    yachtDepth: 0.88,            // shorten yacht peaks 0.95+, threshold
-                                 // catches it cleanly
-    horizonY: 0.62,              // horizon sits at ~62% from bottom of
-                                 // viewport on landscape clips
+    yachtDepth: 0.93,            // tightened from 0.88 — only the very
+                                 // brightest hull pixels lock, so the
+                                 // procedural wave displacement no
+                                 // longer bleeds onto hull edges
+    horizonY: 0.62,
   },
   "shorten-hero": {
     headlineParts: { lead: "The Mediterranean, ", accent: "as you should see it", trail: "." },
@@ -112,7 +113,7 @@ const COPY = {
       waterMotion: 0.014,
     },
     scrubViewports: 5.0,
-    yachtDepth: 0.85,
+    yachtDepth: 0.92,
     horizonY: 0.60,
   },
   "vertical": {
@@ -131,7 +132,7 @@ const COPY = {
     },
     scrubViewports: 5.0,
     panMode: "vertical" as const,
-    yachtDepth: 0.85,
+    yachtDepth: 0.92,
     horizonY: 0.55,
   },
 };
