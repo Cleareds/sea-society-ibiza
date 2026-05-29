@@ -271,13 +271,28 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
       style={{ height: `${scrubViewports * 100}svh` }}
     >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-        {reduced ? (
+        {/* LCP poster — Next/Image marked priority + fetchPriority="high".
+            Rendered BEHIND the WebGL canvas as a real <img>, so it's the
+            largest contentful element painted by the browser (better LCP
+            than waiting for the video texture to decode + first three.js
+            tick to render). The canvas paints on top of it within ~one
+            frame, but if anything delays the canvas (JS not yet hydrated,
+            video still decoding) the user sees the poster instead of an
+            empty hero. */}
+        {posterSrc && (
           <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-            {posterSrc && (
-              <Image src={posterSrc} alt="" fill priority sizes="100vw" className="object-cover" />
-            )}
+            <Image
+              src={posterSrc}
+              alt=""
+              fill
+              priority
+              fetchPriority="high"
+              sizes="100vw"
+              className="object-cover"
+            />
           </div>
-        ) : (
+        )}
+        {reduced ? null : (
           <HomeWater3DCanvas
             videoSrc={videoSrc}
             videoSrcMobile={videoSrcMobile}

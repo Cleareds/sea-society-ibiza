@@ -90,7 +90,7 @@ export default async function FleetPage({
         ]}
       />
 
-      <section className="relative isolate h-[52vh] min-h-[400px] w-full overflow-hidden bg-[#06141a]">
+      <section data-cursor-bg="dark" className="relative isolate h-[52vh] min-h-[400px] w-full overflow-hidden bg-[#06141a]">
         <Image
           src="/sea-society/site/fleet-hero.webp"
           alt=""

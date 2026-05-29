@@ -263,7 +263,7 @@ export function HomeWater3DCanvas({
     video.playsInline = true;
     video.autoplay = false;
     video.setAttribute("webkit-playsinline", "true");
-    video.preload = "auto";
+    video.preload = "metadata";
     if (posterSrc) video.poster = posterSrc;
     const isMobile = typeof window !== "undefined" && window.innerWidth < 900;
     video.src = isMobile && videoSrcMobile ? videoSrcMobile : videoSrc;
@@ -285,7 +285,7 @@ export function HomeWater3DCanvas({
       depthVideo.playsInline = true;
       depthVideo.autoplay = false;
       depthVideo.setAttribute("webkit-playsinline", "true");
-      depthVideo.preload = "auto";
+      depthVideo.preload = "metadata";
       depthVideo.src = depthVideoSrc;
       depthVideo.load();
       depthVideo.addEventListener("loadedmetadata", () => {

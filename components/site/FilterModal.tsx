@@ -336,7 +336,7 @@ function Section({
 }) {
   return (
     <section>
-      <h3 className="text-[10px] font-medium uppercase tracking-[0.3em] text-[var(--color-on-surface-variant)]">
+      <h3 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
         {label}
       </h3>
       <div className="mt-4 space-y-1">{children}</div>
@@ -389,10 +389,10 @@ function CheckRow({
         </span>
         <span
           className={
-            "font-serif text-lg " +
+            "text-sm font-normal " +
             (active
               ? "text-[var(--color-on-surface)]"
-              : "text-[var(--color-on-surface)]/85 group-hover:text-[var(--color-on-surface)]")
+              : "text-[var(--color-on-surface)]/75 group-hover:text-[var(--color-on-surface)]")
           }
         >
           {label}

@@ -1,20 +1,26 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
-import { Hero } from "@/components/site/Hero";
-import { Section } from "@/components/site/Section";
-import { BoatCard } from "@/components/site/BoatCard";
-import { InstagramGrid } from "@/components/site/InstagramGrid";
-import { Reveal } from "@/components/site/Reveal";
-import { ArrowRight } from "lucide-react";
+import path from "node:path";
+import fs from "node:fs";
+import { HomeWater3DScene } from "@/components/site/HomeWater3DScene";
+import { InstagramFeed } from "@/components/site/InstagramFeed";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { websiteLd, fleetItemListLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getFeaturedBoats, getSettings } from "@/lib/data";
-import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
+import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { variants } from "./preview-video-3d/_variants";
 
-const HOME_HERO = "/sea-society/site/home-hero.webp";
+const COLOR_SRC = {
+  full: "/sea-society/video/shorten-scrub.mp4",
+  mobile: "/sea-society/video/shorten-scrub-720.mp4",
+  poster: "/sea-society/video/shorten-poster.jpg",
+  aspect: 16 / 9,
+  mask: "/sea-society/video/shorten-mask.png",
+};
+const DEPTH_REL = "/sea-society/video/shorten-depth-vitl-518.mp4";
 
 export const revalidate = 3600;
 
@@ -41,93 +47,94 @@ export default async function HomePage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const lc = locale as Locale;
-  const t = getMessages(lc);
-  const lp = (path: string) => localePath(lc, path);
+  const variant = variants[0]!;
 
+  const t = getMessages(lc);
   const [settings, featured] = await Promise.all([
     getSettings(),
     getFeaturedBoats(3),
   ]);
+  const featuredWithLabels = featured.map((b) => ({
+    boat: b,
+    fromLabel: t("fleet.fromPrice", {
+      amount: b.priceFrom.toLocaleString("en-GB"),
+    }),
+  }));
+
+  const depthAbs = path.join(process.cwd(), "public", DEPTH_REL.replace(/^\//, ""));
+  const depthExists = fs.existsSync(depthAbs);
+
+  const accentClass = "brand-accent wave-accent";
+  const headline = (
+    <>
+      Ibiza is <span className={accentClass}>different</span>
+      <br />
+      From the Sea.
+    </>
+  );
+  const sub = (
+    <>
+      From the moment you step aboard at Botafoc Marina,
+      <br className="hidden md:inline" />
+      {" "}to the moment you watch the sun dissolve into the
+      <br className="hidden md:inline" />
+      {" "}Mediterranean, every detail is handled.
+    </>
+  );
 
   return (
-    <>
+    <main className="text-white">
       <JsonLd data={[websiteLd(), fleetItemListLd(featured)]} />
-
-      <Hero
-        eyebrow=""
-        headline={
-          <>
-            Ibiza is <span className="brand-accent">different</span>
-            <br /> From the Sea.
-          </>
-        }
-        sub={
-          <>
-            From the moment you step aboard at Botafoc Marina,<br />
-            to the moment you watch the sun dissolve into the<br />
-            Mediterranean, every detail is handled.
-          </>
-        }
-        imageSrc={HOME_HERO}
-        imageAlt="Looking out at Es Vedra rock at golden hour from a quiet anchorage off Ibiza's south coast."
+      <HomeWater3DScene
+        videoSrc={COLOR_SRC.full}
+        videoSrcMobile={COLOR_SRC.mobile}
+        maskSrc={COLOR_SRC.mask}
+        depthVideoSrc={depthExists ? DEPTH_REL : undefined}
+        depthVideoSrcMobile={depthExists ? DEPTH_REL : undefined}
+        yachtDepthThreshold={0.72}
+        horizonY={0.58}
+        seaShallowColor={variant.shallow}
+        seaDeepColor={variant.deep}
+        seaFoamColor={variant.foam}
+        seaSunDir={variant.sunDir}
+        skyColor={variant.skyColor}
+        waveScale={variant.waveScale}
+        cameraHeight={variant.cameraHeight}
+        cameraDolly={variant.cameraDolly}
+        videoAspect={COLOR_SRC.aspect}
+        posterSrc={COLOR_SRC.poster}
         whatsappNumber={settings.whatsappNumber}
-        ctaLabel="Book here"
-        scrollLabel={t("cta.scroll")}
+        featured={featuredWithLabels}
+        locale={lc}
+        headline={headline}
+        accentClassName="wave-accent"
+        headlineClassName="md:max-w-[1600px]"
+        sub={sub}
+        typography="editorial-serif"
+        layout="bottom-left"
+        canvas={{}}
+        scrubViewports={6.0}
+        panMode="none"
+        instagramHandle={settings.instagramHandle}
+        instagramHref={settings.instagramUrl}
+        instagramSlot={
+          <InstagramFeed
+            handle={settings.instagramHandle}
+            href={settings.instagramUrl}
+            tone="dark"
+            accentClassName="wave-accent"
+          />
+        }
+        brandCloseSlot={
+          <Image
+            src="/brand/icon-light-512.webp"
+            alt="Sea Society Ibiza"
+            width={140}
+            height={140}
+            className="h-28 w-28 object-contain opacity-90 md:h-36 md:w-36"
+          />
+        }
       />
-
-      {/* Everything below scrolls over the sticky hero image. */}
-      <div id="after-hero" className="relative z-10 bg-[var(--color-surface)]">
-        {/* The fleet — 3 yachts + link to /fleet. Left-aligned to keep
-            the editorial reading rhythm. */}
-        <Section className="bg-[var(--color-surface-container-low)]" bleed>
-          <Reveal>
-            <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-baseline">
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-                  {t("home.featured.eyebrow")}
-                </p>
-                <h2 className="mt-3 max-w-3xl font-serif text-4xl text-[var(--color-on-surface)] md:text-6xl">
-                  Explore the <span className="brand-accent">fleet</span>
-                </h2>
-              </div>
-            </div>
-
-            <ul className="mt-12 grid gap-6 md:grid-cols-3 md:gap-8">
-              {featured.slice(0, 3).map((b, i) => (
-                <li key={b.id}>
-                  <BoatCard
-                    boat={b}
-                    locale={lc}
-                    priority={i < 2}
-                    fromLabel={t("fleet.fromPrice", {
-                      amount: b.priceFrom.toLocaleString("en-GB"),
-                    })}
-                  />
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-10">
-              <Link
-                href={lp("/fleet")}
-                className="group inline-flex items-center gap-3 text-sm font-medium uppercase tracking-[0.3em] text-[var(--color-primary)] transition-colors hover:text-[var(--color-on-surface)]"
-              >
-                See the full fleet
-                <ArrowRight
-                  aria-hidden
-                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                />
-              </Link>
-            </div>
-          </Reveal>
-        </Section>
-
-        {/* Follow the journey — full-bleed photo wall. No bottom padding
-            so the next section (footer) sits flush. */}
-        <div className="pt-12 md:pt-20">
-          <InstagramGrid handle={settings.instagramHandle} href={settings.instagramUrl} />
-        </div>
-      </div>
-    </>
+    </main>
   );
 }
