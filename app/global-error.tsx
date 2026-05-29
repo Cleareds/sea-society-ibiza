@@ -29,7 +29,7 @@ export default function GlobalError({
           minHeight: "100vh",
           display: "grid",
           placeItems: "center",
-          background: "#006565",
+          background: "#055043",
           color: "#fcf9f8",
           fontFamily:
             "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif",
@@ -82,7 +82,7 @@ export default function GlobalError({
               type="button"
               onClick={() => reset()}
               style={{
-                background: "#bc0100",
+                background: "#055043",
                 color: "#fff",
                 border: 0,
                 padding: "12px 24px",
