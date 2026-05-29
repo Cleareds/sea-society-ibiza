@@ -4,7 +4,7 @@ import { BookHereCTA } from "@/components/site/BookHereCTA";
 interface HeroProps {
   /** Headline rendered as React node so the caller can colour-highlight words. */
   headline: React.ReactNode;
-  sub: string;
+  sub: React.ReactNode;
   imageSrc: string;
   imageAlt: string;
   eyebrow?: string;

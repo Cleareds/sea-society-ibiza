@@ -52,12 +52,18 @@ export default async function PreviewVideoDepthVariantPage({
   const depthAbsPath = path.join(process.cwd(), "public", depthRel.replace(/^\//, ""));
   const depthExists = fs.existsSync(depthAbsPath);
 
-  const { lead, accent, trail } = variant.headlineParts;
   const headline = (
     <>
-      {lead}
-      <span className="brand-accent">{accent}</span>
-      {trail}
+      Ibiza is <span className="brand-accent">different</span>
+      <br />
+      From the Sea.
+    </>
+  );
+  const sub = (
+    <>
+      From the moment you step aboard at Botafoc Marina,<br />
+      to the moment you watch the sun dissolve into the<br />
+      Mediterranean, every detail is handled.
     </>
   );
 
@@ -79,7 +85,7 @@ export default async function PreviewVideoDepthVariantPage({
         featured={featuredWithLabels}
         locale={lc}
         headline={headline}
-        sub={variant.sub}
+        sub={sub}
         typography={variant.typography}
         layout={variant.layout}
         canvas={variant.canvas}

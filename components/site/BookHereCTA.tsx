@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/whatsapp";
 
@@ -30,29 +30,57 @@ export function BookHereCTA({
   size = "md",
 }: InlineProps) {
   const href = whatsappLink({ number, boatName });
+  // Sized to match the header pill's typography but with a larger
+  // outer footprint for body-of-page placements. Uppercase tracking
+  // matches the header CTA so the hover language reads as one system.
   const sizeCls =
-    size === "lg" ? "h-14 px-9 text-base" : "h-12 px-7 text-sm md:text-base";
+    size === "lg" ? "h-14 px-9 text-xs" : "h-12 px-7 text-[11px]";
+  // Outer border / colour. The actual hover-fill swap (slide-up
+  // colour change) lives below as a stacked span.
   const toneCls =
     tone === "light"
-      ? "border border-white/40 bg-white/5 text-white hover:bg-white/15"
-      : "border border-[var(--color-on-surface)]/20 bg-[var(--color-on-surface)] text-[var(--color-surface)] hover:opacity-90";
+      ? "border border-white/50 text-white"
+      : "border border-[var(--color-on-surface)]/30 text-[var(--color-on-surface)]";
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "group inline-flex w-fit items-center justify-center gap-3 rounded-full font-medium tracking-wide backdrop-blur-sm transition-all",
-        "hover:-translate-y-0.5",
+        "group relative inline-flex w-fit items-center justify-center gap-3 overflow-hidden rounded-full font-medium uppercase tracking-[0.22em] backdrop-blur-sm transition-all duration-500",
         sizeCls,
         toneCls,
         className,
       )}
     >
-      <span>{label}</span>
-      <ArrowRight
+      {/* Sliding fill — translates from below on hover. Colour
+          matches the inversion of the tone (light → fills white;
+          dark → fills with the brand surface ink). */}
+      <span
         aria-hidden
-        className="h-4 w-4 transition-transform group-hover:translate-x-1"
+        className={cn(
+          "absolute inset-0 -z-0 translate-y-full transition-transform duration-500 ease-out group-hover:translate-y-0",
+          tone === "light" ? "bg-white" : "bg-[var(--color-on-surface)]",
+        )}
+      />
+      <span
+        className={cn(
+          "relative z-10 transition-colors duration-500",
+          tone === "light"
+            ? "group-hover:text-[#06141a]"
+            : "group-hover:text-[var(--color-surface)]",
+        )}
+      >
+        {label}
+      </span>
+      <ArrowUpRight
+        aria-hidden
+        className={cn(
+          "relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
+          tone === "light"
+            ? "group-hover:text-[#06141a]"
+            : "group-hover:text-[var(--color-surface)]",
+        )}
       />
     </a>
   );
@@ -102,12 +130,18 @@ export function StickyBookHere({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group inline-flex h-12 w-full max-w-md items-center justify-center gap-3 rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-sm font-medium tracking-wide text-white shadow-2xl backdrop-blur-md transition-all hover:bg-[#06141a] md:h-14 md:w-auto md:px-10 md:text-base"
+        className="group relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-[11px] font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10 md:text-xs"
       >
-        {label}
-        <ArrowRight
+        <span
           aria-hidden
-          className="h-4 w-4 transition-transform group-hover:translate-x-1"
+          className="absolute inset-0 -z-0 translate-y-full bg-white transition-transform duration-500 ease-out group-hover:translate-y-0"
+        />
+        <span className="relative z-10 transition-colors duration-500 group-hover:text-[#06141a]">
+          {label}
+        </span>
+        <ArrowUpRight
+          aria-hidden
+          className="relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#06141a]"
         />
       </a>
     </div>

@@ -50,7 +50,6 @@ export default async function PreviewSeaVariantPage({
     path.join(process.cwd(), "public", depthRel.replace(/^\//, "")),
   );
 
-  const { lead, accent, trail } = variant.headlineParts;
   // Open-sea route: the brand-accent focus word gets the wave fill
   // (white text with a light turquoise wave scrolling through it).
   // The h2 'Explore the fleet' inside the scene picks up the same
@@ -59,9 +58,16 @@ export default async function PreviewSeaVariantPage({
   const accentClass = useWave ? "brand-accent wave-accent" : "brand-accent";
   const headline = (
     <>
-      {lead}
-      <span className={accentClass}>{accent}</span>
-      {trail}
+      Ibiza is <span className={accentClass}>different</span>
+      <br />
+      From the Sea.
+    </>
+  );
+  const sub = (
+    <>
+      From the moment you step aboard at Botafoc Marina,<br />
+      to the moment you watch the sun dissolve into the<br />
+      Mediterranean, every detail is handled.
     </>
   );
 
@@ -88,7 +94,7 @@ export default async function PreviewSeaVariantPage({
         locale={lc}
         headline={headline}
         accentClassName={useWave ? "wave-accent" : undefined}
-        sub={variant.sub}
+        sub={sub}
         typography="editorial-serif"
         layout="bottom-left"
         canvas={{

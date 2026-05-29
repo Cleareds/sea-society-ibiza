@@ -52,7 +52,7 @@ export interface HomeVideoSceneProps {
   /** Class merged into ALL brand-accent spans (the h1 focus word AND
    *  the h2 'Explore the fleet' focus word) on this scene. */
   accentClassName?: string;
-  sub: string;
+  sub: React.ReactNode;
   typography?: Typography;
   layout?: Layout;
   canvas?: CanvasOverrides;

@@ -58,10 +58,16 @@ export default async function HomePage({
         headline={
           <>
             Ibiza is <span className="brand-accent">different</span>
-            <br className="hidden md:block" /> from the sea.
+            <br /> From the Sea.
           </>
         }
-        sub="From the moment you step aboard at Botafoc Marina to the moment you watch the sun dissolve into the Mediterranean, every detail is handled."
+        sub={
+          <>
+            From the moment you step aboard at Botafoc Marina,<br />
+            to the moment you watch the sun dissolve into the<br />
+            Mediterranean, every detail is handled.
+          </>
+        }
         imageSrc={HOME_HERO}
         imageAlt="Looking out at Es Vedra rock at golden hour from a quiet anchorage off Ibiza's south coast."
         whatsappNumber={settings.whatsappNumber}
