@@ -230,7 +230,13 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
       // animate opacity below md (which would otherwise leave IG
       // stuck at 0 until the user has scrolled past 65% of runway).
       const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
-      const heroOpacity = clamp01(1 - (p - 0.30) / 0.15);
+      // Hero text fades MUCH faster on mobile — the pinned sticky
+      // overlaps with the in-flow cards as they scroll up, so we
+      // need the hero text gone before cards reach the upper half
+      // of the viewport.
+      const heroOpacity = isDesktop
+        ? clamp01(1 - (p - 0.30) / 0.15)
+        : clamp01(1 - p / 0.10);
       const cardsOpacity = Math.min(
         clamp01((p - 0.30) / 0.15),
         clamp01(1 - (p - 0.65) / 0.15),
@@ -373,7 +379,7 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
           Hidden on desktop (absolute-pinned version inside the pin
           takes over). Generous vertical padding for a slower
           scroll-in feel. */}
-      <div className="relative z-10 w-full px-5 pt-[10svh] pb-[8svh] md:hidden">
+      <div className="relative z-10 w-full px-5 pt-[28svh] pb-[10svh] md:hidden">
         <div className="mx-auto w-full max-w-(--spacing-container-max)">
           {renderCardsContent({ featured, lp, variantTag, accentClassName })}
         </div>
