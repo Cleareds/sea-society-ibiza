@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import path from "node:path";
 import fs from "node:fs";
@@ -121,6 +122,22 @@ export default async function PreviewSeaVariantPage({
           />
         }
       />
+
+      {/* Branded close — large white SS icon centred between the IG
+          feed and the footer. Same vertical padding as the IG block
+          so the rhythm continues from the IG section. Only on the
+          open-sea route. */}
+      {variant.slug === "open-sea" && (
+        <div className="relative z-10 flex w-full items-center justify-center px-5 pb-[14svh] pt-[4svh] md:px-10">
+          <Image
+            src="/brand/icon-light-512.webp"
+            alt="Sea Society Ibiza"
+            width={140}
+            height={140}
+            className="h-28 w-28 object-contain opacity-90 md:h-36 md:w-36"
+          />
+        </div>
+      )}
     </main>
   );
 }
