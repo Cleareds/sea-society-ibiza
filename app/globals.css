@@ -148,6 +148,43 @@ h1, h2, h3, h4 {
   color: inherit;
 }
 
+/* Wave-fill heading — letters are filled with white above the water
+   line, with a light turquoise wave scrolling sideways below it.
+   Same technique as the GeeksforGeeks pure-CSS wave-text demo: a
+   tileable SVG wave used as background-image, clipped to the text
+   shape, animated horizontally. */
+.wave-headline {
+  /* Two stacked backgrounds, both clipped to the text:
+     - top: scrolling SVG wave (turquoise below the wave line, white
+       on the strip ABOVE so the letters' tops read white)
+     - bottom: solid white fallback so any uncovered area still reads
+       white instead of falling through to text-fill default. */
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M 0 75 Q 100 35 200 75 T 400 75 V 200 H 0 Z' fill='%2390e3e0'/></svg>"),
+    linear-gradient(to bottom, #ffffff, #ffffff);
+  background-repeat: repeat-x, no-repeat;
+  background-size: 400px 100%, 100% 100%;
+  background-position: 0 0, 0 0;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  /* Disable the brand-headline text-shadow — the shadow plus
+     transparent fill renders as a translucent shadow halo around
+     each letter, which fights the effect. */
+  text-shadow: none !important;
+  animation: wave-headline-flow 7s linear infinite;
+}
+
+@keyframes wave-headline-flow {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: -400px 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-headline { animation: none; }
+}
+
 /* `.brand-img-hover` — apply to wrappers (or directly to images) on
  *  content cards / tile grids so the cursor brightens the image as it
  *  hovers. A milder echo of the WebGL canvas's cursor-light effect on

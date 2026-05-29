@@ -81,6 +81,7 @@ export default async function PreviewSeaVariantPage({
         featured={featuredWithLabels}
         locale={lc}
         headline={headline}
+        headlineClassName={variant.slug === "open-sea" ? "wave-headline" : undefined}
         sub={variant.sub}
         typography="editorial-serif"
         layout="bottom-left"

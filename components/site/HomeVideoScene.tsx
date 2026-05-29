@@ -45,6 +45,10 @@ export interface HomeVideoSceneProps {
   featured: Array<{ boat: Boat; fromLabel: string }>;
   locale: Locale;
   headline: React.ReactNode;
+  /** Extra class names merged into the h1 — used to apply the wave-fill
+   *  treatment on individual variants without changing the shared
+   *  typography preset. */
+  headlineClassName?: string;
   sub: string;
   typography?: Typography;
   layout?: Layout;
@@ -156,7 +160,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
   const {
     videoSrc, videoSrcMobile, maskSrc, videoAspect, posterSrc,
     whatsappNumber, featured, locale,
-    headline, sub,
+    headline, headlineClassName, sub,
     typography = "editorial-serif",
     layout = "bottom-left",
     canvas,
@@ -296,7 +300,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
                   : "justify-end")
             }
           >
-            <h1 className={HEADLINE_CLASSES[typography]}>{headline}</h1>
+            <h1 className={`${HEADLINE_CLASSES[typography]} ${headlineClassName ?? ""}`.trim()}>{headline}</h1>
             <p className={SUB_CLASSES[typography]}>{sub}</p>
             <div className={layout === "center" ? "mt-10 flex justify-center" : "mt-10"}>
               <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
