@@ -145,12 +145,12 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 )}
               />
             </a>
-            {/* SS brand mark — sits next to the pill, lifted ~8px so it
-                breaks the optical baseline of the nav row. */}
+            {/* SS brand mark — sits next to the pill, vertically
+                centered to match the Book here CTA baseline. */}
             <Link
               href={lp("/")}
               aria-label="Sea Society Ibiza — home"
-              className="relative -mt-2 inline-flex h-10 w-10 items-center justify-center"
+              className="relative inline-flex h-10 w-10 items-center justify-center"
             >
               <Image
                 src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}
@@ -204,7 +204,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
           <Link
             href={lp("/")}
             aria-label="Sea Society Ibiza — home"
-            className="relative -mt-1 inline-flex h-10 w-10 items-center justify-center"
+            className="relative inline-flex h-10 w-10 items-center justify-center"
           >
             <Image
               src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}

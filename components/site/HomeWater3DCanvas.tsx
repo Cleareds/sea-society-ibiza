@@ -75,21 +75,33 @@ const COMPOSITE_FRAG = /* glsl */ `
     float keepPhoto = 0.0;
     if (uHasDepth > 0.5) {
       float d = texture2D(uDepth, uv).r;
-      // VERY wide yacht transition — yacht depth values span 0.80–
-      // 0.98 on DA-V2 vitl-518, and we want every pixel that's
-      // remotely yacht-like to be kept from the photo so the boat
-      // stays visible.
-      float yachtKeep = smoothstep(uYachtDepth - 0.10, uYachtDepth + 0.06, d);
-      // Wide horizon blend — soft fade from 3D water (bottom of
-      // viewport) to photo (top) over ~0.20 of the viewport.
-      // vuv.y=1 is the TOP, so high vuv.y = sky region = keep photo.
+      // YACHT-KEEP: high depth AND mid-frame screen position. The
+      // bottom of the frame in shorten.mov is foreground wake +
+      // close-camera sea, which DA-V2 reads at high depth too. The
+      // vertical gate suppresses the false-positive at the bottom.
+      float yachtDepthOk = smoothstep(uYachtDepth - 0.04, uYachtDepth + 0.04, d);
+      float yachtPositionOk = smoothstep(0.18, 0.30, vuv.y);  // 0 in
+                                                              // bottom 18%
+                                                              // 1 above 30%
+      float yachtKeep = yachtDepthOk * yachtPositionOk;
+      // HORIZON-KEEP: top of viewport stays photo (sky + cliffs).
       float horizonKeep = smoothstep(uHorizonY - 0.10, uHorizonY + 0.10, vuv.y);
       keepPhoto = max(yachtKeep, horizonKeep);
     } else {
       keepPhoto = 0.5;
     }
 
-    vec3 final = mix(water3d, photo, keepPhoto);
+    // SEA BLEND — in sea regions the PHOTO stays the base (so the
+    // real water texture and colour shows through), and the 3D water
+    // is mixed in to provide depth cues: normal-map ripple, sun
+    // glint, fresnel-tinted shading. Reads as effects 'below the
+    // surface' rather than a synthetic plate laid on top.
+    vec3 seaBlend = mix(photo, water3d, 0.42);
+    // Plus an additive highlight where the 3D water is brighter than
+    // the photo — sparkle / specular get to shine through.
+    seaBlend += max(vec3(0.0), water3d - photo) * 0.35;
+
+    vec3 final = mix(seaBlend, photo, keepPhoto);
     gl_FragColor = vec4(final, 1.0);
   }
 `;
