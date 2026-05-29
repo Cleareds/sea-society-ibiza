@@ -12,7 +12,7 @@ import { breadcrumbLd, fleetItemListLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getBoats } from "@/lib/data";
 // (photo dummy refs replaced by /sea-society/site/* assets)
-import type { Boat, BoatType } from "@/lib/data/types";
+import type { Boat } from "@/lib/data/types";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -42,14 +42,21 @@ interface SearchParams {
   brand?: string;
 }
 
+function csv(v: string | undefined): string[] {
+  if (!v) return [];
+  return v.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
 function applyFilters(boats: Boat[], sp: SearchParams): Boat[] {
+  const types = csv(sp.type);
+  const brands = csv(sp.brand).map((b) => b.toLowerCase());
   return boats.filter((b) => {
-    if (sp.type && b.type !== (sp.type as BoatType)) return false;
+    if (types.length > 0 && !types.includes(b.type)) return false;
     if (sp.minGuests && b.guests < Number(sp.minGuests)) return false;
     if (sp.minLength && b.lengthM < Number(sp.minLength)) return false;
     if (sp.maxLength && b.lengthM > Number(sp.maxLength)) return false;
     if (sp.maxPrice && b.priceFrom > Number(sp.maxPrice)) return false;
-    if (sp.brand && b.brand.toLowerCase() !== sp.brand.toLowerCase()) return false;
+    if (brands.length > 0 && !brands.includes(b.brand.toLowerCase())) return false;
     return true;
   });
 }

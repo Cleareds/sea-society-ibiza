@@ -75,14 +75,13 @@ const COMPOSITE_FRAG = /* glsl */ `
     float keepPhoto = 0.0;
     if (uHasDepth > 0.5) {
       float d = texture2D(uDepth, uv).r;
-      // YACHT-KEEP: high depth AND mid-frame screen position. The
-      // bottom of the frame in shorten.mov is foreground wake +
-      // close-camera sea, which DA-V2 reads at high depth too. The
-      // vertical gate suppresses the false-positive at the bottom.
-      float yachtDepthOk = smoothstep(uYachtDepth - 0.04, uYachtDepth + 0.04, d);
-      float yachtPositionOk = smoothstep(0.18, 0.30, vuv.y);  // 0 in
-                                                              // bottom 18%
-                                                              // 1 above 30%
+      // YACHT-KEEP: depth ≥ threshold AND mid-frame screen position.
+      // Wider depth band (0.10 instead of 0.04) keeps the yacht
+      // hull fully sharp across all DA-V2 confidence variations.
+      // The vertical gate suppresses the foreground wake at the
+      // bottom which DA-V2 incorrectly reads as 'near'.
+      float yachtDepthOk = smoothstep(uYachtDepth - 0.08, uYachtDepth + 0.08, d);
+      float yachtPositionOk = smoothstep(0.18, 0.30, vuv.y);
       float yachtKeep = yachtDepthOk * yachtPositionOk;
       // HORIZON-KEEP: top of viewport stays photo (sky + cliffs).
       float horizonKeep = smoothstep(uHorizonY - 0.10, uHorizonY + 0.10, vuv.y);
@@ -91,15 +90,14 @@ const COMPOSITE_FRAG = /* glsl */ `
       keepPhoto = 0.5;
     }
 
-    // SEA BLEND — in sea regions the PHOTO stays the base (so the
-    // real water texture and colour shows through), and the 3D water
-    // is mixed in to provide depth cues: normal-map ripple, sun
-    // glint, fresnel-tinted shading. Reads as effects 'below the
-    // surface' rather than a synthetic plate laid on top.
-    vec3 seaBlend = mix(photo, water3d, 0.42);
-    // Plus an additive highlight where the 3D water is brighter than
-    // the photo — sparkle / specular get to shine through.
-    seaBlend += max(vec3(0.0), water3d - photo) * 0.35;
+    // SEA BLEND — photo dominates (~80%). 3D water contributes only
+    // a faint depth cue: normal-map ripple darkening troughs and
+    // fresnel-lit peaks. Reads as effects 'below the surface' rather
+    // than a synthetic plate laid on top.
+    vec3 seaBlend = mix(photo, water3d, 0.20);
+    // Additive highlight where 3D water is meaningfully brighter
+    // than the photo — sun sparkle pops through.
+    seaBlend += max(vec3(0.0), water3d - photo) * 0.18;
 
     vec3 final = mix(seaBlend, photo, keepPhoto);
     gl_FragColor = vec4(final, 1.0);
@@ -130,13 +128,15 @@ const WATER_VERT = /* glsl */ `
     vec3 p = position;
     vec3 n = vec3(0.0, 1.0, 0.0);
 
-    // Six waves — directions tuned for rolling toward camera.
-    p += gerstner(p, normalize(vec2( 0.1,  1.0)), 28.0, 0.85, 0.65, uTime, n);
-    p += gerstner(p, normalize(vec2( 0.4,  0.9)), 20.0, 0.55, 0.80, uTime, n);
-    p += gerstner(p, normalize(vec2(-0.3,  0.9)), 12.0, 0.32, 0.95, uTime, n);
-    p += gerstner(p, normalize(vec2( 0.2,  0.95)), 6.5, 0.18, 1.20, uTime, n);
-    p += gerstner(p, normalize(vec2( 0.8,  0.6)),  3.4, 0.10, 1.45, uTime, n);
-    p += gerstner(p, normalize(vec2(-0.55, 0.85)), 1.6, 0.05, 1.75, uTime, n);
+    // Six waves — amplitudes halved + a touch more for the smallest
+    // chop, so the surface reads as small calm wavelets rather than
+    // big rolling swell.
+    p += gerstner(p, normalize(vec2( 0.1,  1.0)), 28.0, 0.40, 0.65, uTime, n);
+    p += gerstner(p, normalize(vec2( 0.4,  0.9)), 20.0, 0.26, 0.80, uTime, n);
+    p += gerstner(p, normalize(vec2(-0.3,  0.9)), 12.0, 0.16, 0.95, uTime, n);
+    p += gerstner(p, normalize(vec2( 0.2,  0.95)), 6.5, 0.09, 1.20, uTime, n);
+    p += gerstner(p, normalize(vec2( 0.8,  0.6)),  3.4, 0.05, 1.45, uTime, n);
+    p += gerstner(p, normalize(vec2(-0.55, 0.85)), 1.6, 0.03, 1.75, uTime, n);
 
     vWorldPos = p;
     vNormal = normalize(n);
