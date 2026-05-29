@@ -45,6 +45,17 @@ export interface HomeWater3DCanvasProps {
   seaDeep?: [number, number, number];
   seaFoam?: [number, number, number];
   sunDir?: [number, number, number];
+  /** Multiplier on all Gerstner wave amplitudes — bump to make the
+   *  surface read more active, drop to flatten. Default 1.0. */
+  waveScale?: number;
+  /** Camera height above sea (Y) and dolly back from origin (Z). Tune
+   *  per source video so the synthetic horizon lands at the photo's
+   *  horizon line. Defaults match shorten.mov. */
+  cameraHeight?: number;
+  cameraDolly?: number;
+  /** Sky colour the water reflects via Fresnel — set per variant
+   *  so each preset matches its lighting palette. */
+  skyColor?: [number, number, number];
 }
 
 const COMPOSITE_VERT = /* glsl */ `
@@ -107,6 +118,7 @@ const COMPOSITE_FRAG = /* glsl */ `
 // 3D water — vertex-displaced plane with Gerstner waves.
 const WATER_VERT = /* glsl */ `
   uniform float uTime;
+  uniform float uWaveScale;
   varying vec2 vUv;
   varying vec3 vNormal;
   varying vec3 vWorldPos;
@@ -128,15 +140,16 @@ const WATER_VERT = /* glsl */ `
     vec3 p = position;
     vec3 n = vec3(0.0, 1.0, 0.0);
 
-    // Six waves — amplitudes halved + a touch more for the smallest
-    // chop, so the surface reads as small calm wavelets rather than
-    // big rolling swell.
-    p += gerstner(p, normalize(vec2( 0.1,  1.0)), 28.0, 0.40, 0.65, uTime, n);
-    p += gerstner(p, normalize(vec2( 0.4,  0.9)), 20.0, 0.26, 0.80, uTime, n);
-    p += gerstner(p, normalize(vec2(-0.3,  0.9)), 12.0, 0.16, 0.95, uTime, n);
-    p += gerstner(p, normalize(vec2( 0.2,  0.95)), 6.5, 0.09, 1.20, uTime, n);
-    p += gerstner(p, normalize(vec2( 0.8,  0.6)),  3.4, 0.05, 1.45, uTime, n);
-    p += gerstner(p, normalize(vec2(-0.55, 0.85)), 1.6, 0.03, 1.75, uTime, n);
+    // Six waves — directions toward the camera. Amplitudes are
+    // multiplied by uWaveScale so variants can be calmer / more
+    // active without rewriting the shader.
+    float s = uWaveScale;
+    p += gerstner(p, normalize(vec2( 0.1,  1.0)), 28.0, 0.40 * s, 0.65, uTime, n);
+    p += gerstner(p, normalize(vec2( 0.4,  0.9)), 20.0, 0.26 * s, 0.80, uTime, n);
+    p += gerstner(p, normalize(vec2(-0.3,  0.9)), 12.0, 0.16 * s, 0.95, uTime, n);
+    p += gerstner(p, normalize(vec2( 0.2,  0.95)), 6.5, 0.09 * s, 1.20, uTime, n);
+    p += gerstner(p, normalize(vec2( 0.8,  0.6)),  3.4, 0.05 * s, 1.45, uTime, n);
+    p += gerstner(p, normalize(vec2(-0.55, 0.85)), 1.6, 0.03 * s, 1.75, uTime, n);
 
     vWorldPos = p;
     vNormal = normalize(n);
@@ -231,6 +244,10 @@ export function HomeWater3DCanvas({
   seaDeep = [0.10, 0.22, 0.32],
   seaFoam = [0.95, 0.92, 0.86],
   sunDir = [0.55, 0.30, 0.80],
+  waveScale = 1.0,
+  cameraHeight = 12,
+  cameraDolly = 18,
+  skyColor = [0.48, 0.62, 0.74],
 }: HomeWater3DCanvasProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -299,7 +316,7 @@ export function HomeWater3DCanvas({
     const waterCamera = new THREE.PerspectiveCamera(50, 16 / 9, 0.5, 400);
     // Drone-shot framing: camera ~12m above water, tilted ~25° down,
     // looking forward. Tuned by eye against shorten.mov framing.
-    waterCamera.position.set(0, 12, 18);
+    waterCamera.position.set(0, cameraHeight, cameraDolly);
     waterCamera.lookAt(0, 0, -8);
 
     // 200x200 subdivisions — enough density for the Gerstner waves
@@ -325,9 +342,10 @@ export function HomeWater3DCanvas({
       uSeaDeep: { value: new THREE.Vector3(...seaDeep) },
       uSeaFoam: { value: new THREE.Vector3(...seaFoam) },
       uSunDir: { value: new THREE.Vector3(...sunDir) },
-      uSkyColor: { value: new THREE.Vector3(0.45, 0.62, 0.78) },
+      uSkyColor: { value: new THREE.Vector3(skyColor[0], skyColor[1], skyColor[2]) },
       uCameraPosCustom: { value: waterCamera.position.clone() },
       uOceanNormal: { value: oceanNormalTex },
+      uWaveScale: { value: waveScale },
     };
     const waterMat = new THREE.ShaderMaterial({
       vertexShader: WATER_VERT,
@@ -455,17 +473,8 @@ export function HomeWater3DCanvas({
         }
       }
 
-      // PASS 1 — render 3D water
+      // PASS 1 — render 3D water (sky colour now a variant constant)
       waterUniforms.uTime.value = time;
-      // Sky colour follows the video sky band each frame
-      try {
-        const img = video as unknown as HTMLVideoElement;
-        if (img.readyState >= 2) {
-          // Lightweight estimate: cycle the sky to a fixed dusk tone
-          // for now. We could canvas-sample the video but it costs.
-          waterUniforms.uSkyColor.value.set(0.48, 0.62, 0.74);
-        }
-      } catch { /* ignore */ }
       renderer.setRenderTarget(waterFBO);
       renderer.clear();
       renderer.render(waterScene, waterCamera);
@@ -511,6 +520,10 @@ export function HomeWater3DCanvas({
     seaDeep[0], seaDeep[1], seaDeep[2],
     seaFoam[0], seaFoam[1], seaFoam[2],
     sunDir[0], sunDir[1], sunDir[2],
+    skyColor[0], skyColor[1], skyColor[2],
+    waveScale,
+    cameraHeight,
+    cameraDolly,
   ]);
 
   return (

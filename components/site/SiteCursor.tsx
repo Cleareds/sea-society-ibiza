@@ -63,13 +63,21 @@ export function SiteCursor() {
         "a, button, [role='button'], input, textarea, select, [data-cursor='hover']",
       );
       el.dataset.hover = overInteractive ? "true" : "false";
-      // Cursor colour context — walk up from the hovered element to
-      // the first ancestor that declares a colour intent. Default is
-      // 'light' (dark-turquoise cursor on white content pages). Hero
-      // sections with photo/video backdrops set data-cursor-bg="dark"
-      // so the cursor switches to white over them.
-      const ctx = target?.closest("[data-cursor-bg]") as HTMLElement | null;
-      el.dataset.bg = ctx?.dataset.cursorBg === "dark" ? "dark" : "light";
+      // Cursor colour context — two-tier resolution:
+      //   1. Explicit data-cursor-bg on any ancestor wins (used by
+      //      heroes with overlay copy where the cursor sits on TEXT
+      //      that visually reads as 'on the image').
+      //   2. Otherwise auto-detect — over any img/video/picture
+      //      element, switch to dark (= white cursor). Over plain
+      //      content, the default light context (= dark-turquoise
+      //      cursor) applies.
+      const explicit = target?.closest("[data-cursor-bg]") as HTMLElement | null;
+      if (explicit) {
+        el.dataset.bg = explicit.dataset.cursorBg === "light" ? "light" : "dark";
+      } else {
+        const overImagery = target?.closest("img, video, picture");
+        el.dataset.bg = overImagery ? "dark" : "light";
+      }
       el.dataset.visible = "true";
       if (!raf) raf = requestAnimationFrame(tick);
     };

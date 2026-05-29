@@ -74,6 +74,10 @@ export interface HomeWater3DSceneProps {
   seaDeepColor?: [number, number, number];
   seaFoamColor?: [number, number, number];
   seaSunDir?: [number, number, number];
+  skyColor?: [number, number, number];
+  waveScale?: number;
+  cameraHeight?: number;
+  cameraDolly?: number;
   seaBlend?: number;
   /** Optional Instagram slot — rendered as the third phase (after the
    *  yacht cards) over the still-scrubbing video. Pass <InstagramFeed />
@@ -185,6 +189,10 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
     seaDeepColor,
     seaFoamColor,
     seaSunDir,
+    skyColor,
+    waveScale,
+    cameraHeight,
+    cameraDolly,
     seaBlend,
     instagramSlot,
     instagramHandle,
@@ -280,6 +288,10 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
             seaDeep={seaDeepColor}
             seaFoam={seaFoamColor}
             sunDir={seaSunDir}
+            skyColor={skyColor}
+            waveScale={waveScale}
+            cameraHeight={cameraHeight}
+            cameraDolly={cameraDolly}
             videoAspect={videoAspect}
             posterSrc={posterSrc}
             scrubScopeRef={runwayRef}

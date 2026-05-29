@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
-import { FilterBar } from "@/components/site/FilterBar";
+import { FilterModal } from "@/components/site/FilterModal";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -120,12 +120,22 @@ export default async function FleetPage({
       </section>
 
       <Section>
-        <FilterBar brands={brands} locale={lc} />
-
-        <p className="mt-6 text-sm text-[var(--color-on-surface-variant)]">
-          {boats.length} {boats.length === 1 ? t("fleet.boatSingular") : t("fleet.boatPlural")}{" "}
-          {t("fleet.matching", { count: boats.length })}
-        </p>
+        <div className="flex items-baseline justify-between gap-4">
+          <p className="text-sm text-[var(--color-on-surface-variant)]">
+            {boats.length} {boats.length === 1 ? t("fleet.boatSingular") : t("fleet.boatPlural")}{" "}
+            {t("fleet.matching", { count: boats.length })}
+          </p>
+          <FilterModal
+            boats={allBoats.map((b) => ({
+              type: b.type,
+              brand: b.brand,
+              guests: b.guests,
+              priceFrom: b.priceFrom,
+            }))}
+            brands={brands}
+            locale={lc}
+          />
+        </div>
 
         {boats.length === 0 ? (
           <div className="mt-12 rounded-2xl border border-dashed border-[var(--color-outline)] p-10 text-center">
