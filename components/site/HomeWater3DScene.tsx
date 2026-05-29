@@ -488,7 +488,7 @@ function renderCardsContent({
         ))}
       </ul>
       {variantTag && (
-        <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/55">
+        <p className="mt-6 text-[10px] uppercase tracking-[0.25em] text-white/80">
           {variantTag}
         </p>
       )}

@@ -115,7 +115,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 "group relative inline-flex h-10 items-center gap-2 overflow-hidden rounded-full border px-5 text-[11px] font-medium uppercase tracking-[0.22em] transition-all duration-500",
                 isSolid
                   ? "border-[var(--color-primary)]/40 text-[var(--color-primary)] hover:border-[var(--color-primary)]"
-                  : "border-white/55 text-white hover:border-white",
+                  : "border-white/80 text-white hover:border-white",
               )}
             >
               <span
