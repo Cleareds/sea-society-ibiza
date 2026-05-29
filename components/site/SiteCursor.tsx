@@ -58,10 +58,18 @@ export function SiteCursor() {
       if (e.pointerType !== "mouse") return;
       tx = e.clientX;
       ty = e.clientY;
-      const overInteractive = (e.target as HTMLElement | null)?.closest(
+      const target = e.target as HTMLElement | null;
+      const overInteractive = target?.closest(
         "a, button, [role='button'], input, textarea, select, [data-cursor='hover']",
       );
       el.dataset.hover = overInteractive ? "true" : "false";
+      // Cursor colour context — walk up from the hovered element to
+      // the first ancestor that declares a colour intent. Default is
+      // 'light' (dark-turquoise cursor on white content pages). Hero
+      // sections with photo/video backdrops set data-cursor-bg="dark"
+      // so the cursor switches to white over them.
+      const ctx = target?.closest("[data-cursor-bg]") as HTMLElement | null;
+      el.dataset.bg = ctx?.dataset.cursorBg === "dark" ? "dark" : "light";
       el.dataset.visible = "true";
       if (!raf) raf = requestAnimationFrame(tick);
     };

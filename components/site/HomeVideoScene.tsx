@@ -259,6 +259,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
     <div
       ref={runwayRef}
       className="relative z-10 w-full"
+      data-cursor-bg="dark"
       style={{ height: `${scrubViewports * 100}svh` }}
     >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">

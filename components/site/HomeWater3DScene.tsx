@@ -259,6 +259,7 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
     <div
       ref={runwayRef}
       className="relative z-10 w-full"
+      data-cursor-bg="dark"
       style={{ height: `${scrubViewports * 100}svh` }}
     >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">

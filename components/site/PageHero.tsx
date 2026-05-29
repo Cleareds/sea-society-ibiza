@@ -34,6 +34,7 @@ export function PageHero({
 }: Props) {
   return (
     <section
+      data-cursor-bg="dark"
       className={`relative isolate w-full overflow-hidden bg-[#06141a] ${
         height === "tall" ? "h-[60vh] min-h-[480px]" : "h-[52vh] min-h-[400px]"
       }`}

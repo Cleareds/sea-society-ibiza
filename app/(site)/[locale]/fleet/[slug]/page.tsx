@@ -97,7 +97,7 @@ export default async function BoatDetailPage({
       />
 
       {/* Hero — full-bleed boat photo + name + model + tagline */}
-      <section className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[#06141a]">
+      <section data-cursor-bg="dark" className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[#06141a]">
         <Image
           src={boat.heroImage}
           alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}

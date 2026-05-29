@@ -37,6 +37,7 @@ export function Hero({
 }: HeroProps) {
   return (
     <section
+      data-cursor-bg="dark"
       className={
         pinned
           ? "sticky top-0 z-0 isolate h-[100svh] w-full overflow-hidden bg-[#06141a]"

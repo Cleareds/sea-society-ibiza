@@ -398,6 +398,7 @@ function WebGLImmersiveHero({
   return (
     <section
       ref={sectionRef}
+      data-cursor-bg="dark"
       className="immersive-hero relative w-full bg-[#06141a] text-white"
       aria-label="Sea Society — immersive scroll story"
       // 2× viewport tall so the user has 1× of scroll to drive the

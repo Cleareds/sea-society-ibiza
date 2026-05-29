@@ -1,4 +1,8 @@
-/* Site-wide custom cursor — soft white glass ring with a centred dot.
+/* Site-wide custom cursor — context-aware colour:
+   - default (light page background): dark turquoise (matches the
+     brand-primary CTAs).
+   - data-bg="dark" (hero sections marked with data-cursor-bg="dark"):
+     soft white glass.
    Expands and brightens over interactive elements. Hidden on touch /
    reduced-motion. */
 
@@ -23,16 +27,17 @@
   pointer-events: none;
   z-index: 100;
   transform: translate3d(-50%, -50%, 0);
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  /* Default (light bg) — dark turquoise, matching brand-primary CTAs. */
+  border: 1.5px solid rgba(31, 122, 138, 0.75);
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(255, 255, 255, 0.18) 0%,
-    rgba(255, 255, 255, 0.06) 45%,
-    rgba(255, 255, 255, 0) 70%
+    rgba(31, 122, 138, 0.12) 0%,
+    rgba(31, 122, 138, 0.04) 45%,
+    rgba(31, 122, 138, 0) 70%
   );
   box-shadow:
-    0 0 22px rgba(255, 255, 255, 0.28),
-    inset 0 0 10px rgba(255, 255, 255, 0.18);
+    0 0 18px rgba(31, 122, 138, 0.22),
+    inset 0 0 10px rgba(31, 122, 138, 0.16);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   opacity: 0;
@@ -53,13 +58,44 @@
   width: 4px;
   height: 4px;
   margin: -2px;
-  background: rgba(255, 255, 255, 1);
+  background: rgba(31, 122, 138, 1);
   border-radius: 9999px;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 6px rgba(31, 122, 138, 0.85);
+  transition: background 250ms ease, box-shadow 250ms ease;
 }
 .site-cursor[data-hover="true"] {
   width: 72px;
   height: 72px;
+  border-color: rgba(31, 122, 138, 1);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(31, 122, 138, 0.22) 0%,
+    rgba(31, 122, 138, 0.08) 50%,
+    rgba(31, 122, 138, 0) 75%
+  );
+  box-shadow:
+    0 0 28px rgba(31, 122, 138, 0.40),
+    inset 0 0 16px rgba(31, 122, 138, 0.22);
+}
+
+/* ---- Dark-context override — over photo / video heroes ------------ */
+.site-cursor[data-bg="dark"] {
+  border-color: rgba(255, 255, 255, 0.85);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  box-shadow:
+    0 0 22px rgba(255, 255, 255, 0.28),
+    inset 0 0 10px rgba(255, 255, 255, 0.18);
+}
+.site-cursor[data-bg="dark"]::after {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+}
+.site-cursor[data-bg="dark"][data-hover="true"] {
   border-color: rgba(255, 255, 255, 1);
   background: radial-gradient(
     circle at 50% 50%,
