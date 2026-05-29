@@ -166,20 +166,6 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-          <Link
-            href={lp("/")}
-            aria-label="Sea Society Ibiza — home"
-            className="relative -mt-1 inline-flex h-10 w-10 items-center justify-center"
-          >
-            <Image
-              src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}
-              alt=""
-              width={36}
-              height={36}
-              priority
-              className="h-9 w-9 object-contain"
-            />
-          </Link>
           <Sheet>
             <SheetTrigger asChild>
               <button
@@ -215,6 +201,20 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
             </ul>
           </SheetContent>
           </Sheet>
+          <Link
+            href={lp("/")}
+            aria-label="Sea Society Ibiza — home"
+            className="relative -mt-1 inline-flex h-10 w-10 items-center justify-center"
+          >
+            <Image
+              src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}
+              alt=""
+              width={36}
+              height={36}
+              priority
+              className="h-9 w-9 object-contain"
+            />
+          </Link>
         </div>
       </nav>
     </header>
