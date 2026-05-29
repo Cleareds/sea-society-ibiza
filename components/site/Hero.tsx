@@ -59,13 +59,13 @@ export function Hero({
       </div>
       <div className="absolute inset-0 brand-image-overlay" />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-28 pt-28 text-white md:px-10 md:pb-40 md:pt-40">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col justify-end px-5 pb-40 pt-28 text-white md:px-10 md:pb-56 md:pt-40">
         {eyebrow && (
           <p className="brand-eyebrow motion-safe:animate-hero-rise [animation-delay:120ms]">
             {eyebrow}
           </p>
         )}
-        <h1 className="brand-headline motion-safe:animate-hero-rise max-w-4xl text-[clamp(2.75rem,9vw,6rem)] [animation-delay:240ms]">
+        <h1 className="brand-headline motion-safe:animate-hero-rise max-w-4xl text-[clamp(2.75rem,9vw,6rem)] md:max-w-[1600px] [animation-delay:240ms]">
           {headline}
         </h1>
         <p className="brand-sub motion-safe:animate-hero-rise mt-6 max-w-xl text-base [animation-delay:380ms] md:text-lg">

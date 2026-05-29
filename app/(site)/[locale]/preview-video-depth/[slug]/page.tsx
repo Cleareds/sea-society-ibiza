@@ -61,9 +61,11 @@ export default async function PreviewVideoDepthVariantPage({
   );
   const sub = (
     <>
-      From the moment you step aboard at Botafoc Marina,<br />
-      to the moment you watch the sun dissolve into the<br />
-      Mediterranean, every detail is handled.
+      From the moment you step aboard at Botafoc Marina,
+      <br className="hidden md:inline" />
+      {" "}to the moment you watch the sun dissolve into the
+      <br className="hidden md:inline" />
+      {" "}Mediterranean, every detail is handled.
     </>
   );
 
@@ -85,6 +87,7 @@ export default async function PreviewVideoDepthVariantPage({
         featured={featuredWithLabels}
         locale={lc}
         headline={headline}
+        headlineClassName="md:max-w-[1600px]"
         sub={sub}
         typography={variant.typography}
         layout={variant.layout}

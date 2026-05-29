@@ -300,7 +300,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
         >
           <div
             className={
-              "relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col px-5 pt-28 pb-28 text-white md:px-10 md:pt-40 md:pb-40 " +
+              "relative z-10 mx-auto flex h-full w-full max-w-(--spacing-container-max) flex-col px-5 pt-28 pb-40 text-white md:px-10 md:pt-40 md:pb-56 " +
               (layout === "center"
                 ? "items-center justify-center text-center"
                 : layout === "right-band"
