@@ -49,6 +49,9 @@ export interface HomeVideoSceneProps {
    *  treatment on individual variants without changing the shared
    *  typography preset. */
   headlineClassName?: string;
+  /** Class merged into ALL brand-accent spans (the h1 focus word AND
+   *  the h2 'Explore the fleet' focus word) on this scene. */
+  accentClassName?: string;
   sub: string;
   typography?: Typography;
   layout?: Layout;
@@ -160,7 +163,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
   const {
     videoSrc, videoSrcMobile, maskSrc, videoAspect, posterSrc,
     whatsappNumber, featured, locale,
-    headline, headlineClassName, sub,
+    headline, headlineClassName, accentClassName, sub,
     typography = "editorial-serif",
     layout = "bottom-left",
     canvas,
@@ -338,7 +341,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
           className="absolute inset-0 z-10 hidden items-center opacity-0 transition-opacity duration-300 md:flex"
         >
           <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 md:px-10">
-            {renderCardsContent({ featured, lp, variantTag })}
+            {renderCardsContent({ featured, lp, variantTag, accentClassName })}
           </div>
         </div>
 
@@ -350,7 +353,7 @@ export function HomeVideoScene(props: HomeVideoSceneProps) {
           the desktop absolute-pinned version above takes over at md. */}
       <div className="relative z-10 w-full px-5 py-[8svh] md:hidden">
         <div className="mx-auto w-full max-w-(--spacing-container-max)">
-          {renderCardsContent({ featured, lp, variantTag })}
+          {renderCardsContent({ featured, lp, variantTag, accentClassName })}
         </div>
       </div>
 
@@ -398,16 +401,19 @@ function renderCardsContent({
   featured,
   lp,
   variantTag,
+  accentClassName,
 }: {
   featured: Array<{ boat: Boat; fromLabel: string }>;
   lp: (p: string) => string;
   variantTag?: string;
+  accentClassName?: string;
 }) {
+  const accentCls = `brand-accent ${accentClassName ?? ""}`.trim();
   return (
     <>
       <div className="flex items-baseline justify-between gap-4 pb-6 text-white">
         <h2 className="font-serif text-2xl md:text-4xl">
-          Explore the <span className="brand-accent">fleet</span>
+          Explore the <span className={accentCls}>fleet</span>
         </h2>
         <Link
           href={lp("/fleet")}

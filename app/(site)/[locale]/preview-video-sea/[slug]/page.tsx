@@ -51,10 +51,16 @@ export default async function PreviewSeaVariantPage({
   );
 
   const { lead, accent, trail } = variant.headlineParts;
+  // Open-sea route: the brand-accent focus word gets the wave fill
+  // (white text with a light turquoise wave scrolling through it).
+  // The h2 'Explore the fleet' inside the scene picks up the same
+  // class via accentClassName.
+  const useWave = variant.slug === "open-sea";
+  const accentClass = useWave ? "brand-accent wave-accent" : "brand-accent";
   const headline = (
     <>
       {lead}
-      <span className="brand-accent">{accent}</span>
+      <span className={accentClass}>{accent}</span>
       {trail}
     </>
   );
@@ -81,7 +87,7 @@ export default async function PreviewSeaVariantPage({
         featured={featuredWithLabels}
         locale={lc}
         headline={headline}
-        headlineClassName={variant.slug === "open-sea" ? "wave-headline" : undefined}
+        accentClassName={useWave ? "wave-accent" : undefined}
         sub={variant.sub}
         typography="editorial-serif"
         layout="bottom-left"
