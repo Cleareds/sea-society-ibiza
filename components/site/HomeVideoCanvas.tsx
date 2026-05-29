@@ -253,24 +253,21 @@ const FRAGMENT = /* glsl */ `
     float staticMask;
     if (uHasDepth > 0.5) {
       // Per-frame depth video. Static foreground = yacht (very high
-      // depth, i.e. very close to camera) UNION the horizon strip
-      // at the top of the screen (no waves can roll behind the
-      // horizon — that strip is sky + distant land). Everything else
-      // is sea and gets wave / shimmer / parallax treatment.
+      // depth) UNION horizon strip. Everything else is sea and gets
+      // wave / shimmer / parallax treatment.
       //
-      // Two reasons to use vuv (screen Y) instead of depth alone for
-      // the horizon:
-      //   - DA-V2 gives the sky AND distant sea similar low-depth
-      //     values, so a pure depth threshold can't tell them apart.
-      //   - Putting the horizon mask in screen space anchors it
-      //     visually — waves never cross the horizon line.
+      // CONFIDENCE BUFFER: the threshold transitions for yacht and
+      // horizon are kept WIDE so the boundary zone is ambiguous,
+      // and waterMask in those ambiguous pixels stays low. Effects
+      // only fire where the shader is genuinely confident the pixel
+      // is sea.
       float d = texture2D(uDepth, uv).r;
-      float yachtStatic = smoothstep(uYachtDepth - 0.04, uYachtDepth + 0.04, d);
-      // horizonStatic = 1 in the top strip of the viewport, 0 below
-      // the horizon line. PlaneGeometry UVs put vuv.y=1 at the TOP of
-      // the viewport. uHorizonY is the screen-Y where the horizon
-      // sits (0 = bottom of viewport, 1 = top).
-      float horizonStatic = smoothstep(uHorizonY - 0.05, uHorizonY + 0.05, vuv.y);
+      // Wider yacht transition: 0.08 either side (was 0.04). Any
+      // pixel within 0.08 of the yacht threshold is treated as
+      // partially static.
+      float yachtStatic = smoothstep(uYachtDepth - 0.10, uYachtDepth + 0.02, d);
+      // Wider horizon transition: 0.10 either side (was 0.05).
+      float horizonStatic = smoothstep(uHorizonY - 0.10, uHorizonY + 0.02, vuv.y);
       staticMask = max(yachtStatic, horizonStatic);
       waterMask = 1.0 - staticMask;
     } else {
@@ -278,7 +275,11 @@ const FRAGMENT = /* glsl */ `
       waterMask = mask.g;
       staticMask = mask.b;
     }
-    float water = smoothstep(0.30, 0.55, waterMask) * (1.0 - staticMask);
+    // Confidence gate — only the cleanest sea pixels get the full
+    // effects. The 0.60..0.95 band on the depth-derived waterMask
+    // means: stay 0 in any ambiguous edge region, ramp to 1 only
+    // where mask is unambiguously sea.
+    float water = smoothstep(0.60, 0.95, waterMask) * (1.0 - staticMask);
 
     vec2 toCursor = vuv - uCursor;
     float cursorDist = length(toCursor);

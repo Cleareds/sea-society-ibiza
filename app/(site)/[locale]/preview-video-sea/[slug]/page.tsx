@@ -84,12 +84,14 @@ export default async function PreviewSeaVariantPage({
         depthVideoSrcMobile={depthExists ? depthRel : undefined}
         depthWaterLo={variant.depthRange[0]}
         depthWaterHi={variant.depthRange[1]}
+        yachtDepthThreshold={0.93}
+        horizonY={0.62}
         seaMode="synthetic"
         seaShallowColor={variant.shallow}
         seaDeepColor={variant.deep}
         seaFoamColor={variant.foam}
         seaSunDir={variant.sunDir}
-        seaBlend={0.30}
+        seaBlend={0.18}
         videoAspect={color.aspect}
         posterSrc={color.poster}
         whatsappNumber={settings.whatsappNumber}
@@ -102,14 +104,18 @@ export default async function PreviewSeaVariantPage({
         typography="editorial-serif"
         layout="bottom-left"
         canvas={{
-          cursorLightStrength: 0.18,
-          shimmerStrength: 0.18,   // procedural caustic on top of synth
+          cursorLightStrength: 0.12,
+          shimmerStrength: 0.06,     // very subtle caustic — only in
+                                     // confidently-sea pixels
           brightnessLift: 1.10,
           saturation: 1.06,
           contrast: 1.02,
-          parallaxX: 0.010,
-          parallaxY: 0.005,
-          waterMotion: 0.012,      // sea moves under cursor + paused
+          parallaxX: 0.005,          // small parallax so static fg
+                                     // stays anchored
+          parallaxY: 0.0025,
+          waterMotion: 0.004,        // tiny idle UV displacement —
+                                     // visible only over sea, never
+                                     // touches yacht/cliff
         }}
         variantTag={variant.tag}
         scrubViewports={variant.scrubViewports}
