@@ -158,7 +158,7 @@ h1, h2, h3, h4 {
 .wave-accent {
   display: inline-block;
   background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M 0 130 Q 100 95 200 130 T 400 130 V 200 H 0 Z' fill='%23b8e0d8'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M 0 105 Q 100 65 200 105 T 400 105 V 200 H 0 Z' fill='%23b8e0d8'/></svg>"),
     linear-gradient(to bottom, #ffffff, #ffffff);
   background-repeat: repeat-x, no-repeat;
   background-size: 400px 100%, 100% 100%;

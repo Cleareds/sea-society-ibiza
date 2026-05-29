@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -102,6 +103,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
           </ul>
 
           {whatsappNumber && (
+            <>
             <a
               href={whatsappLink({ number: whatsappNumber })}
               target="_blank"
@@ -143,22 +145,54 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 )}
               />
             </a>
+            {/* SS brand mark — sits next to the pill, lifted ~8px so it
+                breaks the optical baseline of the nav row. */}
+            <Link
+              href={lp("/")}
+              aria-label="Sea Society Ibiza — home"
+              className="relative -mt-2 inline-flex h-10 w-10 items-center justify-center"
+            >
+              <Image
+                src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}
+                alt=""
+                width={40}
+                height={40}
+                priority
+                className="h-10 w-10 object-contain"
+              />
+            </Link>
+            </>
           )}
         </div>
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <button
-              type="button"
-              aria-label={labels.openMenu}
-              className={cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-full md:hidden",
-                isSolid ? "text-[var(--color-on-surface)]" : "text-white",
-              )}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-          </SheetTrigger>
+        <div className="flex items-center gap-2 md:hidden">
+          <Link
+            href={lp("/")}
+            aria-label="Sea Society Ibiza — home"
+            className="relative -mt-1 inline-flex h-10 w-10 items-center justify-center"
+          >
+            <Image
+              src={isSolid ? "/brand/icon-dark-180.webp" : "/brand/icon-light-180.webp"}
+              alt=""
+              width={36}
+              height={36}
+              priority
+              className="h-9 w-9 object-contain"
+            />
+          </Link>
+          <Sheet>
+            <SheetTrigger asChild>
+              <button
+                type="button"
+                aria-label={labels.openMenu}
+                className={cn(
+                  "inline-flex h-10 w-10 items-center justify-center rounded-full",
+                  isSolid ? "text-[var(--color-on-surface)]" : "text-white",
+                )}
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+            </SheetTrigger>
           <SheetContent side="right" className="flex flex-col gap-8">
             <SheetTitle className="text-3xl">{labels.menu}</SheetTitle>
             <ul className="flex flex-col gap-2 text-2xl">
@@ -180,7 +214,8 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
               </li>
             </ul>
           </SheetContent>
-        </Sheet>
+          </Sheet>
+        </div>
       </nav>
     </header>
   );
