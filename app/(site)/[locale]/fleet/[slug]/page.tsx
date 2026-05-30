@@ -315,6 +315,37 @@ export default async function BoatDetailPage({
           </div>
         </Section>
       )}
+
+      <Section>
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
+            Not just a boat
+          </p>
+          <h2 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+            Pair it with an experience
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
+            Sunset cruise, multi-day Balearic charter, proposal,
+            birthday or corporate hire — every charter on{" "}
+            {boat.name} can be wrapped in a fully-handled experience:
+            catering, water toys, photographer, florals, champagne.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link
+              href={lp("/experiences")}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-primary)] px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)] hover:text-white"
+            >
+              Browse experiences
+            </Link>
+            <Link
+              href={lp("/destinations")}
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-outline)] px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[var(--color-on-surface)] transition-colors hover:border-[var(--color-on-surface)]"
+            >
+              View destinations
+            </Link>
+          </div>
+        </div>
+      </Section>
     </>
   );
 }

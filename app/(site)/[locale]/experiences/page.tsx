@@ -7,7 +7,7 @@ import { MarkdownBody } from "@/components/site/MarkdownBody";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd } from "@/lib/seo/jsonld";
+import { breadcrumbLd, experienceItemListLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getExperiences } from "@/lib/data";
 import { addOns } from "@/lib/data/dummy";
@@ -47,10 +47,13 @@ export default async function ExperiencesPage({
   return (
     <>
       <JsonLd
-        data={breadcrumbLd([
-          { name: t("breadcrumb.home"), path: lp("/") },
-          { name: t("nav.experiences"), path: lp("/experiences") },
-        ])}
+        data={[
+          breadcrumbLd([
+            { name: t("breadcrumb.home"), path: lp("/") },
+            { name: t("nav.experiences"), path: lp("/experiences") },
+          ]),
+          experienceItemListLd(experiences),
+        ]}
       />
 
       <PageHero

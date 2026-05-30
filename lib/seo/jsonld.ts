@@ -117,6 +117,19 @@ export function fleetItemListLd(boats: Boat[]) {
   };
 }
 
+export function experienceItemListLd(experiences: Experience[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: experiences.map((e, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      url: absoluteUrl(`/experiences/${e.slug}`),
+      name: e.title,
+    })),
+  };
+}
+
 export function experienceTripLd(experience: Experience) {
   return {
     "@context": "https://schema.org",

@@ -63,6 +63,35 @@ export default async function DestinationsPage({
       />
 
       <Section>
+        <div className="mx-auto max-w-3xl pb-12 md:pb-20">
+          <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
+            Cruising from Botafoc
+          </p>
+          <p className="mt-4 text-lg leading-relaxed text-[var(--color-on-surface)] md:text-xl">
+            From Botafoc Marina, Ibiza opens onto three distinct cruising
+            worlds. South to <strong>Formentera</strong> — the shallow
+            turquoise of Ses Illetes and the protected anchorage at Espalmador,
+            roughly 45 minutes by tender. West to <strong>Ibiza&apos;s own coast</strong>
+            — Cala Bassa, Cala Comte, Cala Salada and the cliffs of Es Vedrà
+            at sunset, all reachable inside a single day charter. North to{" "}
+            <strong>Mallorca</strong> — overnight cruising for guests who want
+            to swap islands without flying.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)]">
+            Every itinerary is built around your guests, the weather window and
+            the season&apos;s mood. Browse our{" "}
+            <Link href={lp("/fleet")} className="underline decoration-[var(--color-primary)] decoration-2 underline-offset-4 hover:text-[var(--color-primary)]">
+              fleet of 19 yachts
+            </Link>{" "}
+            or pick from{" "}
+            <Link href={lp("/experiences")} className="underline decoration-[var(--color-primary)] decoration-2 underline-offset-4 hover:text-[var(--color-primary)]">
+              curated experiences
+            </Link>{" "}
+            — day trips, sunset cruises, multi-day Balearic charters,
+            celebrations and corporate events.
+          </p>
+        </div>
+
         <ul className="space-y-20 md:space-y-32">
           {destinations.map((d, i) => (
             <li

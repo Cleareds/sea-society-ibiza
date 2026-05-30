@@ -35,6 +35,7 @@ export async function generateMetadata({
     description:
       "19 luxury yachts from Botafoc Marina, Ibiza. Day trips, sunset cruises and multi-day Balearic charters — handled by Ibimar with 20+ years on the water.",
     path: "/",
+    image: "/sea-society/site/home-hero.webp",
     locale: isLocale(locale) ? locale : "en",
   });
 }
