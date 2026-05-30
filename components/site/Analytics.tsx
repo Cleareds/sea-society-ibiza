@@ -38,7 +38,9 @@ export function Analytics() {
     return () => window.removeEventListener("ssi:consent", onUpdate);
   }, []);
 
-  const ga = process.env.NEXT_PUBLIC_GA_ID;
+  // GA4 measurement ID is public (visible in the script URL); the env
+  // var lets us override per-env, the fallback is production.
+  const ga = process.env.NEXT_PUBLIC_GA_ID ?? "G-D9XJL0VGJL";
   const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
   return (
