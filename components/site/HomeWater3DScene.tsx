@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { BookHereCTA } from "@/components/site/BookHereCTA";
@@ -12,10 +11,7 @@ import { localePath } from "@/lib/i18n/config";
 import { imageVariant } from "@/lib/image-url";
 import { cardImageForSlug } from "@/lib/boat-card-images";
 
-const HomeWater3DCanvas = dynamic(
-  () => import("./HomeWater3DCanvas").then((m) => m.HomeWater3DCanvas),
-  { ssr: false, loading: () => null },
-);
+import { HomeHeroVideo } from "./HomeHeroVideo";
 
 export type Typography =
   | "editorial-serif"
@@ -284,35 +280,10 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
             video still decoding) the user sees the poster instead of an
             empty hero. */}
         {posterSrc && (
-          <div aria-hidden className="pointer-events-none absolute inset-0 z-0">
-            <Image
-              src={posterSrc}
-              alt=""
-              fill
-              priority
-              fetchPriority="high"
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
-        )}
-        {reduced ? null : (
-          <HomeWater3DCanvas
-            videoSrc={videoSrc}
-            videoSrcMobile={videoSrcMobile}
-            depthVideoSrc={depthVideoSrc}
-            yachtDepthThreshold={yachtDepthThreshold}
-            horizonY={horizonY}
-            seaShallow={seaShallowColor}
-            seaDeep={seaDeepColor}
-            seaFoam={seaFoamColor}
-            sunDir={seaSunDir}
-            skyColor={skyColor}
-            waveScale={waveScale}
-            cameraHeight={cameraHeight}
-            cameraDolly={cameraDolly}
-            videoAspect={videoAspect}
-            posterSrc={posterSrc}
+          <HomeHeroVideo
+            poster={posterSrc}
+            src1080={videoSrc}
+            src720={videoSrcMobile ?? videoSrc}
             scrubScopeRef={runwayRef}
           />
         )}

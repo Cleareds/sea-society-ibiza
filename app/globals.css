@@ -19,21 +19,21 @@
   --color-outline: #6e7979;
   --color-outline-variant: #bdc9c8;
 
-  --color-primary: #055043;
+  --color-primary: #06141a;
   --color-on-primary: #ffffff;
-  --color-primary-container: #086852;
+  --color-primary-container: #1f2d35;
   --color-on-primary-container: #e3fffe;
   --color-inverse-primary: #7cb5ab;
 
-  --color-secondary: #055043;
+  --color-secondary: #06141a;
   --color-on-secondary: #ffffff;
-  --color-secondary-container: #086852;
+  --color-secondary-container: #1f2d35;
   --color-on-secondary-container: #fffbff;
 
   --color-tertiary: #5a5a58;
   --color-on-tertiary: #ffffff;
 
-  --color-error: #055043;
+  --color-error: #06141a;
   --color-on-error: #ffffff;
 
   --color-background: #fcf9f8;
@@ -42,16 +42,21 @@
   /* --- Brand convenience aliases used in the brief --- */
   --color-ink: #1c1b1b;
   --color-cream: #fcf9f8;
-  --color-sea: #055043;
-  --color-coral: #055043;
+  --color-sea: #06141a;
+  --color-coral: #06141a;
   --color-muted: #6e7979;
   --color-line: #e5e2e1;
 
   /* --- Typography (wired via next/font in app/layout.tsx) ---
-   * Sans: Inter (body, UI, labels, navigation).
+   * Sans: brand "Myanmar MN" (per Lauren's brand designer spec —
+   *   used for body, UI, labels, navigation, anything large that's
+   *   not a serif title). It's a macOS/iOS system font so it shows
+   *   correctly on Apple devices without a web-font download.
+   *   On non-Apple platforms the stack falls back to Inter (still
+   *   loaded via next/font) and then to the system sans.
    * Serif: brand "Starc Serif" for display headings + Fraunces as the
-   * italic / heavier-weight fallback (Starc ships Regular only). */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+   *   italic / heavier-weight fallback (Starc ships Regular only). */
+  --font-sans: "Myanmar MN", var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif:
     var(--font-starc), var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
 
@@ -168,7 +173,7 @@ h1, h2, h3, h4 {
 .wave-accent {
   display: inline-block;
   background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M 0 105 Q 100 65 200 105 T 400 105 V 200 H 0 Z' fill='%23055043'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200' viewBox='0 0 400 200' preserveAspectRatio='none'><path d='M 0 105 Q 100 65 200 105 T 400 105 V 200 H 0 Z' fill='%2306141a'/></svg>"),
     linear-gradient(to bottom, #ffffff, #ffffff);
   background-repeat: repeat-x, no-repeat;
   background-size: 400px 100%, 100% 100%;
