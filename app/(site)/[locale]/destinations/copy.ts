@@ -13,6 +13,10 @@ interface DestinationCopy {
   introBody: string;
   introTagline: string;
 
+  /** Tab labels shared by both island blocks. */
+  seaTabLabel: string;
+  clubsTabLabel: string;
+
   ibizaEyebrow: string;
   ibizaTitle: string;
   ibizaSub: string;
@@ -60,6 +64,8 @@ const en: DestinationCopy = {
   metaDescription:
     "A Sea Society local guide to the Balearics: best coves, hidden anchorages, the day-charter route around Ibiza & Formentera, and the beach clubs we keep going back to.",
   heroTitle: "Discover Ibiza & Formentera Through Local Eyes",
+  seaTabLabel: "From the sea",
+  clubsTabLabel: "Beach clubs",
   introLead: "The best memories don’t always happen on the water.",
   introBody:
     "Over the years, we’ve discovered hidden beach clubs, unforgettable restaurants, secret coves and beautiful spots that make these islands so special. From long lunches overlooking the sea to sunset drinks in places you won’t find in most travel guides, these are the locations we genuinely love and recommend.",
@@ -278,6 +284,8 @@ const es: DestinationCopy = {
   metaDescription:
     "Una guía local de Sea Society por las Baleares: las mejores calas, fondeaderos escondidos, la ruta perfecta para un día de charter por Ibiza y Formentera, y los beach clubs a los que volvemos siempre.",
   heroTitle: "Descubre Ibiza y Formentera con ojos locales",
+  seaTabLabel: "Desde el mar",
+  clubsTabLabel: "Beach clubs",
   introLead: "Los mejores recuerdos no siempre ocurren en el agua.",
   introBody:
     "A lo largo de los años hemos descubierto beach clubs escondidos, restaurantes inolvidables, calas secretas y rincones preciosos que hacen únicas a estas islas. Desde comidas largas frente al mar hasta copas al atardecer en lugares que no encontrarás en la mayoría de las guías, estos son los sitios que de verdad nos encantan y recomendamos.",
