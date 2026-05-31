@@ -93,7 +93,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 <Link
                   href={l.href}
                   className={cn(
-                    "text-sm transition-colors",
+                    "text-xs uppercase tracking-[0.18em] transition-colors",
                     isSolid
                       ? "text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
                       : "text-white/90 hover:text-white",
