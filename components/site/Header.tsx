@@ -87,10 +87,6 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
-          <LocaleSwitcher
-            currentLocale={locale}
-            variant={isSolid ? "solid" : "transparent"}
-          />
           <ul className="flex items-center gap-8">
             {navLinks.map((l) => (
               <li key={l.href}>
@@ -108,6 +104,21 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
               </li>
             ))}
           </ul>
+          {/* Vertical separator + locale switcher sit between the nav
+              links and the Book here pill. The thin 1px line scales
+              its colour with the header context (transparent over
+              heroes, outlined on solid). */}
+          <span
+            aria-hidden
+            className={cn(
+              "h-4 w-px",
+              isSolid ? "bg-[var(--color-outline-variant)]" : "bg-white/40",
+            )}
+          />
+          <LocaleSwitcher
+            currentLocale={locale}
+            variant={isSolid ? "solid" : "transparent"}
+          />
 
           {whatsappNumber && (
             <>
@@ -207,7 +218,11 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
               </li>
             </ul>
             <div className="mt-auto border-t border-[var(--color-outline-variant)]/40 pt-6">
-              <LocaleSwitcher currentLocale={locale} variant="solid" />
+              <LocaleSwitcher
+                currentLocale={locale}
+                variant="solid"
+                className="text-base tracking-[0.2em]"
+              />
             </div>
           </SheetContent>
           </Sheet>

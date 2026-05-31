@@ -16,6 +16,9 @@ interface Props {
   /** `transparent` is used on top of dark heroes (white text);
    *  `solid` is the default solid-header dark text style. */
   variant?: "solid" | "transparent";
+  /** Extra classes merged into the outer <nav>. Use to override the
+   *  default `text-xs` sizing (e.g. `text-base` for the mobile sheet). */
+  className?: string;
 }
 
 /**
@@ -25,7 +28,7 @@ interface Props {
  * and navigates to the same path under the new prefix (`/about`
  * &harr; `/es/about`).
  */
-export function LocaleSwitcher({ currentLocale, variant = "solid" }: Props) {
+export function LocaleSwitcher({ currentLocale, variant = "solid", className }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -49,7 +52,10 @@ export function LocaleSwitcher({ currentLocale, variant = "solid" }: Props) {
   return (
     <nav
       aria-label="Language"
-      className="inline-flex items-center text-xs uppercase tracking-[0.18em]"
+      className={cn(
+        "inline-flex items-center text-xs uppercase tracking-[0.18em]",
+        className,
+      )}
     >
       {locales.map((l, i) => (
         <React.Fragment key={l}>
