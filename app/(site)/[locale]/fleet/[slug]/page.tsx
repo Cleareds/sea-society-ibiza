@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Check, Ruler, Users, BedDouble, Gauge, Calendar, Cog, Bath, Anchor } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
+import { BoatHeroVideo } from "@/components/site/BoatHeroVideo";
+import { boatVideoForSlug } from "@/lib/boat-videos";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { BookHereCTA } from "@/components/site/BookHereCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -82,6 +84,7 @@ export default async function BoatDetailPage({
 
   const related = all.filter((b) => b.id !== boat.id).slice(0, 3);
   const highlights = boat.highlights ?? [];
+  const heroVideo = boatVideoForSlug(boat.slug);
 
   return (
     <>
@@ -96,16 +99,28 @@ export default async function BoatDetailPage({
         ]}
       />
 
-      {/* Hero — full-bleed boat photo + name + model + tagline */}
+      {/* Hero — full-bleed boat photo + name + model + tagline. For
+          the 9 boats with shipped footage, a yoyo-looped video plays
+          behind the copy; the poster is still the LCP element so
+          first paint is unchanged. */}
       <section data-cursor-bg="dark" className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[#06141a]">
-        <Image
-          src={boat.heroImage}
-          alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        {heroVideo ? (
+          <BoatHeroVideo
+            poster={heroVideo.poster}
+            src1080={heroVideo.src1080}
+            src720={heroVideo.src720}
+            alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}
+          />
+        ) : (
+          <Image
+            src={boat.heroImage}
+            alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
         <div className="absolute inset-0 brand-image-overlay" />
         <div className="relative z-10 flex min-h-[80vh] flex-col px-5 pt-24 pb-16 md:px-10 md:pt-32 md:pb-24">
           <div className="mx-auto w-full max-w-(--spacing-container-max) brand-breadcrumb">
