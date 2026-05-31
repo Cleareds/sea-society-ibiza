@@ -473,7 +473,7 @@ function renderCardsContent({
             <Link href={lp(`/fleet/${b.slug}`)} className="group block">
               <div className="relative aspect-[5/3] overflow-hidden">
                 <Image
-                  src={imageVariant(cardImageForSlug(b.slug) ?? b.cardImage ?? b.heroImage, 900)}
+                  src={imageVariant(b.cardImage ?? cardImageForSlug(b.slug) ?? b.heroImage, 900)}
                   alt={`${b.name} — ${b.modelName ?? b.brand}`}
                   fill
                   sizes="(min-width: 768px) 30vw, 90vw"

@@ -99,6 +99,7 @@ interface BoatRow {
   gallery: Array<{ src: string; alt: string }> | null;
   highlights: Array<{ icon: string; label: string; value: string }> | null;
   hero_image: string | null;
+  card_image: string | null;
   pdf_url: string | null;
   featured: boolean;
   sort_order: number;
@@ -139,6 +140,7 @@ function mapBoat(row: BoatRow): Boat {
     gallery: row.gallery ?? [],
     highlights: (row.highlights ?? []) as Boat["highlights"],
     heroImage: row.hero_image ?? "",
+    cardImage: row.card_image ?? undefined,
     pdfUrl: row.pdf_url,
     featured: row.featured,
     sortOrder: row.sort_order,
