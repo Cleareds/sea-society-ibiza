@@ -11,7 +11,6 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { getFeaturedBoats, getSettings } from "@/lib/data";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
-import { variants } from "./preview-video-3d/_variants";
 
 const COLOR_SRC = {
   full: "/sea-society/video/shorten-scrub.mp4",
@@ -48,7 +47,6 @@ export default async function HomePage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const lc = locale as Locale;
-  const variant = variants[0]!;
 
   const t = getMessages(lc);
   const [settings, featured] = await Promise.all([
@@ -94,14 +92,6 @@ export default async function HomePage({
         depthVideoSrcMobile={depthExists ? DEPTH_REL : undefined}
         yachtDepthThreshold={0.72}
         horizonY={0.58}
-        seaShallowColor={variant.shallow}
-        seaDeepColor={variant.deep}
-        seaFoamColor={variant.foam}
-        seaSunDir={variant.sunDir}
-        skyColor={variant.skyColor}
-        waveScale={variant.waveScale}
-        cameraHeight={variant.cameraHeight}
-        cameraDolly={variant.cameraDolly}
         videoAspect={COLOR_SRC.aspect}
         posterSrc={COLOR_SRC.poster}
         whatsappNumber={settings.whatsappNumber}
