@@ -95,7 +95,13 @@ export default async function FleetPage({
         <BoatHeroVideo
           poster="/sea-society/yacht-videos/sensation-poster.webp"
           posterMobile="/sea-society/fleet-videos/fleet-mobile-poster.webp"
-          src1080="/sea-society/yacht-videos/sensation-loop.mp4"
+          // Use the 720p Sensation encode (~4.4 MB) on desktop too —
+          // the /fleet hero is only 52vh, so the source paints at
+          // ~1366×400 which 720p oversamples comfortably. The 1080p
+          // variant (~11 MB) was decode-jittering during the early
+          // hydration window even though it's used fine on boat
+          // detail pages where the hero is 80vh full-bleed.
+          src1080="/sea-society/yacht-videos/sensation-loop-720.mp4"
           src720="/sea-society/fleet-videos/fleet-mobile-loop.mp4"
           alt=""
         />
