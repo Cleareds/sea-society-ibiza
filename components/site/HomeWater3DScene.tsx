@@ -335,7 +335,7 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
             <h1 className={`${HEADLINE_CLASSES[typography]} ${headlineClassName ?? ""}`.trim()}>{headline}</h1>
             <p className={SUB_CLASSES[typography]}>{sub}</p>
             <div className={layout === "center" ? "mt-10 flex justify-center" : "mt-10"}>
-              <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
+              <BookHereCTA number={whatsappNumber} size="lg" label="Book here" placement="home_hero" />
             </div>
           </div>
 

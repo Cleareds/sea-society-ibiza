@@ -236,6 +236,7 @@ export default async function AboutPage({
                 number={settings.whatsappNumber}
                 tone="dark"
                 label="Book your charter"
+                placement="about_cta"
               />
             </div>
           </div>

@@ -104,7 +104,7 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
             is handled.
           </p>
           <div className="mt-10">
-            <BookHereCTA number={whatsappNumber} size="lg" label="Book here" />
+            <BookHereCTA number={whatsappNumber} size="lg" label="Book here" placement="home_immersive_hero" />
           </div>
 
           {/* Scroll cue — "Scroll" label above a gently bobbing arrow.

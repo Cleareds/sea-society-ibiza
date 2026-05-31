@@ -15,6 +15,7 @@ import {
 import { Logo } from "@/components/site/Logo";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import { whatsappLink } from "@/lib/whatsapp";
+import { trackBookHereClick } from "@/lib/analytics";
 
 export interface HeaderLabels {
   fleet: string;
@@ -108,6 +109,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
               href={whatsappLink({ number: whatsappNumber })}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackBookHereClick({ placement: "header_pill" })}
               className={cn(
                 // Luxe pill — thin gold border, sliding fill on hover, never a
                 // generic button. Same height as the nav so it sits inside

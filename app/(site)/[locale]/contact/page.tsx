@@ -120,6 +120,7 @@ export default async function ContactPage({
                   tone="dark"
                   size="lg"
                   label="Book via WhatsApp"
+                  placement="contact_sidebar"
                 />
               </div>
 

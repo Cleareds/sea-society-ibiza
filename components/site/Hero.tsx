@@ -73,7 +73,7 @@ export function Hero({
           {sub}
         </p>
         <div className="motion-safe:animate-hero-rise mt-10 [animation-delay:520ms]">
-          <BookHereCTA number={whatsappNumber} size="lg" label={ctaLabel} />
+          <BookHereCTA number={whatsappNumber} size="lg" label={ctaLabel} placement="home_classic_hero" />
         </div>
       </div>
 

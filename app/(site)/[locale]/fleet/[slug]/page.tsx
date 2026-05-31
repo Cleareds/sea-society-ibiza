@@ -150,6 +150,8 @@ export default async function BoatDetailPage({
                 number={settings.whatsappNumber}
                 boatName={boat.name}
                 size="lg"
+                placement="boat_detail_hero"
+                boatSlug={boat.slug}
               />
             </div>
           </div>
@@ -294,6 +296,8 @@ export default async function BoatDetailPage({
                     size="lg"
                     label="Book via WhatsApp"
                     className="w-full"
+                    placement="boat_detail_below_specs"
+                    boatSlug={boat.slug}
                   />
                 </div>
               </div>

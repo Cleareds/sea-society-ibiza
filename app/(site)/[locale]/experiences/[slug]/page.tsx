@@ -134,6 +134,8 @@ export default async function ExperienceDetailPage({
                 number={settings.whatsappNumber}
                 boatName={exp.title}
                 size="lg"
+                placement="experience_detail_hero"
+                experienceSlug={exp.slug}
               />
             </div>
           </div>
@@ -234,6 +236,8 @@ export default async function ExperienceDetailPage({
                     size="lg"
                     label="Book via WhatsApp"
                     className="w-full"
+                    placement="experience_detail_cta"
+                    experienceSlug={exp.slug}
                   />
                 </div>
               </div>
