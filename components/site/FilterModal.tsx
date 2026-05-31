@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { localePath, type Locale } from "@/lib/i18n/config";
+import { getMessages } from "@/lib/i18n/messages";
 
 /**
  * Fleet filter modal — dynamic faceting + checkbox UI.
@@ -43,27 +44,25 @@ interface Props {
   locale?: Locale;
 }
 
-const TYPES: Array<{ value: string; label: string }> = [
-  { value: "motor_yacht", label: "Motor" },
-  { value: "sailing_yacht", label: "Sailing" },
-  { value: "catamaran", label: "Catamaran" },
-  { value: "day_boat", label: "Day boat" },
-  { value: "sport_yacht", label: "Sport" },
-];
-
-const GUESTS: Array<{ value: string; label: string }> = [
-  { value: "6", label: "6 or more" },
-  { value: "8", label: "8 or more" },
-  { value: "10", label: "10 or more" },
-  { value: "12", label: "12 or more" },
-];
-
-const PRICES: Array<{ value: string; label: string }> = [
-  { value: "3000", label: "Up to €3,000 / day" },
-  { value: "5000", label: "Up to €5,000 / day" },
-  { value: "10000", label: "Up to €10,000 / day" },
-  { value: "20000", label: "Up to €20,000 / day" },
-];
+// Type/guest/price option labels are built from the locale's message
+// bundle inside the component so they translate. The English defaults
+// above are kept as fallback when a key is missing.
+const TYPE_VALUES = [
+  "motor_yacht",
+  "sailing_yacht",
+  "catamaran",
+  "day_boat",
+  "sport_yacht",
+] as const;
+const TYPE_KEY: Record<(typeof TYPE_VALUES)[number], string> = {
+  motor_yacht: "fleet.filters.motor",
+  sailing_yacht: "fleet.filters.sailing",
+  catamaran: "fleet.filters.catamaran",
+  day_boat: "fleet.filters.dayBoat",
+  sport_yacht: "fleet.filters.sport",
+};
+const GUEST_VALUES = ["6", "8", "10", "12"] as const;
+const PRICE_VALUES = ["3000", "5000", "10000", "20000"] as const;
 
 interface Draft {
   types: Set<string>;
@@ -107,6 +106,31 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
   const router = useRouter();
   const params = useSearchParams();
   const base = localePath(locale, "/fleet");
+  const t = getMessages(locale);
+
+  // Build locale-aware option label arrays.
+  const TYPES = React.useMemo(
+    () => TYPE_VALUES.map((v) => ({ value: v as string, label: t(TYPE_KEY[v]) })),
+    [t],
+  );
+  const GUESTS = React.useMemo(
+    () =>
+      GUEST_VALUES.map((v) => ({
+        value: v as string,
+        label: t("fleet.filters.guestsOrMore", { n: v }),
+      })),
+    [t],
+  );
+  const PRICES = React.useMemo(
+    () =>
+      PRICE_VALUES.map((v) => ({
+        value: v as string,
+        label: t("fleet.filters.upToPerDay", {
+          amount: Number(v).toLocaleString("en-GB"),
+        }),
+      })),
+    [t],
+  );
 
   // Live draft state — initialised from URL params on each open so the
   // modal always reflects the canonical state.
@@ -253,7 +277,7 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
           className="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.22em] text-[var(--color-on-surface)] hover:text-[var(--color-primary)] transition-colors"
         >
           <SlidersHorizontal className="h-4 w-4" />
-          Filters
+          {t("fleet.filters.button")}
           {activeCount > 0 && (
             <span
               aria-hidden
@@ -273,18 +297,20 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
             it's anchored to the true bottom of the sheet, never
             scrolled-under by long filter content. */}
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6">
-          <SheetTitle className="text-3xl">Filter the fleet</SheetTitle>
+          <SheetTitle className="text-3xl">{t("fleet.filters.title")}</SheetTitle>
           <p
             className="mt-2 text-sm text-[var(--color-on-surface-variant)]"
             aria-live="polite"
             aria-atomic="true"
           >
-            {matchCount} {matchCount === 1 ? "boat" : "boats"} match
+            {matchCount === 1
+              ? t("fleet.boatsMatchSingular", { count: matchCount })
+              : t("fleet.boatsMatchPlural", { count: matchCount })}
           </p>
 
           <div className="mt-8 space-y-10">
             {presentTypes.length > 0 && (
-              <Section label="Type">
+              <Section label={t("fleet.filters.type")}>
                 {presentTypes.map((t) => {
                   const active = draft.types.has(t.value);
                   const count = facetCount("types", t.value);
@@ -302,7 +328,7 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
             )}
 
             {presentBrands.length > 0 && (
-              <Section label="Brand">
+              <Section label={t("fleet.filters.brand")}>
                 {presentBrands.map((b) => {
                   const active = draft.brands.has(b.toLowerCase());
                   const count = facetCount("brands", b);
@@ -320,7 +346,7 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
             )}
 
             {presentGuests.length > 0 && (
-              <Section label="For">
+              <Section label={t("fleet.filters.for")}>
                 {presentGuests.map((g) => {
                   const active = draft.minGuests === g.value;
                   const count = facetCount("minGuests", g.value);
@@ -339,7 +365,7 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
             )}
 
             {presentPrices.length > 0 && (
-              <Section label="Budget">
+              <Section label={t("fleet.filters.budget")}>
                 {presentPrices.map((p) => {
                   const active = draft.maxPrice === p.value;
                   const count = facetCount("maxPrice", p.value);
@@ -368,14 +394,16 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
             onClick={reset}
             className="text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors"
           >
-            Clear all
+            {t("fleet.filters.clearAll")}
           </button>
           <button
             type="button"
             onClick={apply}
             className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-[#000000] bg-[#000000] px-6 text-[11px] font-medium uppercase tracking-[0.22em] text-white transition-colors duration-300 hover:bg-white hover:text-[#000000]"
           >
-            Show {matchCount} {matchCount === 1 ? "boat" : "boats"}
+            {matchCount === 1
+              ? t("fleet.filters.showSingular", { count: matchCount })
+              : t("fleet.filters.showPlural", { count: matchCount })}
           </button>
         </div>
       </SheetContent>

@@ -15,7 +15,7 @@
     "explore": "Explore",
     "visitUs": "Visit us",
     "byIbimar": "by Ibimar",
-    "summary": "Luxury yacht charter from Botafoc Marina, Ibiza. Nineteen boats, twenty years on the water, one phone call.",
+    "summary": "Luxury yacht charter from Botafoc Marina, Ibiza. Twenty years on the water, one phone call.",
     "rightsReserved": "All rights reserved",
     "privacy": "Privacy",
     "terms": "Terms & cookies"
@@ -26,6 +26,7 @@
     "browseFleet": "Browse the fleet",
     "messageWhatsApp": "Message us on WhatsApp",
     "openWhatsApp": "Open WhatsApp",
+    "bookHere": "Book here",
     "bookWhatsApp": "Book via WhatsApp",
     "sendEnquiry": "Send enquiry",
     "scroll": "Scroll"
@@ -40,7 +41,7 @@
     "featured": {
       "eyebrow": "Discover your vessel",
       "title": "Featured fleet",
-      "all": "All 19 boats →"
+      "all": "All {count} boats →"
     },
     "experiences": {
       "eyebrow": "For every kind of day",
@@ -63,25 +64,29 @@
   },
   "fleet": {
     "title": "The fleet",
-    "subtitle": "Nineteen boats based at Botafoc Marina. Filter to the right one — or send us the shape of your day and we will choose for you.",
-    "matching": "{count} matching",
-    "boatSingular": "boat",
-    "boatPlural": "boats",
+    "subtitle": "{count} boats based at Botafoc Marina. Filter to the right one — or send us the shape of your day and we will choose for you.",
+    "boatsMatchSingular": "{count} boat matches",
+    "boatsMatchPlural": "{count} boats match",
     "noResults": "No boats match those filters.",
     "noResultsHint": "Reset the filters or send us a message — we will suggest something from the wider fleet.",
     "reset": "Reset filters",
     "filters": {
-      "allTypes": "All types",
-      "motor_yacht": "Motor yacht",
-      "sailing_yacht": "Sailing",
+      "button": "Filters",
+      "title": "Filter the fleet",
+      "type": "Type",
+      "brand": "Brand",
+      "for": "For",
+      "budget": "Budget",
+      "motor": "Motor",
+      "sailing": "Sailing",
       "catamaran": "Catamaran",
-      "day_boat": "Day boat",
-      "sport_yacht": "Sport yacht",
-      "anySize": "Any size",
-      "guestsPlus": "{n}+ guests",
-      "allBrands": "All brands",
-      "anyBudget": "Any budget",
-      "upTo": "Up to €{amount}"
+      "dayBoat": "Day boat",
+      "sport": "Sport",
+      "guestsOrMore": "{n} or more",
+      "upToPerDay": "Up to €{amount} / day",
+      "clearAll": "Clear all",
+      "showSingular": "Show {count} boat",
+      "showPlural": "Show {count} boats"
     },
     "fromPrice": "From €{amount}"
   },
@@ -92,7 +97,7 @@
     "whatsIncluded": "What's included",
     "specifications": "Specifications",
     "similar": "Similar boats",
-    "allBoats": "All 19 boats →",
+    "allBoats": "All {count} boats →",
     "orWhatsApp": "Or WhatsApp us directly"
   },
   "form": {

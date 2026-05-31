@@ -120,7 +120,9 @@ export default async function FleetPage({
             <h1 className="brand-headline mt-5 max-w-3xl text-[clamp(2.25rem,7vw,4.5rem)] md:text-6xl">
               {t("fleet.title")}
             </h1>
-            <p className="brand-sub mt-4 max-w-xl text-base md:text-lg">{t("fleet.subtitle")}</p>
+            <p className="brand-sub mt-4 max-w-xl text-base md:text-lg">
+              {t("fleet.subtitle", { count: allBoats.length })}
+            </p>
           </div>
         </div>
       </section>
@@ -128,8 +130,9 @@ export default async function FleetPage({
       <Section bleed className="bg-[#f4f4f4]">
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-sm text-[var(--color-on-surface-variant)]">
-            {boats.length} {boats.length === 1 ? t("fleet.boatSingular") : t("fleet.boatPlural")}{" "}
-            {t("fleet.matching", { count: boats.length })}
+            {boats.length === 1
+              ? t("fleet.boatsMatchSingular", { count: boats.length })
+              : t("fleet.boatsMatchPlural", { count: boats.length })}
           </p>
           <FilterModal
             boats={allBoats.map((b) => ({

@@ -64,22 +64,51 @@ export default async function HomePage({
   const depthExists = fs.existsSync(depthAbs);
 
   const accentClass = "brand-accent wave-accent";
-  const headline = (
-    <>
-      Ibiza is <span className={accentClass}>different</span>
-      <br />
-      From the Sea.
-    </>
-  );
-  const sub = (
-    <>
-      From the moment you step aboard at Botafoc Marina,
-      <br className="hidden md:inline" />
-      {" "}to the moment you watch the sun dissolve into the
-      <br className="hidden md:inline" />
-      {" "}Mediterranean, every detail is handled.
-    </>
-  );
+  const headline =
+    lc === "es" ? (
+      <>
+        Ibiza es <span className={accentClass}>diferente</span>
+        <br />
+        desde el mar.
+      </>
+    ) : (
+      <>
+        Ibiza is <span className={accentClass}>different</span>
+        <br />
+        From the Sea.
+      </>
+    );
+  const sub =
+    lc === "es" ? (
+      <>
+        Desde el momento en que subes a bordo en Marina Botafoc,
+        <br className="hidden md:inline" />
+        {" "}hasta el momento en que ves el sol disolverse en
+        <br className="hidden md:inline" />
+        {" "}el Mediterráneo, cada detalle está cuidado.
+      </>
+    ) : (
+      <>
+        From the moment you step aboard at Botafoc Marina,
+        <br className="hidden md:inline" />
+        {" "}to the moment you watch the sun dissolve into the
+        <br className="hidden md:inline" />
+        {" "}Mediterranean, every detail is handled.
+      </>
+    );
+  // Localised in-scene featured-cards heading. The accent word lives
+  // inside the span so its colour treatment matches the brand system.
+  const featuredTitle =
+    lc === "es" ? (
+      <>
+        <span className={accentClass}>Descubre</span> la flota
+      </>
+    ) : (
+      <>
+        <span className={accentClass}>Explore</span> the fleet
+      </>
+    );
+  const seeAllLabel = lc === "es" ? "Ver todo" : "See all";
 
   return (
     <main className="text-white">
@@ -101,6 +130,10 @@ export default async function HomePage({
         accentClassName="wave-accent"
         headlineClassName="md:max-w-[1600px]"
         sub={sub}
+        bookHereLabel={t("cta.bookHere")}
+        scrollLabel={t("cta.scroll")}
+        featuredTitle={featuredTitle}
+        seeAllLabel={seeAllLabel}
         typography="editorial-serif"
         layout="bottom-left"
         canvas={{}}

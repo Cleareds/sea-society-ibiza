@@ -286,8 +286,9 @@ export default async function BoatDetailPage({
                   {boat.baseHarbour ? ` · ${boat.baseHarbour}` : ""}
                 </p>
                 <p className="mt-6 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-                  Send us a WhatsApp with your dates and group size — we
-                  respond within a few hours from Botafoc Marina.
+                  {lc === "es"
+                    ? "Escríbenos por WhatsApp con tus fechas y el tamaño del grupo — respondemos en pocas horas desde Marina Botafoc."
+                    : "Send us a WhatsApp with your dates and group size — we respond within a few hours from Botafoc Marina."}
                 </p>
                 <div className="mt-6">
                   <BookHereCTA
@@ -295,7 +296,7 @@ export default async function BoatDetailPage({
                     boatName={boat.name}
                     tone="dark"
                     size="lg"
-                    label="Book via WhatsApp"
+                    label={t("cta.bookWhatsApp")}
                     className="w-full"
                     placement="boat_detail_below_specs"
                     boatSlug={boat.slug}
@@ -318,7 +319,7 @@ export default async function BoatDetailPage({
                 href={lp("/fleet")}
                 className="text-sm font-medium text-[var(--color-primary)] hover:underline"
               >
-                {t("boat.allBoats")}
+                {t("boat.allBoats", { count: all.length })}
               </Link>
             </div>
             <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -341,29 +342,22 @@ export default async function BoatDetailPage({
       <Section>
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-            Not just a boat
+            {lc === "es" ? "Más que un barco" : "Not just a boat"}
           </p>
           <h2 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
-            Pair it with an experience
+            {lc === "es" ? "Combínalo con una experiencia" : "Pair it with an experience"}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-            Sunset cruise, multi-day Balearic charter, proposal,
-            birthday or corporate hire — every charter on{" "}
-            {boat.name} can be wrapped in a fully-handled experience:
-            catering, water toys, photographer, florals, champagne.
+            {lc === "es"
+              ? `Crucero al atardecer, charter multidía por las Baleares, pedida, cumpleaños o evento corporativo — cada charter en ${boat.name} puede convertirse en una experiencia completa: catering, juguetes acuáticos, fotógrafo, florales, champagne.`
+              : `Sunset cruise, multi-day Balearic charter, proposal, birthday or corporate hire — every charter on ${boat.name} can be wrapped in a fully-handled experience: catering, water toys, photographer, florals, champagne.`}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href={lp("/experiences")}
-              className="inline-flex items-center gap-2 rounded-full border border-[#000000] bg-[#000000] px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-white transition-colors hover:bg-white hover:text-[#000000]"
-            >
-              Browse experiences
-            </Link>
             <Link
               href={lp("/destinations")}
               className="inline-flex items-center gap-2 rounded-full border border-[#000000] bg-white px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[#000000] transition-colors hover:bg-[#000000] hover:text-white"
             >
-              View destinations
+              {lc === "es" ? "Ver destinos" : "View destinations"}
             </Link>
           </div>
         </div>

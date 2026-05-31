@@ -51,6 +51,16 @@ export interface HomeWater3DSceneProps {
    *  the h2 'Explore the fleet' focus word) on this scene. */
   accentClassName?: string;
   sub: React.ReactNode;
+  /** Localised label for the "Book here" hero CTA. Falls back to "Book here". */
+  bookHereLabel?: string;
+  /** Localised label for the scroll cue. Falls back to "Scroll". */
+  scrollLabel?: string;
+  /** Localised headline for the in-scene featured-cards section.
+   *  Falls back to "Explore the fleet" (with "Explore" accented). */
+  featuredTitle?: React.ReactNode;
+  /** Localised label for the "See all" link in the featured section.
+   *  Falls back to "See all". */
+  seeAllLabel?: string;
   typography?: Typography;
   layout?: Layout;
   canvas?: CanvasOverrides;
@@ -170,6 +180,10 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
     videoSrc, videoSrcMobile, maskSrc, videoAspect, posterSrc,
     whatsappNumber, featured, locale,
     headline, headlineClassName, accentClassName, sub,
+    bookHereLabel = "Book here",
+    scrollLabel = "Scroll",
+    featuredTitle,
+    seeAllLabel = "See all",
     typography = "editorial-serif",
     layout = "bottom-left",
     canvas,
@@ -306,7 +320,7 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
             <h1 className={`${HEADLINE_CLASSES[typography]} ${headlineClassName ?? ""}`.trim()}>{headline}</h1>
             <p className={SUB_CLASSES[typography]}>{sub}</p>
             <div className={layout === "center" ? "mt-10 flex justify-center" : "mt-10"}>
-              <BookHereCTA number={whatsappNumber} size="lg" label="Book here" placement="home_hero" />
+              <BookHereCTA number={whatsappNumber} size="lg" label={bookHereLabel} placement="home_hero" />
             </div>
           </div>
 
@@ -314,7 +328,7 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
           <div className="pointer-events-none absolute inset-x-0 bottom-[max(env(safe-area-inset-bottom),1.5rem)] z-10 flex justify-center">
             <span className="inline-flex flex-col items-center gap-3 text-white/80">
               <span className="text-[10px] uppercase tracking-[0.35em] text-white/85">
-                Scroll
+                {scrollLabel}
               </span>
               <span className="home-cue-arrow inline-block" aria-hidden>
                 <svg
@@ -341,7 +355,7 @@ export function HomeWater3DScene(props: HomeWater3DSceneProps) {
           className="absolute inset-0 z-10 hidden items-center opacity-0 transition-opacity duration-300 md:flex"
         >
           <div className="mx-auto w-full max-w-(--spacing-container-max) px-5 md:px-10">
-            {renderCardsContent({ featured, lp, variantTag, accentClassName })}
+            {renderCardsContent({ featured, lp, variantTag, accentClassName, featuredTitle, seeAllLabel })}
           </div>
         </div>
 
@@ -414,24 +428,32 @@ function renderCardsContent({
   lp,
   variantTag,
   accentClassName,
+  featuredTitle,
+  seeAllLabel,
 }: {
   featured: Array<{ boat: Boat; fromLabel: string }>;
   lp: (p: string) => string;
   variantTag?: string;
   accentClassName?: string;
+  featuredTitle?: React.ReactNode;
+  seeAllLabel?: string;
 }) {
   const accentCls = `brand-accent ${accentClassName ?? ""}`.trim();
   return (
     <>
       <div className="flex items-baseline justify-between gap-4 pb-6 text-white">
         <h2 className="font-serif text-2xl md:text-4xl">
-          <span className={accentCls}>Explore</span> the fleet
+          {featuredTitle ?? (
+            <>
+              <span className={accentCls}>Explore</span> the fleet
+            </>
+          )}
         </h2>
         <Link
           href={lp("/fleet")}
           className="group inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.3em] text-white/90 transition-colors hover:text-white"
         >
-          See all
+          {seeAllLabel ?? "See all"}
           <ArrowRight aria-hidden className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </Link>
       </div>

@@ -15,7 +15,7 @@
     "explore": "Explorar",
     "visitUs": "Visítanos",
     "byIbimar": "by Ibimar",
-    "summary": "Charter de yates de lujo desde Botafoc Marina, Ibiza. Diecinueve barcos, veinte años en el agua, una llamada.",
+    "summary": "Charter de yates de lujo desde Marina Botafoc, Ibiza. Veinte años en el agua, una llamada.",
     "rightsReserved": "Todos los derechos reservados",
     "privacy": "Privacidad",
     "terms": "Términos y cookies"
@@ -26,9 +26,116 @@
     "browseFleet": "Ver la flota",
     "messageWhatsApp": "Escríbenos por WhatsApp",
     "openWhatsApp": "Abrir WhatsApp",
+    "bookHere": "Reservar aquí",
     "bookWhatsApp": "Reservar por WhatsApp",
     "sendEnquiry": "Enviar consulta",
     "scroll": "Desliza"
+  },
+  "home": {
+    "tagline": "Una plataforma. Experiencias infinitas en el mar.",
+    "intro": {
+      "eyebrow": "La experiencia",
+      "title": "Un día en el agua. Un recuerdo para toda la vida.",
+      "body": "Desde el momento en que subes a bordo en Marina Botafoc hasta el momento en que ves el sol disolverse en el Mediterráneo, cada detalle está cuidado. El capitán sabe dónde no están los demás barcos. El chef sabe lo que el mar quiere que comas. Tú solo trae a la gente."
+    },
+    "featured": {
+      "eyebrow": "Descubre tu barco",
+      "title": "Flota destacada",
+      "all": "Ver los {count} barcos →"
+    },
+    "experiences": {
+      "eyebrow": "Para cada tipo de día",
+      "title": "Experiencias",
+      "all": "Ver todas las experiencias →"
+    },
+    "destinations": {
+      "eyebrow": "A dónde vas",
+      "title": "Destinos",
+      "all": "Ver todos los destinos →"
+    },
+    "instagram": {
+      "title": "Sigue el viaje"
+    },
+    "enquiry": {
+      "eyebrow": "Tu charter empieza con un mensaje.",
+      "title": "Cuéntanos tus fechas y tu grupo — nos encargamos del resto.",
+      "orWhatsApp": "O escríbenos directamente por"
+    }
+  },
+  "fleet": {
+    "title": "La flota",
+    "subtitle": "{count} barcos con base en Marina Botafoc. Filtra el adecuado — o cuéntanos cómo quieres que sea tu día y te elegimos uno.",
+    "boatsMatchSingular": "{count} barco coincide",
+    "boatsMatchPlural": "{count} barcos coinciden",
+    "noResults": "Ningún barco coincide con esos filtros.",
+    "noResultsHint": "Reinicia los filtros o escríbenos — te sugeriremos algo dentro de la flota más amplia.",
+    "reset": "Reiniciar filtros",
+    "filters": {
+      "button": "Filtros",
+      "title": "Filtrar la flota",
+      "type": "Tipo",
+      "brand": "Marca",
+      "for": "Para",
+      "budget": "Presupuesto",
+      "motor": "Motor",
+      "sailing": "Vela",
+      "catamaran": "Catamarán",
+      "dayBoat": "Embarcación de día",
+      "sport": "Sport",
+      "guestsOrMore": "{n} o más",
+      "upToPerDay": "Hasta €{amount} / día",
+      "clearAll": "Borrar todo",
+      "showSingular": "Mostrar {count} barco",
+      "showPlural": "Mostrar {count} barcos"
+    },
+    "fromPrice": "Desde €{amount}"
+  },
+  "boat": {
+    "checkAvailability": "Consultar disponibilidad",
+    "tellDates": "Cuéntanos tus fechas.",
+    "confirmWithin": "Confirmamos la disponibilidad de {name} en pocas horas.",
+    "whatsIncluded": "Qué incluye",
+    "specifications": "Especificaciones",
+    "similar": "Barcos similares",
+    "allBoats": "Ver los {count} barcos →",
+    "orWhatsApp": "O escríbenos directamente por WhatsApp"
+  },
+  "form": {
+    "name": "Tu nombre",
+    "email": "Email",
+    "phone": "Teléfono (opcional)",
+    "dates": "Fechas",
+    "datesPlaceholder": "ej. 12–14 de julio",
+    "groupSize": "Tamaño del grupo",
+    "boatPreference": "Preferencia de barco",
+    "boatNotSure": "Aún no estoy seguro",
+    "message": "Mensaje",
+    "messagePlaceholder": "Cuéntanos sobre tu charter — ocasión, ruta, cualquier detalle especial.",
+    "responseTime": "Respondemos en pocas horas. Al enviar, aceptas nuestra",
+    "privacyPolicy": "política de privacidad",
+    "submitting": "Enviando…",
+    "successTitle": "Gracias.",
+    "successBody": "Tenemos tu mensaje y te contactaremos en pocas horas.",
+    "errorGeneric": "Algo ha salido mal. Inténtalo de nuevo."
+  },
+  "contact": {
+    "orMessageDirect": "O escríbenos directamente",
+    "fasterWhatsApp": "Más rápido por WhatsApp.",
+    "whatsAppHint": "Para fechas dentro de los próximos siete días, WhatsApp es la vía más rápida.",
+    "email": "Email",
+    "phone": "Teléfono",
+    "marina": "Marina",
+    "mapTitle": "Marina Botafoc en el mapa",
+    "mapAttribution": "Mapa © colaboradores de OpenStreetMap",
+    "faqEyebrow": "Preguntas frecuentes",
+    "faqTitle": "Antes de escribir",
+    "moreQuestions": "¿Más preguntas?",
+    "sendMessage": "Enviar un mensaje",
+    "personally": "— las respondemos personalmente."
+  },
+  "breadcrumb": {
+    "home": "Inicio",
+    "fleet": "Flota"
   },
   "errors": {
     "notFound": {
@@ -40,9 +147,24 @@
     "serverError": {
       "eyebrow": "Aguas agitadas",
       "title": "Algo ha ido mal por nuestra parte.",
-      "body": "Hemos registrado el problema. Inténtalo de nuevo en un momento — o envíanos un mensaje.",
+      "body": "Hemos registrado el problema. Inténtalo de nuevo en un momento — o envíanos un mensaje y lo resolvemos.",
       "retry": "Reintentar",
       "back": "Volver al inicio"
     }
+  },
+  "cookies": {
+    "title": "Cookies, la versión corta.",
+    "body": "Usamos cookies necesarias para que el sitio funcione, más algunas opcionales para analítica y marketing. Elige qué quieres permitir.",
+    "necessary": "Necesarias",
+    "necessaryHint": "imprescindibles para que el sitio funcione.",
+    "analytics": "Analítica",
+    "analyticsHint": "uso anónimo para mejorar el sitio (Google Analytics).",
+    "marketing": "Marketing",
+    "marketingHint": "medir el rendimiento de los anuncios (Meta Pixel).",
+    "acceptAll": "Aceptar todo",
+    "choose": "Elegir",
+    "saveSelection": "Guardar selección",
+    "rejectAll": "Rechazar todo",
+    "preferences": "Preferencias"
   }
 }
