@@ -15,6 +15,7 @@ const OVERRIDES: Record<string, string> = {
   "manbero-ii-princess-v53": "/images/boats/cards/manbero-card.webp",
   "mazu-astondoa-80": "/images/boats/cards/mazu-card.webp",
   "sensation-pershing-72": "/images/boats/cards/sensation-card.webp",
+  "majestic-vandutch-40": "/images/boats/cards/majestic-card.webp",
 };
 
 export function cardImageForSlug(slug: string): string | undefined {

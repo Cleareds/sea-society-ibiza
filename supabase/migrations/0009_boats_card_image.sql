@@ -38,6 +38,9 @@ update boats set card_image = '/images/boats/cards/mazu-card.webp'
 update boats set card_image = '/images/boats/cards/sensation-card.webp'
   where slug = 'sensation-pershing-72';
 
+update boats set card_image = '/images/boats/cards/majestic-card.webp'
+  where slug = 'majestic-vandutch-40';
+
 comment on column boats.card_image is
   'Optional URL for tile/list contexts. Falls back to hero_image when null. Detail page banner always uses hero_image.';
 

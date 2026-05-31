@@ -1011,6 +1011,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("majestic"), alt: "Majestic — VanDutch 40" }],
     heroImage: hero("majestic"),
+    cardImage: card("majestic"),
     pdfUrl: null,
     featured: false,
     sortOrder: 19,
