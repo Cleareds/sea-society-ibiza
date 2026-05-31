@@ -127,7 +127,7 @@ export default async function AboutPage({
         </Reveal>
       </Section>
 
-      <Section>
+      <Section bleed className="bg-[#f4f4f4]">
         <Reveal className="mx-auto max-w-3xl text-center">
           <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
             Welcome to Sea Society.
