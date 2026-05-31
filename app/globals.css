@@ -265,6 +265,23 @@ h1, h2, h3, h4 {
       rgba(0, 0, 0, 0.82) 100%);
 }
 
+/* Lighter variant — used on /fleet/[slug] boat detail heroes, where
+   the hero now plays a video and we want the footage to read brighter.
+   Tune the alpha values below to make the overlay darker/lighter:
+     - first radial: top number rgba alpha (vignette strength)
+     - linear stops: each rgba alpha controls darkness at that vertical
+       point (top / 22% / 45% / 80% / 100%). Lower = brighter image. */
+.brand-image-overlay-light {
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.28) 100%),
+    linear-gradient(180deg,
+      rgba(0, 0, 0, 0.22) 0%,
+      rgba(0, 0, 0, 0.04) 22%,
+      rgba(0, 0, 0, 0.04) 45%,
+      rgba(0, 0, 0, 0.32) 80%,
+      rgba(0, 0, 0, 0.50) 100%);
+}
+
 /* Respect reduced motion across the app. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

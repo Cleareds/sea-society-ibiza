@@ -13,30 +13,31 @@ interface Props {
 /**
  * Detail-page hero video player for the 9 boats with shipped footage.
  *
+ * Playback model:
+ *   - Plays the source clip forward ONCE on mount (no loop attribute,
+ *     no yoyo encoding) and freezes on the last frame.
+ *   - One replay is allowed PER PAGE VISIT: it fires when the user
+ *     has scrolled to the bottom of the page and then scrolls back to
+ *     the top. After that single replay, no more autoplay — the user
+ *     can reload to see it again.
+ *
  * Performance:
  *   - The poster image is rendered as a Next/Image with `priority` +
  *     `fetchPriority="high"`, so it's the LCP element painted before
  *     any video bytes arrive.
  *   - <video preload="metadata"> — server sends only the moov atom +
  *     1-2s of data; the rest streams via range requests as playback
- *     advances. Saves bandwidth on slow connections.
- *   - The video source is chosen at mount from `window.innerWidth` so
- *     small viewports get the 720p tier (~50% the size of 1080p).
+ *     advances.
+ *   - Source tier picked at mount from `window.innerWidth` (1080p for
+ *     desktop, 720p for phones).
  *   - The <video> is overlaid above the poster and cross-faded in via
- *     CSS opacity once it can play — no layout shift, no flash of
- *     empty pixels.
- *
- * Loop:
- *   - The mp4 itself is a yoyo (forward frames + reversed frames in
- *     one file), so native `loop` plays endlessly with no visible
- *     seam — last frame of forward equals first frame of reverse,
- *     and vice-versa.
+ *     CSS opacity once it can play.
  *
  * Accessibility:
- *   - aria-hidden on the video (it's decorative; the boat copy below
- *     conveys all info).
- *   - prefers-reduced-motion skips the video entirely and leaves the
- *     poster as the hero — no autoplay, no animation.
+ *   - aria-hidden on the video (it's decorative; boat copy below
+ *     carries all info).
+ *   - prefers-reduced-motion OR navigator.connection.saveData skip
+ *     the video entirely and leave the poster as the hero.
  */
 export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
   const [src, setSrc] = React.useState<string | null>(null);
@@ -46,9 +47,6 @@ export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
 
   React.useEffect(() => {
     const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // Bail out under reduced motion OR when the user has Data Saver on
-    // (Chrome's saveData hint, fired on metered/slow connections).
-    // Either way, the poster stays as the hero, no video bytes load.
     type ConnLike = { saveData?: boolean };
     const conn = (navigator as Navigator & { connection?: ConnLike }).connection;
     const saveData = conn?.saveData === true;
@@ -56,9 +54,6 @@ export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
       setReduced(true);
       return;
     }
-    // Pick the resolution tier at mount based on viewport width.
-    // Small phones get the 540p file (~half the size); everything
-    // else gets the 720p tier — sharp on retina laptops + desktops.
     setSrc(window.innerWidth >= 1100 ? src1080 : src720);
   }, [src1080, src720]);
 
@@ -67,13 +62,44 @@ export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
     if (!v) return;
     const onCanPlay = () => setReady(true);
     v.addEventListener("canplay", onCanPlay);
-    // Some browsers fire `loadeddata` first; accept either as ready.
     v.addEventListener("loadeddata", onCanPlay);
     return () => {
       v.removeEventListener("canplay", onCanPlay);
       v.removeEventListener("loadeddata", onCanPlay);
     };
   }, [src]);
+
+  // One-time scroll-to-top replay. The user has to actually reach the
+  // bottom of the page (within 64px) and then scroll back to the top
+  // (within 32px). After firing once, the listener never fires again
+  // for this page mount.
+  React.useEffect(() => {
+    if (reduced || !src) return;
+    let hasReachedBottom = false;
+    let hasReplayed = false;
+    const onScroll = () => {
+      if (hasReplayed) return;
+      const y = window.scrollY;
+      const max =
+        document.documentElement.scrollHeight - window.innerHeight;
+      if (!hasReachedBottom && y >= max - 64) {
+        hasReachedBottom = true;
+        return;
+      }
+      if (hasReachedBottom && y <= 32) {
+        hasReplayed = true;
+        const v = videoRef.current;
+        if (v) {
+          v.currentTime = 0;
+          void v.play().catch(() => {
+            /* play() can reject if the tab is hidden — fine. */
+          });
+        }
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [reduced, src]);
 
   return (
     <>
@@ -88,7 +114,8 @@ export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
         className="object-cover"
       />
       {/* Video overlay — cross-fades in once it can play. Skipped
-          entirely under prefers-reduced-motion. */}
+          entirely under prefers-reduced-motion or Save-Data. No
+          `loop` attribute: plays once, freezes on last frame. */}
       {!reduced && src && (
         <video
           ref={videoRef}
@@ -96,7 +123,6 @@ export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
           poster={poster}
           autoPlay
           muted
-          loop
           playsInline
           preload="metadata"
           disableRemotePlayback

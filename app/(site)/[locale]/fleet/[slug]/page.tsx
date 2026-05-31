@@ -121,7 +121,7 @@ export default async function BoatDetailPage({
             className="object-cover"
           />
         )}
-        <div className="absolute inset-0 brand-image-overlay" />
+        <div className={`absolute inset-0 ${heroVideo ? "brand-image-overlay-light" : "brand-image-overlay"}`} />
         <div className="relative z-10 flex min-h-[80vh] flex-col px-5 pt-24 pb-16 md:px-10 md:pt-32 md:pb-24">
           <div className="mx-auto w-full max-w-(--spacing-container-max) brand-breadcrumb">
             <Breadcrumb

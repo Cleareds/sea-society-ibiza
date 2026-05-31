@@ -17,24 +17,25 @@ encode() {
   cwebp -q 72 "$tmp_png" -o "$OUT_DIR/${stem}-poster.webp" -quiet
   rm -f "$tmp_png"
 
-  # Hi tier: 1280×720 @ 24fps, CRF 28 with hard bitrate cap at
-  # 2 Mbit/s. Water + boat highlights are high-entropy; without
-  # the cap CRF 28 runs to 5+ Mbit/s. Cap gives us ~9 MB per ~35s
-  # yoyo while keeping film-tuned visual fidelity.
-  echo "[$stem] 720p hi yoyo..."
-  ffmpeg -y -loglevel error -i "$src" -filter_complex \
-    "[0:v]scale=1280:-2,split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0,fps=24,format=yuv420p[v]" \
-    -map "[v]" -c:v libx264 -preset slow -crf 28 -tune film -profile:v high -level 4.0 \
-    -maxrate 2M -bufsize 4M \
+  # Hi tier: full 1920×1080 30fps, H.264 CRF 21 -tune film, hard
+  # cap 6 Mbit/s. Forward-only (no yoyo) — the player plays once
+  # and stops at the last frame; scroll-to-top from page bottom
+  # triggers a single replay. This gives source-quality footage at
+  # ~14-22 MB per clip.
+  echo "[$stem] 1080p hi..."
+  ffmpeg -y -loglevel error -i "$src" \
+    -vf "scale=1920:-2,fps=30,format=yuv420p" \
+    -c:v libx264 -preset slow -crf 21 -tune film -profile:v high -level 4.1 \
+    -maxrate 6M -bufsize 12M \
     -movflags +faststart -an "$OUT_DIR/${stem}-loop.mp4"
 
-  # Lo tier: 960×540 @ 24fps, CRF 30, hard cap 1 Mbit/s. ~4 MB
-  # per yoyo, used on innerWidth < 1100.
-  echo "[$stem] 540p lo yoyo..."
-  ffmpeg -y -loglevel error -i "$src" -filter_complex \
-    "[0:v]scale=960:-2,split[a][b];[b]reverse[r];[a][r]concat=n=2:v=1:a=0,fps=24,format=yuv420p[v]" \
-    -map "[v]" -c:v libx264 -preset slow -crf 30 -tune film -profile:v main -level 3.1 \
-    -maxrate 1M -bufsize 2M \
+  # Lo tier: 1280×720 30fps CRF 24, cap 2.5 Mbit/s. ~6-12 MB,
+  # served on innerWidth < 1100 (phones).
+  echo "[$stem] 720p lo..."
+  ffmpeg -y -loglevel error -i "$src" \
+    -vf "scale=1280:-2,fps=30,format=yuv420p" \
+    -c:v libx264 -preset slow -crf 24 -tune film -profile:v high -level 4.0 \
+    -maxrate 2.5M -bufsize 5M \
     -movflags +faststart -an "$OUT_DIR/${stem}-loop-720.mp4"
 
   ls -la "$OUT_DIR/${stem}-loop.mp4" "$OUT_DIR/${stem}-loop-720.mp4" "$OUT_DIR/${stem}-poster.webp" | awk '{print $5, $NF}'
