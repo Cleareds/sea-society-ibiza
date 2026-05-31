@@ -23,13 +23,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata({
+  const meta = pageMetadata({
     title: "Experiences",
     description:
       "Day trips, sunset cruises, multi-day Balearic charters and special occasions. Plus add-ons: catering, water toys, photographer, florals, champagne.",
     path: "/experiences",
     locale: isLocale(locale) ? locale : "en",
   });
+  // Hidden from search engines while the section is being finalised.
+  return { ...meta, robots: { index: false, follow: false } };
 }
 
 export default async function ExperiencesPage({

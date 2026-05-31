@@ -39,13 +39,15 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const exp = await getExperienceBySlug(slug);
   if (!exp) return { title: "Experience not found" };
-  return pageMetadata({
+  const meta = pageMetadata({
     title: exp.metaTitle || exp.title,
     description: exp.metaDescription || exp.intro || exp.body.slice(0, 160),
     path: `/experiences/${exp.slug}`,
     image: exp.heroImage,
     locale: isLocale(locale) ? locale : "en",
   });
+  // Hidden from search engines while the section is being finalised.
+  return { ...meta, robots: { index: false, follow: false } };
 }
 
 const eurFmt = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });

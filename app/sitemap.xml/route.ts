@@ -28,7 +28,8 @@ export async function GET() {
   const staticPaths: Array<{ path: string; freq: string; priority: number }> = [
     { path: "/", freq: "weekly", priority: 1.0 },
     { path: "/fleet", freq: "weekly", priority: 0.9 },
-    { path: "/experiences", freq: "monthly", priority: 0.7 },
+    // Experiences hidden until launch — see app/robots.ts disallow + page noindex.
+    // { path: "/experiences", freq: "monthly", priority: 0.7 },
     { path: "/destinations", freq: "monthly", priority: 0.7 },
     { path: "/about", freq: "monthly", priority: 0.5 },
     { path: "/contact", freq: "monthly", priority: 0.7 },

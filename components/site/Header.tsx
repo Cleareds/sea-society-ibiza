@@ -51,9 +51,10 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
   const isSolid = scrolled || !transparentOnHero;
   const lp = (path: string) => localePath(locale, path);
 
+  // Experiences hidden from nav (and indexing) until the section
+  // is launch-ready. Re-add the entry below when bringing it back.
   const navLinks = [
     { href: lp("/fleet"), label: labels.fleet },
-    { href: lp("/experiences"), label: labels.experiences },
     { href: lp("/destinations"), label: labels.destinations },
     { href: lp("/about"), label: labels.about },
   ];

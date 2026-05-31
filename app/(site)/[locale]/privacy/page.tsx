@@ -50,7 +50,7 @@ export default async function PrivacyPage({
       <PageHero
         eyebrow="Legal"
         title="Privacy policy"
-        imageSrc="/sea-society/site/about-hero.webp"
+        imageSrc="/images/boats/inspiration-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
           { name: t("footer.privacy") },

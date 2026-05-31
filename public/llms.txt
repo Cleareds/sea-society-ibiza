@@ -8,7 +8,7 @@ Sea Society Ibiza ("Sea Society", "the agency") is an Ibiza-based luxury yacht c
 
 - [Homepage](https://seasocietyibiza.com/): brand intro, featured fleet, Instagram feed.
 - [Fleet](https://seasocietyibiza.com/fleet): all 19 yachts with filters (type, brand, guests, budget).
-- [Experiences](https://seasocietyibiza.com/experiences): day trips, sunset cruises, multi-day charters, special occasions (proposals, birthdays, corporate).
+<!-- Experiences section hidden from indexing during pre-launch finalisation; reinstate this bullet when /experiences is published. -->
 - [Destinations](https://seasocietyibiza.com/destinations): Ibiza, Formentera, Mallorca cruising guides.
 - [About](https://seasocietyibiza.com/about): the team and how we work.
 - [Contact](https://seasocietyibiza.com/contact): enquiry form, FAQ, WhatsApp booking line.

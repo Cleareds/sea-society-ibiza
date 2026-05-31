@@ -62,11 +62,6 @@ export function Footer({ settings, locale, t }: FooterProps) {
                 </Link>
               </li>
               <li>
-                <Link href={lp("/experiences")} className="hover:text-[var(--color-primary)]">
-                  {t("nav.experiences")}
-                </Link>
-              </li>
-              <li>
                 <Link href={lp("/destinations")} className="hover:text-[var(--color-primary)]">
                   {t("nav.destinations")}
                 </Link>

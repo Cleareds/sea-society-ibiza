@@ -1,7 +1,7 @@
 import type { Settings } from "../types";
 
 export const settings: Settings = {
-  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+34600000000",
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+32 479 38 80 46",
   whatsappDefaultMessage: "Hi Sea Society, I'd like to enquire about a charter.",
   instagramUrl: "https://www.instagram.com/seasociety.ibiza/",
   instagramHandle: "@seasociety.ibiza",
