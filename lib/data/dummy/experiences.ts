@@ -60,7 +60,7 @@ export const experiences: Experience[] = [
   {
     id: "x-04",
     slug: "special-occasions",
-    title: "Special occasions",
+    title: "Sea Society Experiences",
     intro: "Birthdays, proposals, anniversaries, corporate days.",
     body: "We organise milestone birthdays (often with a chef and stewardess), proposals (we'll cue the champagne so you don't have to think about it), and corporate days for teams of up to twenty across two boats. Tell us what the day needs to be and we'll handle the rest.",
     longDescription:
@@ -71,7 +71,7 @@ export const experiences: Experience[] = [
     heroImage: img("exp-special"),
     sortOrder: 4,
     isPublished: true,
-    metaTitle: "Special occasions on the water — Ibiza yacht charter",
+    metaTitle: "Sea Society Experiences — Ibiza yacht charter",
     metaDescription:
       "Birthdays, proposals, anniversaries and corporate days on a private yacht in Ibiza. Chef, florals, photographer — all arranged.",
   },
