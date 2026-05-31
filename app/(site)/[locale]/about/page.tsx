@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { Reveal } from "@/components/site/Reveal";
-import { InstagramGrid } from "@/components/site/InstagramGrid";
-import { BookHereCTA } from "@/components/site/BookHereCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getSettings } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -22,29 +18,29 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return pageMetadata({
-    title: "About — Sea Society Ibiza by Ibimar",
+    title: "Meet the Founders — Sea Society Ibiza",
     description:
-      "Sea Society Ibiza is a luxury charter platform built on Ibimar's 20-year operation at Botafoc Marina. Meet the crew, the partnership, and the marina at the heart of every charter.",
+      "Sea Society is built by three Belgian women — Lauren, Dorine and Leentje — who curate unforgettable charter experiences from Botafoc Marina, Ibiza, in partnership with Ibimar.",
     path: "/about",
     locale: isLocale(locale) ? locale : "en",
   });
 }
 
-const crew = [
+const founders = [
   {
-    name: "Capt. Marc Vidal",
-    role: "Fleet Captain · 18 years",
-    bio: "Born in Sant Antoni. Holds a 200-ton master licence. Knows every cove on the west coast by feel — and which ones to skip when the meltemi turns.",
+    name: "Lauren",
+    role: "Photographer, marketer & content creator.",
+    bio: "Lauren is the visual storyteller behind Sea Society. Always chasing the perfect light, authentic moments and inspiring destinations, she brings the Sea Society lifestyle to life through photography and content. If you've fallen in love with an image on our website or Instagram, chances are Lauren was behind the camera.",
   },
   {
-    name: "Sofia Reyes",
-    role: "Charter Director",
-    bio: "Runs the day-of operation: catering, water toys, dock timings, special requests. Came from a Mallorca-side superyacht background.",
+    name: "Dorine",
+    role: "Sales specialist & collaboration hunter.",
+    bio: "Dorine is constantly connecting people, brands and ideas. With a natural talent for sales and relationship building, she's always on the lookout for unique partnerships, exciting experiences and new ways to make Sea Society even more special.",
   },
   {
-    name: "Tomeu Riera",
-    role: "Workshop & Maintenance Lead",
-    bio: "Twenty years at the dock with Ibimar. Every engine, prop and trim system in the fleet passes through his hands twice a year.",
+    name: "Leentje",
+    role: "Content creator, marketer & trend watcher.",
+    bio: "Always tuned into the latest trends, emerging platforms and cultural moments, Leentje helps shape the voice and personality of Sea Society. Her focus goes beyond creating content — she strives to make people feel what's behind the brand. Through storytelling, community building and authentic communication, she brings the energy, emotions and experiences of Sea Society closer to its audience. She believes the strongest brands aren't just seen, they're felt. And that's exactly what she aims to create with every piece of content.",
   },
 ];
 
@@ -59,8 +55,6 @@ export default async function AboutPage({
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
 
-  const settings = await getSettings();
-
   return (
     <>
       <JsonLd
@@ -71,7 +65,7 @@ export default async function AboutPage({
       />
 
       <PageHero
-        title="Built on twenty years at the dock."
+        title="Meet the Founders"
         imageSrc="/sea-society/site/about-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
@@ -79,106 +73,50 @@ export default async function AboutPage({
         ]}
       />
 
-      {/* Brand story */}
       <Section>
-        <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-7">
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-              The brand
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              One <span className="brand-accent">platform</span>.<br />
-              Endless experiences at sea.
-            </h2>
-            <div className="mt-6 space-y-5 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-              <p>
-                Sea Society Ibiza was created to give guests one number, one
-                conversation, and access to every yacht in the fleet. The brand
-                is new. The operation behind it is not.
-              </p>
-              <p>
-                Every booking still goes through Ibimar's twenty years of
-                Botafoc relationships — captains, harbourmasters, caterers,
-                photographers, transfer providers. The difference is that you
-                no longer have to navigate any of that yourself.
-              </p>
-            </div>
-          </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
-            <Image
-              src="/sea-society/site/dest-formentera.webp"
-              alt="Yacht anchored off a Formentera sandbank in clear turquoise water."
-              fill
-              sizes="(min-width: 768px) 40vw, 90vw"
-              className="object-cover"
-            />
-          </div>
+        <Reveal className="mx-auto max-w-3xl space-y-6 text-base leading-relaxed text-[var(--color-on-surface)] md:text-lg">
+          <p>
+            Sea Society was born from a shared passion for unforgettable
+            experiences, meaningful connections and the magic of life
+            on the water.
+          </p>
+          <p>
+            Behind the platform are three Belgian women who believe that
+            chartering a yacht should be about much more than simply
+            booking a boat. Together with our trusted partner Ibimar, we
+            curate experiences that turn a day at sea into a story worth
+            telling.
+          </p>
+          <p>
+            Whether you&apos;re looking for the perfect proposal setup, a
+            wellness morning, a private chef experience or simply advice
+            on the best hidden spots around Ibiza, we&apos;re here to help.
+          </p>
+          <p>
+            We personally oversee the Sea Society platform, its
+            marketing, collaborations and community, and we&apos;re always
+            just a message away for any questions about the experiences
+            featured on our website.
+          </p>
         </Reveal>
       </Section>
 
-      {/* Ibimar partnership */}
       <Section bleed className="bg-[var(--color-surface-container-low)]">
-        <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5 md:order-1">
-            <Image
-              src="/sea-society/site/about-hero.webp"
-              alt="Botafoc Marina at golden hour — Ibimar yachts at their berths."
-              fill
-              sizes="(min-width: 768px) 40vw, 90vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="md:col-span-7 md:order-2">
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-              The partnership
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              In partnership with <span className="brand-accent">Ibimar</span>.
-            </h2>
-            <div className="mt-6 space-y-5 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-              <p>
-                Ibimar is a family-run operation that has held berths at
-                Botafoc Marina since 2005 and now manages 21 yachts across
-                day-charter, sunset, and multi-day Balearic itineraries.
-              </p>
-              <p>
-                Sea Society Ibiza is Ibimar's premium charter platform: one
-                point of contact, one curated fleet, one operator that owns the
-                entire experience — from the WhatsApp message that starts a
-                charter through to the chef and floristry on the day.
-              </p>
-            </div>
-          </div>
-        </Reveal>
-      </Section>
-
-      {/* Crew */}
-      <Section>
         <Reveal>
-          <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-            The crew
-          </p>
-          <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-            The people who run your day.
-          </h2>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-            Three names you will hear repeatedly across the planning, the
-            charter, and the follow-up. Every booking flows through them.
-          </p>
-          <ul className="mt-10 grid gap-6 md:grid-cols-3">
-            {crew.map((c) => (
+          <ul className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+            {founders.map((f) => (
               <li
-                key={c.name}
-                className="rounded-2xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-6"
+                key={f.name}
+                className="rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-8"
               >
-                <h3 className="font-serif text-2xl text-[var(--color-on-surface)]">
-                  {c.name}
-                </h3>
-                <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]">
-                  {c.role}
+                <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+                  {f.name}
+                </h2>
+                <p className="mt-2 text-sm italic text-[var(--color-primary)]">
+                  {f.role}
                 </p>
-                <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-                  {c.bio}
+                <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
+                  {f.bio}
                 </p>
               </li>
             ))}
@@ -186,79 +124,16 @@ export default async function AboutPage({
         </Reveal>
       </Section>
 
-      {/* Botafoc Marina */}
-      <Section bleed className="bg-[var(--color-surface-container-low)]">
-        <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
-          <div className="md:col-span-7">
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-              Home port
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              Botafoc <span className="brand-accent">Marina</span>.
-            </h2>
-            <div className="mt-6 space-y-5 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-              <p>
-                Marina Botafoc is the deep-water marina on the eastern edge of
-                Ibiza Town — ten minutes from the airport, walking distance
-                from Pacha and the old town, and the home berth of every yacht
-                in our fleet.
-              </p>
-              <p>
-                Charters depart and return here. Provisioning, catering and
-                transfers all source from Marina Botafoc's preferred partners,
-                and our office is on the pier — the same one your captain will
-                meet you on.
-              </p>
-              <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
-                <div>
-                  <dt className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                    Address
-                  </dt>
-                  <dd className="mt-1">{settings.address}</dd>
-                </div>
-                <div>
-                  <dt className="text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                    Office
-                  </dt>
-                  <dd className="mt-1">
-                    <a
-                      className="hover:text-[var(--color-primary)]"
-                      href={`mailto:${settings.email}`}
-                    >
-                      {settings.email}
-                    </a>
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div className="mt-8">
-              <BookHereCTA
-                number={settings.whatsappNumber}
-                tone="dark"
-                label="Book your charter"
-                placement="about_cta"
-              />
-            </div>
-          </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
-            <Image
-              src="/sea-society/site/fleet-hero.webp"
-              alt="A yacht running parallel to Ibiza's coastline near Botafoc."
-              fill
-              sizes="(min-width: 768px) 40vw, 90vw"
-              className="object-cover"
-            />
-          </div>
+      <Section>
+        <Reveal className="mx-auto max-w-3xl text-center">
+          <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+            Welcome to Sea Society.
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
+            A community built around unforgettable moments at sea.
+          </p>
         </Reveal>
       </Section>
-
-      {/* Instagram feed — same as homepage */}
-      <div className="pt-12 md:pt-20">
-        <InstagramGrid
-          handle={settings.instagramHandle}
-          href={settings.instagramUrl}
-        />
-      </div>
     </>
   );
 }
