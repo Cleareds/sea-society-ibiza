@@ -12,7 +12,6 @@ import { getSettings } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { getDestinationsCopy } from "./copy";
-import { ClubsTabs } from "./ClubsTabs";
 
 export const revalidate = 3600;
 
@@ -97,9 +96,8 @@ export default async function DestinationsPage({
         </Reveal>
       </Section>
 
-      {/* 2. Ibiza from the Sea — vertical image LEFT, text+cards RIGHT.
-          Side-by-side layout cuts the section height nearly in half vs
-          the previous banner-on-top variant. */}
+      {/* 2. Ibiza — coves side-by-side with portrait image LEFT, then
+          beach clubs underneath in the same section. Per island. */}
       <Section>
         <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
           <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
@@ -128,11 +126,33 @@ export default async function DestinationsPage({
             </div>
           </div>
         </Reveal>
+
+        {/* Ibiza beach clubs — full-width grid under the side-by-side
+            block. Same Section / same Reveal-adjacent block so they
+            read as one island block. */}
+        <Reveal className="mt-20 md:mt-28">
+          <div className="max-w-3xl">
+            <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
+              {c.ibizaClubsEyebrow.replace(" · Ibiza", "").replace(" · Formentera", "")}
+            </p>
+            <h3 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+              {c.ibizaClubsTitle}
+            </h3>
+            <p className="mt-4 text-base text-[var(--color-on-surface-variant)] md:text-lg">
+              {c.ibizaClubsSub}
+            </p>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {c.ibizaClubs.map((club) => (
+              <SpotCard key={club.name} {...club} />
+            ))}
+          </div>
+        </Reveal>
       </Section>
 
-      {/* 3. Formentera — vertical image on the RIGHT, text+cards LEFT
-          (mirror of the Ibiza block so the two sections form a visual
-          conversation rather than a stacked repeat). */}
+      {/* 3. Formentera — coves side-by-side with image RIGHT (mirror),
+          then Formentera beach clubs underneath including the
+          long-form Cala Duo card. */}
       <Section bleed className="bg-[#f4f4f4]">
         <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
           <div className="md:col-span-7 md:order-1">
@@ -156,6 +176,43 @@ export default async function DestinationsPage({
               sizes="(min-width: 768px) 40vw, 100vw"
               className="object-cover"
             />
+          </div>
+        </Reveal>
+
+        {/* Formentera beach clubs — Beso, Juan y Andrea, Cala Duo
+            (the long-form card spans both columns on desktop). */}
+        <Reveal className="mt-20 md:mt-28">
+          <div className="max-w-3xl">
+            <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
+              {c.formenteraClubsEyebrow.replace(" · Ibiza", "").replace(" · Formentera", "")}
+            </p>
+            <h3 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+              {c.formenteraClubsTitle}
+            </h3>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-2">
+            {c.formenteraClubs.map((club) => (
+              <SpotCard key={club.name} {...club} />
+            ))}
+            <div className="rounded-2xl bg-white p-6 shadow-sm md:col-span-2 md:p-8">
+              <h3 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
+                {c.calaDuoTitle}
+              </h3>
+              <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
+                {c.calaDuoLead}
+              </p>
+              <ul className="mt-4 grid gap-2 text-sm text-[var(--color-on-surface-variant)] md:grid-cols-2 md:text-base">
+                {c.calaDuoBullets.map((b) => (
+                  <li key={b} className="flex gap-3">
+                    <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#000000]" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
+                {c.calaDuoOutro}
+              </p>
+            </div>
           </div>
         </Reveal>
       </Section>
@@ -245,62 +302,6 @@ export default async function DestinationsPage({
         </Reveal>
       </Section>
 
-      {/* 6. Beach clubs — single section with Ibiza / Formentera tabs.
-          Collapsing the two previously-stacked club sections into one
-          tabbed panel saves ~1200 px of page height; only the active
-          island's cards render at any time. */}
-      <Section>
-        <Reveal>
-          <div className="max-w-3xl">
-            <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-              {c.ibizaClubsEyebrow.replace(" · Ibiza", "").replace(" · Formentera", "")}
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              {c.ibizaClubsTitle}
-            </h2>
-            <p className="mt-4 text-base text-[var(--color-on-surface-variant)] md:text-lg">
-              {c.ibizaClubsSub}
-            </p>
-          </div>
-
-          <ClubsTabs
-            labels={{ ibiza: c.ibizaTitle, formentera: c.formenteraTitle }}
-            ibiza={
-              <div className="grid gap-6 md:grid-cols-2">
-                {c.ibizaClubs.map((club) => (
-                  <SpotCard key={club.name} {...club} />
-                ))}
-              </div>
-            }
-            formentera={
-              <div className="grid gap-6 md:grid-cols-2">
-                {c.formenteraClubs.map((club) => (
-                  <SpotCard key={club.name} {...club} />
-                ))}
-                <div className="rounded-2xl bg-white p-6 shadow-sm md:col-span-2 md:p-8">
-                  <h3 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
-                    {c.calaDuoTitle}
-                  </h3>
-                  <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
-                    {c.calaDuoLead}
-                  </p>
-                  <ul className="mt-4 grid gap-2 text-sm text-[var(--color-on-surface-variant)] md:grid-cols-2 md:text-base">
-                    {c.calaDuoBullets.map((b) => (
-                      <li key={b} className="flex gap-3">
-                        <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#000000]" />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
-                    {c.calaDuoOutro}
-                  </p>
-                </div>
-              </div>
-            }
-          />
-        </Reveal>
-      </Section>
 
       {/* 8. Sea Society Tip closing */}
       <Section>
