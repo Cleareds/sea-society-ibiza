@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { Reveal } from "@/components/site/Reveal";
+import { InstagramGrid } from "@/components/site/InstagramGrid";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { getSettings } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
@@ -54,6 +56,7 @@ export default async function AboutPage({
   const lc = locale as Locale;
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
+  const settings = await getSettings();
 
   return (
     <>
@@ -134,6 +137,13 @@ export default async function AboutPage({
           </p>
         </Reveal>
       </Section>
+
+      <div className="pt-12 md:pt-20">
+        <InstagramGrid
+          handle={settings.instagramHandle}
+          href={settings.instagramUrl}
+        />
+      </div>
     </>
   );
 }
