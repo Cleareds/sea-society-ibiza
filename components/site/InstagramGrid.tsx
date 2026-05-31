@@ -14,7 +14,7 @@ import Image from "next/image";
  *               keeps the section compact on small screens.
  */
 const DEFAULT_TILES: Array<{ src: string }> = Array.from({ length: 18 }, (_, i) => ({
-  src: `/sea-society/site/journey-${i + 1}.webp`,
+  src: `/sea-society/site/instagram/journey-${i + 1}.webp`,
 }));
 
 interface Props {

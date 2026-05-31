@@ -74,6 +74,6 @@ We respond within a few hours during the season (April–October), within a day 
   aboutI18n: {},
   contactI18n: {},
   journeyImages: Array.from({ length: 18 }, (_, i) => ({
-    src: `/sea-society/site/journey-${i + 1}.webp`,
+    src: `/sea-society/site/instagram/journey-${i + 1}.webp`,
   })),
 };
