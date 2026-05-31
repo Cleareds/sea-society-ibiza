@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
@@ -46,16 +47,19 @@ const aboutCopy = {
     founders: [
       {
         name: "Lauren",
+        image: "/sea-society/site/founders/lauren.webp",
         role: "Photographer, marketer & content creator.",
         bio: "Lauren is the visual storyteller behind Sea Society. Always chasing the perfect light, authentic moments and inspiring destinations, she brings the Sea Society lifestyle to life through photography and content. If you've fallen in love with an image on our website or Instagram, chances are Lauren was behind the camera.",
       },
       {
         name: "Dorine",
+        image: "/sea-society/site/founders/dorine.webp",
         role: "Sales specialist & collaboration hunter.",
         bio: "Dorine is constantly connecting people, brands and ideas. With a natural talent for sales and relationship building, she's always on the lookout for unique partnerships, exciting experiences and new ways to make Sea Society even more special.",
       },
       {
         name: "Leentje",
+        image: "/sea-society/site/founders/leentje.webp",
         role: "Content creator, marketer & trend watcher.",
         bio: "Always tuned into the latest trends, emerging platforms and cultural moments, Leentje helps shape the voice and personality of Sea Society. Her focus goes beyond creating content — she strives to make people feel what's behind the brand. Through storytelling, community building and authentic communication, she brings the energy, emotions and experiences of Sea Society closer to its audience. She believes the strongest brands aren't just seen, they're felt. And that's exactly what she aims to create with every piece of content.",
       },
@@ -74,16 +78,19 @@ const aboutCopy = {
     founders: [
       {
         name: "Lauren",
+        image: "/sea-society/site/founders/lauren.webp",
         role: "Fotógrafa, marketer y creadora de contenido.",
         bio: "Lauren es la narradora visual detrás de Sea Society. Siempre persiguiendo la luz perfecta, momentos auténticos y destinos inspiradores, da vida al estilo Sea Society a través de la fotografía y el contenido. Si te has enamorado de alguna imagen en nuestra web o Instagram, lo más probable es que Lauren estuviera detrás de la cámara.",
       },
       {
         name: "Dorine",
+        image: "/sea-society/site/founders/dorine.webp",
         role: "Especialista en ventas y cazadora de colaboraciones.",
         bio: "Dorine está constantemente conectando personas, marcas e ideas. Con un talento natural para las ventas y la creación de relaciones, siempre busca alianzas únicas, experiencias emocionantes y nuevas formas de hacer que Sea Society sea aún más especial.",
       },
       {
         name: "Leentje",
+        image: "/sea-society/site/founders/leentje.webp",
         role: "Creadora de contenido, marketer y trend watcher.",
         bio: "Siempre atenta a las últimas tendencias, plataformas emergentes y momentos culturales, Leentje ayuda a dar forma a la voz y la personalidad de Sea Society. Su enfoque va más allá de crear contenido: busca que la gente sienta lo que hay detrás de la marca. A través del storytelling, la creación de comunidad y la comunicación auténtica, acerca la energía, las emociones y las experiencias de Sea Society a su audiencia. Cree que las marcas más fuertes no solo se ven, se sienten. Y eso es exactamente lo que persigue con cada pieza de contenido.",
       },
@@ -138,17 +145,28 @@ export default async function AboutPage({
             {c.founders.map((f) => (
               <li
                 key={f.name}
-                className="rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-8"
+                className="overflow-hidden rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)]"
               >
-                <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
-                  {f.name}
-                </h2>
-                <p className="mt-2 text-sm italic text-[var(--color-primary)]">
-                  {f.role}
-                </p>
-                <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-                  {f.bio}
-                </p>
+                <div className="relative aspect-[3/4] w-full overflow-hidden bg-[var(--color-surface-container)]">
+                  <Image
+                    src={f.image}
+                    alt={f.name}
+                    fill
+                    sizes="(min-width: 768px) 30vw, 90vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-8">
+                  <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
+                    {f.name}
+                  </h2>
+                  <p className="mt-2 text-sm italic text-[var(--color-primary)]">
+                    {f.role}
+                  </p>
+                  <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
+                    {f.bio}
+                  </p>
+                </div>
               </li>
             ))}
           </ul>
