@@ -11,14 +11,25 @@ interface BoatCardProps {
   priority?: boolean;
   /** Override for the "From €x,xxx" string (localised in parent). */
   fromLabel?: string;
+  /** Tile background tone. 'gray' (default) for the /fleet/[slug]
+   *  related-boats grid; 'white' for /fleet where the page itself
+   *  sits on a very light gray surface. */
+  tone?: "gray" | "white";
 }
 
-export function BoatCard({ boat, locale = "en", priority = false, fromLabel }: BoatCardProps) {
+export function BoatCard({
+  boat,
+  locale = "en",
+  priority = false,
+  fromLabel,
+  tone = "gray",
+}: BoatCardProps) {
   const href = localePath(locale, `/fleet/${boat.slug}`);
+  const bgCls = tone === "white" ? "bg-white" : "bg-[#f6f3f2]";
   return (
     <Link
       href={href}
-      className="group block overflow-hidden rounded-2xl bg-[#f6f3f2] transition-shadow hover:shadow-xl focus-visible:shadow-xl"
+      className={`group block overflow-hidden rounded-2xl ${bgCls} transition-shadow hover:shadow-xl focus-visible:shadow-xl`}
     >
       <div className="brand-img-hover relative aspect-[4/3] w-full overflow-hidden">
         <Image

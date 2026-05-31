@@ -119,7 +119,7 @@ export default async function FleetPage({
         </div>
       </section>
 
-      <Section>
+      <Section bleed className="bg-[#f4f4f4]">
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-sm text-[var(--color-on-surface-variant)]">
             {boats.length} {boats.length === 1 ? t("fleet.boatSingular") : t("fleet.boatPlural")}{" "}
@@ -163,6 +163,7 @@ export default async function FleetPage({
                   locale={lc}
                   priority={i < 3}
                   fromLabel={t("fleet.fromPrice", { amount: b.priceFrom.toLocaleString("en-GB") })}
+                  tone="white"
                 />
               </li>
             ))}
