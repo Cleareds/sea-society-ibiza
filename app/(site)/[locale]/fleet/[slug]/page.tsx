@@ -11,6 +11,7 @@ import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { BookHereCTA } from "@/components/site/BookHereCTA";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { boatProductLd, breadcrumbLd } from "@/lib/seo/jsonld";
+import { heroImageForSlug } from "@/lib/boat-hero-images";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getBoatBySlug, getBoats, getSettings } from "@/lib/data";
 import type { HighlightIcon } from "@/lib/data/types";
@@ -46,7 +47,7 @@ export async function generateMetadata({
     title: boat.metaTitle || boat.name,
     description: boat.metaDescription || boat.description,
     path: `/fleet/${boat.slug}`,
-    image: boat.heroImage,
+    image: heroImageForSlug(boat.slug) ?? boat.heroImage,
     locale: isLocale(locale) ? locale : "en",
   });
 }
@@ -85,6 +86,7 @@ export default async function BoatDetailPage({
   const related = all.filter((b) => b.id !== boat.id).slice(0, 3);
   const highlights = boat.highlights ?? [];
   const heroVideo = boatVideoForSlug(boat.slug);
+  const resolvedHero = heroImageForSlug(boat.slug) ?? boat.heroImage;
 
   return (
     <>
@@ -113,7 +115,7 @@ export default async function BoatDetailPage({
           />
         ) : (
           <Image
-            src={boat.heroImage}
+            src={resolvedHero}
             alt={`${boat.name} — ${boat.modelName ?? boat.brand}`}
             fill
             priority
