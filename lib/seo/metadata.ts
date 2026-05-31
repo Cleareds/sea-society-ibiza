@@ -6,6 +6,7 @@ export const SITE_TAGLINE = "Luxury Yacht Charter";
 
 const OG_LOCALE_MAP: Record<Locale, string> = {
   en: "en_GB",
+  es: "es_ES",
 };
 
 export function siteUrl() {

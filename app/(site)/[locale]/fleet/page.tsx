@@ -75,7 +75,7 @@ export default async function FleetPage({
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
   const sp = await searchParams;
-  const allBoats = await getBoats();
+  const allBoats = await getBoats(lc);
   const boats = applyFilters(allBoats, sp);
   const brands = Array.from(new Set(allBoats.map((b) => b.brand))).sort();
 

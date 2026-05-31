@@ -1,4 +1,5 @@
 import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, Settings, Testimonial } from "../types";
+import type { Locale } from "@/lib/i18n/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseStaticClient } from "@/lib/supabase/static";
 
@@ -107,17 +108,35 @@ interface BoatRow {
   is_published: boolean;
   meta_title: string | null;
   meta_description: string | null;
+  /** Locale-keyed translations. Each locale key holds partial overrides;
+   *  fields not present fall back to the English columns above. */
+  i18n: Partial<Record<string, Partial<{
+    name: string;
+    model_name: string;
+    tagline: string;
+    description: string;
+    long_description: string;
+    what_included: string[];
+    specs: Array<{ label: string; value: string }>;
+    highlights: Array<{ icon: string; label: string; value: string }>;
+    gallery: Array<{ src: string; alt: string }>;
+    meta_title: string;
+    meta_description: string;
+    base_harbour: string;
+  }>>> | null;
 }
 
-function mapBoat(row: BoatRow): Boat {
+function mapBoat(row: BoatRow, locale: Locale = "en"): Boat {
+  const t = locale !== "en" ? row.i18n?.[locale] : undefined;
   return {
     id: row.id,
     slug: row.slug,
-    name: row.name,
-    modelName: row.model_name ?? undefined,
-    tagline: row.tagline ?? "",
-    description: row.description ?? "",
-    longDescription: row.long_description ?? "",
+    // Names + model numbers are proper nouns; locale doesn't change them.
+    name: t?.name ?? row.name,
+    modelName: t?.model_name ?? row.model_name ?? undefined,
+    tagline: t?.tagline ?? row.tagline ?? "",
+    description: t?.description ?? row.description ?? "",
+    longDescription: t?.long_description ?? row.long_description ?? "",
     lengthM: Number(row.length_m ?? 0),
     beamM: row.beam_m == null ? undefined : Number(row.beam_m),
     guests: row.guests ?? 0,
@@ -127,7 +146,7 @@ function mapBoat(row: BoatRow): Boat {
     brand: row.brand ?? "",
     buildYear: row.build_year ?? 0,
     refitYear: row.refit_year ?? undefined,
-    baseHarbour: row.base_harbour ?? undefined,
+    baseHarbour: t?.base_harbour ?? row.base_harbour ?? undefined,
     cruiseKnots: row.cruise_knots ?? undefined,
     maxKnots: row.max_knots ?? undefined,
     engines: row.engines ?? undefined,
@@ -136,22 +155,22 @@ function mapBoat(row: BoatRow): Boat {
     priceFrom: row.price_from ?? 0,
     priceHigh: row.price_high ?? undefined,
     currency: (row.currency ?? "EUR") as "EUR",
-    whatIncluded: row.what_included ?? [],
-    specs: row.specs ?? [],
-    gallery: row.gallery ?? [],
-    highlights: (row.highlights ?? []) as Boat["highlights"],
+    whatIncluded: t?.what_included ?? row.what_included ?? [],
+    specs: t?.specs ?? row.specs ?? [],
+    gallery: t?.gallery ?? row.gallery ?? [],
+    highlights: (t?.highlights ?? row.highlights ?? []) as Boat["highlights"],
     heroImage: row.hero_image ?? "",
     cardImage: row.card_image ?? undefined,
     pdfUrl: row.pdf_url,
     featured: row.featured,
     sortOrder: row.sort_order,
     isPublished: row.is_published,
-    metaTitle: row.meta_title ?? row.name,
-    metaDescription: row.meta_description ?? row.tagline ?? "",
+    metaTitle: t?.meta_title ?? row.meta_title ?? row.name,
+    metaDescription: t?.meta_description ?? row.meta_description ?? row.tagline ?? "",
   };
 }
 
-export async function getBoats(): Promise<Boat[]> {
+export async function getBoats(locale: Locale = "en"): Promise<Boat[]> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("boats")
@@ -160,10 +179,13 @@ export async function getBoats(): Promise<Boat[]> {
     .order("sort_order", { ascending: true })
     .returns<BoatRow[]>();
   if (error) throw error;
-  return (data ?? []).map(mapBoat);
+  return (data ?? []).map((r) => mapBoat(r, locale));
 }
 
-export async function getBoatBySlug(slug: string): Promise<Boat | null> {
+export async function getBoatBySlug(
+  slug: string,
+  locale: Locale = "en",
+): Promise<Boat | null> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("boats")
@@ -173,10 +195,13 @@ export async function getBoatBySlug(slug: string): Promise<Boat | null> {
     .returns<BoatRow[]>()
     .maybeSingle();
   if (error) throw error;
-  return data ? mapBoat(data) : null;
+  return data ? mapBoat(data, locale) : null;
 }
 
-export async function getFeaturedBoats(limit = 6): Promise<Boat[]> {
+export async function getFeaturedBoats(
+  limit = 6,
+  locale: Locale = "en",
+): Promise<Boat[]> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("boats")
@@ -187,30 +212,41 @@ export async function getFeaturedBoats(limit = 6): Promise<Boat[]> {
     .limit(limit)
     .returns<BoatRow[]>();
   if (error) throw error;
-  return (data ?? []).map(mapBoat);
+  return (data ?? []).map((r) => mapBoat(r, locale));
 }
 
-function mapExperience(r: ExperienceRow): Experience {
+function mapExperience(r: ExperienceRow, locale: Locale = "en"): Experience {
+  type ExpI18n = Partial<{
+    title: string;
+    intro: string;
+    body: string;
+    long_description: string;
+    meta_title: string;
+    meta_description: string;
+    gallery: Array<{ src: string; alt: string }>;
+  }>;
+  const i18n = (r as ExperienceRow & { i18n?: Partial<Record<string, ExpI18n>> }).i18n;
+  const t: ExpI18n | undefined = locale !== "en" ? i18n?.[locale] : undefined;
   return {
     id: r.id,
     slug: r.slug,
-    title: r.title,
-    intro: r.intro ?? "",
-    body: r.body ?? "",
-    longDescription: r.long_description ?? "",
-    gallery: (r.gallery ?? []).map((g) => ({ src: g.src, alt: g.alt })),
+    title: t?.title ?? r.title,
+    intro: t?.intro ?? r.intro ?? "",
+    body: t?.body ?? r.body ?? "",
+    longDescription: t?.long_description ?? r.long_description ?? "",
+    gallery: (t?.gallery ?? r.gallery ?? []).map((g) => ({ src: g.src, alt: g.alt })),
     duration: r.duration ?? undefined,
     groupSize: r.group_size ?? undefined,
     priceFrom: r.price_from ?? undefined,
-    metaTitle: r.meta_title ?? undefined,
-    metaDescription: r.meta_description ?? undefined,
+    metaTitle: t?.meta_title ?? r.meta_title ?? undefined,
+    metaDescription: t?.meta_description ?? r.meta_description ?? undefined,
     heroImage: r.hero_image ?? "",
     sortOrder: r.sort_order,
     isPublished: r.is_published,
   };
 }
 
-export async function getExperiences(): Promise<Experience[]> {
+export async function getExperiences(locale: Locale = "en"): Promise<Experience[]> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("experiences")
@@ -219,7 +255,7 @@ export async function getExperiences(): Promise<Experience[]> {
     .order("sort_order", { ascending: true })
     .returns<ExperienceRow[]>();
   if (error) throw error;
-  return (data ?? []).map(mapExperience);
+  return (data ?? []).map((r) => mapExperience(r, locale));
 }
 
 export async function getAllExperiences(): Promise<Experience[]> {
@@ -230,7 +266,7 @@ export async function getAllExperiences(): Promise<Experience[]> {
     .order("sort_order", { ascending: true })
     .returns<ExperienceRow[]>();
   if (error) throw error;
-  return (data ?? []).map(mapExperience);
+  return (data ?? []).map((r) => mapExperience(r));
 }
 
 export async function getExperienceById(id: string): Promise<Experience | null> {
@@ -245,7 +281,10 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
   return data ? mapExperience(data) : null;
 }
 
-export async function getExperienceBySlug(slug: string): Promise<Experience | null> {
+export async function getExperienceBySlug(
+  slug: string,
+  locale: Locale = "en",
+): Promise<Experience | null> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("experiences")
@@ -255,24 +294,33 @@ export async function getExperienceBySlug(slug: string): Promise<Experience | nu
     .returns<ExperienceRow[]>()
     .maybeSingle();
   if (error) throw error;
-  return data ? mapExperience(data) : null;
+  return data ? mapExperience(data, locale) : null;
 }
 
-function mapDestination(r: DestinationRow): Destination {
+function mapDestination(r: DestinationRow, locale: Locale = "en"): Destination {
+  type DestI18n = Partial<{
+    title: string;
+    intro: string;
+    body: string;
+    highlights: string[];
+    gallery: Array<{ src: string; alt: string }>;
+  }>;
+  const i18n = (r as DestinationRow & { i18n?: Partial<Record<string, DestI18n>> }).i18n;
+  const t: DestI18n | undefined = locale !== "en" ? i18n?.[locale] : undefined;
   return {
     id: r.id,
     slug: r.slug,
-    title: r.title,
-    intro: r.intro ?? "",
-    body: r.body ?? "",
+    title: t?.title ?? r.title,
+    intro: t?.intro ?? r.intro ?? "",
+    body: t?.body ?? r.body ?? "",
     heroImage: r.hero_image ?? "",
-    gallery: r.gallery ?? [],
-    highlights: r.highlights ?? [],
+    gallery: t?.gallery ?? r.gallery ?? [],
+    highlights: t?.highlights ?? r.highlights ?? [],
     isPublished: r.is_published,
   };
 }
 
-export async function getDestinations(): Promise<Destination[]> {
+export async function getDestinations(locale: Locale = "en"): Promise<Destination[]> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("destinations")
@@ -280,7 +328,7 @@ export async function getDestinations(): Promise<Destination[]> {
     .eq("is_published", true)
     .returns<DestinationRow[]>();
   if (error) throw error;
-  return (data ?? []).map(mapDestination);
+  return (data ?? []).map((r) => mapDestination(r, locale));
 }
 
 export async function getAllDestinations(): Promise<Destination[]> {
@@ -290,7 +338,7 @@ export async function getAllDestinations(): Promise<Destination[]> {
     .select("*")
     .returns<DestinationRow[]>();
   if (error) throw error;
-  return (data ?? []).map(mapDestination);
+  return (data ?? []).map((r) => mapDestination(r));
 }
 
 export async function getDestinationById(id: string): Promise<Destination | null> {

@@ -16,6 +16,7 @@ import { Logo } from "@/components/site/Logo";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import { whatsappLink } from "@/lib/whatsapp";
 import { trackBookHereClick } from "@/lib/analytics";
+import { LocaleSwitcher } from "@/components/site/LocaleSwitcher";
 
 export interface HeaderLabels {
   fleet: string;
@@ -85,7 +86,11 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
           />
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
+          <LocaleSwitcher
+            currentLocale={locale}
+            variant={isSolid ? "solid" : "transparent"}
+          />
           <ul className="flex items-center gap-8">
             {navLinks.map((l) => (
               <li key={l.href}>
@@ -201,6 +206,9 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 </SheetClose>
               </li>
             </ul>
+            <div className="mt-auto border-t border-[var(--color-outline-variant)]/40 pt-6">
+              <LocaleSwitcher currentLocale={locale} variant="solid" />
+            </div>
           </SheetContent>
           </Sheet>
           <Link

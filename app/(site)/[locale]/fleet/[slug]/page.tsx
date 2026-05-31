@@ -41,7 +41,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const boat = await getBoatBySlug(slug);
+  const lcForMeta = isLocale(locale) ? locale : "en";
+  const boat = await getBoatBySlug(slug, lcForMeta);
   if (!boat) return { title: "Boat not found" };
   return pageMetadata({
     title: boat.metaTitle || boat.name,
@@ -77,8 +78,8 @@ export default async function BoatDetailPage({
   const lp = (path: string) => localePath(lc, path);
 
   const [boat, all, settings] = await Promise.all([
-    getBoatBySlug(slug),
-    getBoats(),
+    getBoatBySlug(slug, lc),
+    getBoats(lc),
     getSettings(),
   ]);
   if (!boat) notFound();

@@ -10,7 +10,6 @@ import { MarkdownField } from "@/components/admin/MarkdownField";
 import {
   defaultLocale,
   locales,
-  localeFlags,
   localeLabels,
   type Locale,
 } from "@/lib/i18n/config";
@@ -173,7 +172,6 @@ function PageCopySection({
                 : "bg-[var(--color-surface-container)] text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container-high)]",
             )}
           >
-            <span aria-hidden>{localeFlags[lc]}</span>
             {localeLabels[lc]}
             {lc === defaultLocale && (
               <span className="ml-1 text-[9px] opacity-70">canonical</span>

@@ -11,6 +11,7 @@
  */
 import * as dummy from "./dummy";
 import * as supa from "./supabase";
+import type { Locale } from "@/lib/i18n/config";
 
 const supabaseEnabled = () => process.env.USE_SUPABASE === "true";
 
@@ -28,21 +29,22 @@ export type {
   Testimonial,
 } from "./types";
 
-export const getBoats = () => (supabaseEnabled() ? supa.getBoats() : dummy.getBoats());
-export const getBoatBySlug = (slug: string) =>
-  supabaseEnabled() ? supa.getBoatBySlug(slug) : dummy.getBoatBySlug(slug);
-export const getFeaturedBoats = (limit?: number) =>
-  supabaseEnabled() ? supa.getFeaturedBoats(limit) : dummy.getFeaturedBoats(limit);
-export const getExperiences = () =>
-  supabaseEnabled() ? supa.getExperiences() : dummy.getExperiences();
+export const getBoats = (locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getBoats(locale) : dummy.getBoats();
+export const getBoatBySlug = (slug: string, locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getBoatBySlug(slug, locale) : dummy.getBoatBySlug(slug);
+export const getFeaturedBoats = (limit?: number, locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getFeaturedBoats(limit, locale) : dummy.getFeaturedBoats(limit);
+export const getExperiences = (locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getExperiences(locale) : dummy.getExperiences();
 export const getAllExperiences = () =>
   supabaseEnabled() ? supa.getAllExperiences() : dummy.getAllExperiences();
 export const getExperienceById = (id: string) =>
   supabaseEnabled() ? supa.getExperienceById(id) : dummy.getExperienceById(id);
-export const getExperienceBySlug = (slug: string) =>
-  supabaseEnabled() ? supa.getExperienceBySlug(slug) : dummy.getExperienceBySlug(slug);
-export const getDestinations = () =>
-  supabaseEnabled() ? supa.getDestinations() : dummy.getDestinations();
+export const getExperienceBySlug = (slug: string, locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getExperienceBySlug(slug, locale) : dummy.getExperienceBySlug(slug);
+export const getDestinations = (locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getDestinations(locale) : dummy.getDestinations();
 export const getAllDestinations = () =>
   supabaseEnabled() ? supa.getAllDestinations() : dummy.getAllDestinations();
 export const getDestinationById = (id: string) =>

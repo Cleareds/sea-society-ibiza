@@ -19,32 +19,79 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const lc = isLocale(locale) ? locale : "en";
   return pageMetadata({
-    title: "Meet the Founders — Sea Society Ibiza",
+    title:
+      lc === "es"
+        ? "Conoce a las fundadoras — Sea Society Ibiza"
+        : "Meet the Founders — Sea Society Ibiza",
     description:
-      "Sea Society is built by three Belgian women — Lauren, Dorine and Leentje — who curate unforgettable charter experiences from Botafoc Marina, Ibiza, in partnership with Ibimar.",
+      lc === "es"
+        ? "Sea Society está creada por tres mujeres belgas — Lauren, Dorine y Leentje — que curan experiencias inolvidables de charter desde Botafoc Marina, Ibiza, junto a nuestro socio Ibimar."
+        : "Sea Society is built by three Belgian women — Lauren, Dorine and Leentje — who curate unforgettable charter experiences from Botafoc Marina, Ibiza, in partnership with Ibimar.",
     path: "/about",
-    locale: isLocale(locale) ? locale : "en",
+    locale: lc,
   });
 }
 
-const founders = [
-  {
-    name: "Lauren",
-    role: "Photographer, marketer & content creator.",
-    bio: "Lauren is the visual storyteller behind Sea Society. Always chasing the perfect light, authentic moments and inspiring destinations, she brings the Sea Society lifestyle to life through photography and content. If you've fallen in love with an image on our website or Instagram, chances are Lauren was behind the camera.",
+const aboutCopy = {
+  en: {
+    heroTitle: "Meet the Founders",
+    paragraphs: [
+      "Sea Society was born from a shared passion for unforgettable experiences, meaningful connections and the magic of life on the water.",
+      "Behind the platform are three Belgian women who believe that chartering a yacht should be about much more than simply booking a boat. Together with our trusted partner Ibimar, we curate experiences that turn a day at sea into a story worth telling.",
+      "Whether you're looking for the perfect proposal setup, a wellness morning, a private chef experience or simply advice on the best hidden spots around Ibiza, we're here to help.",
+      "We personally oversee the Sea Society platform, its marketing, collaborations and community, and we're always just a message away for any questions about the experiences featured on our website.",
+    ],
+    founders: [
+      {
+        name: "Lauren",
+        role: "Photographer, marketer & content creator.",
+        bio: "Lauren is the visual storyteller behind Sea Society. Always chasing the perfect light, authentic moments and inspiring destinations, she brings the Sea Society lifestyle to life through photography and content. If you've fallen in love with an image on our website or Instagram, chances are Lauren was behind the camera.",
+      },
+      {
+        name: "Dorine",
+        role: "Sales specialist & collaboration hunter.",
+        bio: "Dorine is constantly connecting people, brands and ideas. With a natural talent for sales and relationship building, she's always on the lookout for unique partnerships, exciting experiences and new ways to make Sea Society even more special.",
+      },
+      {
+        name: "Leentje",
+        role: "Content creator, marketer & trend watcher.",
+        bio: "Always tuned into the latest trends, emerging platforms and cultural moments, Leentje helps shape the voice and personality of Sea Society. Her focus goes beyond creating content — she strives to make people feel what's behind the brand. Through storytelling, community building and authentic communication, she brings the energy, emotions and experiences of Sea Society closer to its audience. She believes the strongest brands aren't just seen, they're felt. And that's exactly what she aims to create with every piece of content.",
+      },
+    ],
+    welcomeTitle: "Welcome to Sea Society.",
+    welcomeSub: "A community built around unforgettable moments at sea.",
   },
-  {
-    name: "Dorine",
-    role: "Sales specialist & collaboration hunter.",
-    bio: "Dorine is constantly connecting people, brands and ideas. With a natural talent for sales and relationship building, she's always on the lookout for unique partnerships, exciting experiences and new ways to make Sea Society even more special.",
+  es: {
+    heroTitle: "Conoce a las fundadoras",
+    paragraphs: [
+      "Sea Society nació de una pasión compartida por las experiencias inolvidables, las conexiones auténticas y la magia de la vida en el mar.",
+      "Detrás de la plataforma hay tres mujeres belgas convencidas de que alquilar un yate debería ser mucho más que reservar un barco. Junto a nuestro socio de confianza Ibimar, curamos experiencias que convierten un día en el mar en una historia para contar.",
+      "Ya sea que busques la pedida de mano perfecta, una mañana de bienestar, una experiencia con chef privado o simplemente consejos sobre los mejores rincones secretos de Ibiza, estamos aquí para ayudarte.",
+      "Supervisamos personalmente la plataforma Sea Society, su marketing, colaboraciones y comunidad, y siempre estamos a un mensaje de distancia para resolver cualquier duda sobre las experiencias que aparecen en nuestra web.",
+    ],
+    founders: [
+      {
+        name: "Lauren",
+        role: "Fotógrafa, marketer y creadora de contenido.",
+        bio: "Lauren es la narradora visual detrás de Sea Society. Siempre persiguiendo la luz perfecta, momentos auténticos y destinos inspiradores, da vida al estilo Sea Society a través de la fotografía y el contenido. Si te has enamorado de alguna imagen en nuestra web o Instagram, lo más probable es que Lauren estuviera detrás de la cámara.",
+      },
+      {
+        name: "Dorine",
+        role: "Especialista en ventas y cazadora de colaboraciones.",
+        bio: "Dorine está constantemente conectando personas, marcas e ideas. Con un talento natural para las ventas y la creación de relaciones, siempre busca alianzas únicas, experiencias emocionantes y nuevas formas de hacer que Sea Society sea aún más especial.",
+      },
+      {
+        name: "Leentje",
+        role: "Creadora de contenido, marketer y trend watcher.",
+        bio: "Siempre atenta a las últimas tendencias, plataformas emergentes y momentos culturales, Leentje ayuda a dar forma a la voz y la personalidad de Sea Society. Su enfoque va más allá de crear contenido: busca que la gente sienta lo que hay detrás de la marca. A través del storytelling, la creación de comunidad y la comunicación auténtica, acerca la energía, las emociones y las experiencias de Sea Society a su audiencia. Cree que las marcas más fuertes no solo se ven, se sienten. Y eso es exactamente lo que persigue con cada pieza de contenido.",
+      },
+    ],
+    welcomeTitle: "Bienvenido a Sea Society.",
+    welcomeSub: "Una comunidad construida en torno a momentos inolvidables en el mar.",
   },
-  {
-    name: "Leentje",
-    role: "Content creator, marketer & trend watcher.",
-    bio: "Always tuned into the latest trends, emerging platforms and cultural moments, Leentje helps shape the voice and personality of Sea Society. Her focus goes beyond creating content — she strives to make people feel what's behind the brand. Through storytelling, community building and authentic communication, she brings the energy, emotions and experiences of Sea Society closer to its audience. She believes the strongest brands aren't just seen, they're felt. And that's exactly what she aims to create with every piece of content.",
-  },
-];
+} as const;
 
 export default async function AboutPage({
   params,
@@ -57,6 +104,7 @@ export default async function AboutPage({
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
   const settings = await getSettings();
+  const c = aboutCopy[lc];
 
   return (
     <>
@@ -68,7 +116,7 @@ export default async function AboutPage({
       />
 
       <PageHero
-        title="Meet the Founders"
+        title={c.heroTitle}
         imageSrc="/sea-society/site/about-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
@@ -78,36 +126,16 @@ export default async function AboutPage({
 
       <Section>
         <Reveal className="mx-auto max-w-3xl space-y-6 text-base leading-relaxed text-[var(--color-on-surface)] md:text-lg">
-          <p>
-            Sea Society was born from a shared passion for unforgettable
-            experiences, meaningful connections and the magic of life
-            on the water.
-          </p>
-          <p>
-            Behind the platform are three Belgian women who believe that
-            chartering a yacht should be about much more than simply
-            booking a boat. Together with our trusted partner Ibimar, we
-            curate experiences that turn a day at sea into a story worth
-            telling.
-          </p>
-          <p>
-            Whether you&apos;re looking for the perfect proposal setup, a
-            wellness morning, a private chef experience or simply advice
-            on the best hidden spots around Ibiza, we&apos;re here to help.
-          </p>
-          <p>
-            We personally oversee the Sea Society platform, its
-            marketing, collaborations and community, and we&apos;re always
-            just a message away for any questions about the experiences
-            featured on our website.
-          </p>
+          {c.paragraphs.map((p, i) => (
+            <p key={i}>{p}</p>
+          ))}
         </Reveal>
       </Section>
 
       <Section bleed className="bg-[var(--color-surface-container-low)]">
         <Reveal>
           <ul className="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
-            {founders.map((f) => (
+            {c.founders.map((f) => (
               <li
                 key={f.name}
                 className="rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-8"
@@ -130,10 +158,10 @@ export default async function AboutPage({
       <Section bleed className="bg-[#f4f4f4]">
         <Reveal className="mx-auto max-w-3xl text-center">
           <h2 className="font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
-            Welcome to Sea Society.
+            {c.welcomeTitle}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-            A community built around unforgettable moments at sea.
+            {c.welcomeSub}
           </p>
         </Reveal>
       </Section>

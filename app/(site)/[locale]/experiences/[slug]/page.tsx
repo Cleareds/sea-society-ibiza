@@ -37,7 +37,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const exp = await getExperienceBySlug(slug);
+  const lcForMeta = isLocale(locale) ? locale : "en";
+  const exp = await getExperienceBySlug(slug, lcForMeta);
   if (!exp) return { title: "Experience not found" };
   const meta = pageMetadata({
     title: exp.metaTitle || exp.title,
@@ -64,8 +65,8 @@ export default async function ExperienceDetailPage({
   const lp = (path: string) => localePath(lc, path);
 
   const [exp, all, settings] = await Promise.all([
-    getExperienceBySlug(slug),
-    getExperiences(),
+    getExperienceBySlug(slug, lc),
+    getExperiences(lc),
     getSettings(),
   ]);
   if (!exp) notFound();

@@ -5,26 +5,29 @@
  * stored unprefixed in every content table, and the fallback when a translation
  * is missing for another locale.
  */
-// Locale set narrowed to English-only for launch. The [locale] segment
-// folder structure is kept (avoids a churn-heavy route restructure
-// 30 hours before launch), but only "en" is registered — so
-// generateStaticParams produces a single page per route instead of 5,
-// the sitemap shrinks 5x, and the [locale] serverless function bundle
-// drops below Vercel's 300 MB ceiling.
-//
-// Re-add a locale to this array to bring it back; all routing,
-// middleware and language switcher logic is already wired.
-export const locales = ["en"] as const;
+// Site supports English (default, no URL prefix) and Spanish (/es/...).
+// All routing helpers below + the LocaleSwitcher in the header are
+// driven from this array — to add another locale later, append it
+// here, add its message bundle in lib/i18n/messages.ts, add an entry
+// to OG_LOCALE_MAP in lib/seo/metadata.ts, populate boats.i18n /
+// site_settings.about_i18n / etc. with translations, and add the
+// inline locale-keyed copy in static pages (destinations / about /
+// privacy / terms).
+export const locales = ["en", "es"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
+/** Short label used in the inline header switcher. */
 export const localeLabels: Record<Locale, string> = {
-  en: "English",
+  en: "EN",
+  es: "ES",
 };
 
-export const localeFlags: Record<Locale, string> = {
-  en: "🇬🇧",
+/** Long display label (used elsewhere if a wider control needs it). */
+export const localeFullLabels: Record<Locale, string> = {
+  en: "English",
+  es: "Español",
 };
 
 export function isLocale(value: string | null | undefined): value is Locale {

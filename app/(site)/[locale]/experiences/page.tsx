@@ -44,7 +44,7 @@ export default async function ExperiencesPage({
   const lc = locale as Locale;
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
-  const experiences = await getExperiences();
+  const experiences = await getExperiences(lc);
 
   return (
     <>

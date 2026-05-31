@@ -51,7 +51,7 @@ export default async function HomePage({
   const t = getMessages(lc);
   const [settings, featured] = await Promise.all([
     getSettings(),
-    getFeaturedBoats(3),
+    getFeaturedBoats(3, lc),
   ]);
   const featuredWithLabels = featured.map((b) => ({
     boat: b,
