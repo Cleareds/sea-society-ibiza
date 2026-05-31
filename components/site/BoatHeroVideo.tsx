@@ -5,6 +5,10 @@ import Image from "next/image";
 
 interface Props {
   poster: string;
+  /** Optional. When set, used as the LCP poster on viewports < 1100px
+   *  instead of `poster`. Pair with src720 that matches its aspect
+   *  (e.g. a portrait mobile clip). */
+  posterMobile?: string;
   src1080: string;
   src720: string;
   alt: string;
@@ -39,8 +43,9 @@ interface Props {
  *   - prefers-reduced-motion OR navigator.connection.saveData skip
  *     the video entirely and leave the poster as the hero.
  */
-export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
+export function BoatHeroVideo({ poster, posterMobile, src1080, src720, alt }: Props) {
   const [src, setSrc] = React.useState<string | null>(null);
+  const [activePoster, setActivePoster] = React.useState(poster);
   const [reduced, setReduced] = React.useState(false);
   const [ready, setReady] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
@@ -50,12 +55,17 @@ export function BoatHeroVideo({ poster, src1080, src720, alt }: Props) {
     type ConnLike = { saveData?: boolean };
     const conn = (navigator as Navigator & { connection?: ConnLike }).connection;
     const saveData = conn?.saveData === true;
+    const isDesktop = window.innerWidth >= 1100;
+    // Pick the right poster aspect for the device before anything
+    // paints. Avoids a flash of stretched portrait poster on desktop
+    // (or vice-versa) for the few hundred ms before the video loads.
+    if (!isDesktop && posterMobile) setActivePoster(posterMobile);
     if (mql.matches || saveData) {
       setReduced(true);
       return;
     }
-    setSrc(window.innerWidth >= 1100 ? src1080 : src720);
-  }, [src1080, src720]);
+    setSrc(isDesktop ? src1080 : src720);
+  }, [src1080, src720, posterMobile]);
 
   React.useEffect(() => {
     const v = videoRef.current;

@@ -18,7 +18,7 @@ export function BoatCard({ boat, locale = "en", priority = false, fromLabel }: B
   return (
     <Link
       href={href}
-      className="group block overflow-hidden rounded-2xl bg-[var(--color-surface-container-low)] transition-shadow hover:shadow-xl focus-visible:shadow-xl"
+      className="group block overflow-hidden rounded-2xl bg-[#f6f3f2] transition-shadow hover:shadow-xl focus-visible:shadow-xl"
     >
       <div className="brand-img-hover relative aspect-[4/3] w-full overflow-hidden">
         <Image

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
+import { BoatHeroVideo } from "@/components/site/BoatHeroVideo";
 import { FilterModal } from "@/components/site/FilterModal";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { Button } from "@/components/ui/button";
@@ -91,15 +92,14 @@ export default async function FleetPage({
       />
 
       <section data-cursor-bg="dark" className="relative isolate h-[52vh] min-h-[400px] w-full overflow-hidden bg-[#06141a]">
-        <Image
-          src="/sea-society/site/fleet-hero.webp"
+        <BoatHeroVideo
+          poster="/sea-society/yacht-videos/sensation-poster.webp"
+          posterMobile="/sea-society/fleet-videos/fleet-mobile-poster.webp"
+          src1080="/sea-society/yacht-videos/sensation-loop.mp4"
+          src720="/sea-society/fleet-videos/fleet-mobile-loop.mp4"
           alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
         />
-        <div className="absolute inset-0 brand-image-overlay" />
+        <div className="absolute inset-0 brand-image-overlay-light" />
         <div className="relative z-10 flex h-full flex-col justify-end px-5 pb-14 text-white md:px-10 md:pb-20">
           <div className="mx-auto w-full max-w-(--spacing-container-max)">
             <div className="brand-breadcrumb">
