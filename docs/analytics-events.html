@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sea Society — Analytics events &amp; GTM setup</title>
+    <style>
+      :root {
+        --fg: #1c1b1b;
+        --muted: #6e7979;
+        --primary: #055043;
+        --bg: #fcf9f8;
+        --code-bg: #f3eee9;
+        --code-fg: #1c1b1b;
+        --line: #e5e2e1;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.6 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      main { max-width: 880px; margin: 0 auto; padding: 48px 24px 96px; }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        letter-spacing: -0.01em;
+      }
+      h2 {
+        margin: 48px 0 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line);
+        font-size: 20px;
+        color: var(--primary);
+      }
+      h3 { margin: 28px 0 8px; font-size: 16px; }
+      .lede { margin: 0 0 32px; color: var(--muted); font-size: 14px; }
+      p { margin: 0 0 12px; }
+      ol, ul { padding-left: 22px; margin: 8px 0 16px; }
+      li { margin-bottom: 6px; }
+      code, kbd {
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 1px 6px;
+        border-radius: 3px;
+        font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      pre {
+        background: var(--code-bg);
+        color: var(--code-fg);
+        padding: 14px 16px;
+        border-radius: 6px;
+        overflow-x: auto;
+        font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        margin: 8px 0 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0 20px;
+        font-size: 14px;
+      }
+      th, td {
+        padding: 8px 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        background: #f0eded;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      td code { white-space: nowrap; }
+      .pill {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 2px 10px;
+        border-radius: 999px;
+        background: var(--primary);
+        color: #fff;
+        margin-right: 6px;
+      }
+      .note {
+        border-left: 3px solid var(--primary);
+        padding: 10px 14px;
+        background: #f0eded;
+        border-radius: 0 6px 6px 0;
+        margin: 12px 0 18px;
+        font-size: 14px;
+        color: var(--fg);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Sea Society Ibiza — Book&nbsp;here event tracking</h1>
+      <p class="lede">
+        Reference for the marketing / analytics team. Covers what the
+        site currently fires, how to verify it in GA4, and how to wire
+        the event through Google Tag Manager if you later add a GTM
+        container on top.
+      </p>
+
+      <h2>1. What's wired in code</h2>
+      <p>
+        All "Book here" CTAs across the public site call a single
+        helper, <code>trackBookHereClick()</code>
+        (<code>lib/analytics.ts</code>), which fires a custom GA4 event
+        via the existing <code>gtag</code> bootstrap. No further
+        front-end work is needed — it works on every deploy.
+      </p>
+
+      <h3>Event payload</h3>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Example</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>event_name</code></td>
+            <td>string</td>
+            <td><code>book_here_click</code></td>
+            <td>The only event name we send for this conversion.</td>
+          </tr>
+          <tr>
+            <td><code>placement</code></td>
+            <td>string</td>
+            <td><code>boat_detail_hero</code></td>
+            <td>Which button on which surface (see taxonomy below).</td>
+          </tr>
+          <tr>
+            <td><code>page_path</code></td>
+            <td>string</td>
+            <td><code>/fleet/dr-no-pershing-6x</code></td>
+            <td>Read live from <code>window.location.pathname</code>.</td>
+          </tr>
+          <tr>
+            <td><code>device</code></td>
+            <td>enum</td>
+            <td><code>mobile</code> | <code>tablet</code> | <code>desktop</code></td>
+            <td>Bucketed by viewport: &lt;768px / &lt;1100px / ≥1100px.</td>
+          </tr>
+          <tr>
+            <td><code>boat</code></td>
+            <td>string?</td>
+            <td><code>dr-no-pershing-6x</code></td>
+            <td>Only set on boat-specific surfaces.</td>
+          </tr>
+          <tr>
+            <td><code>experience</code></td>
+            <td>string?</td>
+            <td><code>day-trips</code></td>
+            <td>Only set on experience-specific surfaces.</td>
+          </tr>
+          <tr>
+            <td><code>transport_type</code></td>
+            <td>string</td>
+            <td><code>beacon</code></td>
+            <td>Survives the new-tab navigation to WhatsApp.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Placement taxonomy</h3>
+      <p>
+        Stable snake_case values, never translated. Add new ones by
+        passing a fresh <code>placement</code> to a
+        <code>&lt;BookHereCTA&gt;</code>.
+      </p>
+      <table>
+        <thead><tr><th>Placement</th><th>Where it fires</th></tr></thead>
+        <tbody>
+          <tr><td><code>header_pill</code></td><td>Top-nav WhatsApp pill (every page).</td></tr>
+          <tr><td><code>sticky_mobile</code></td><td>Mobile-only bottom-fixed CTA.</td></tr>
+          <tr><td><code>home_hero</code></td><td>Homepage 3D water hero.</td></tr>
+          <tr><td><code>boat_detail_hero</code></td><td><code>/fleet/[slug]</code> above-fold pill (sends <code>boat</code>).</td></tr>
+          <tr><td><code>boat_detail_below_specs</code></td><td><code>/fleet/[slug]</code> "Book via WhatsApp" below specs (sends <code>boat</code>).</td></tr>
+          <tr><td><code>experience_detail_hero</code></td><td><code>/experiences/[slug]</code> hero (sends <code>experience</code>).</td></tr>
+          <tr><td><code>experience_detail_cta</code></td><td><code>/experiences/[slug]</code> body CTA (sends <code>experience</code>).</td></tr>
+          <tr><td><code>about_cta</code></td><td><code>/about</code> page CTA.</td></tr>
+          <tr><td><code>contact_sidebar</code></td><td><code>/contact</code> right-rail.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>2. Verify the event fires <span class="pill">5 min</span></h2>
+      <ol>
+        <li>Open the live site in Chrome, accept the cookie banner (Analytics opt-in required).</li>
+        <li>Open DevTools → Network → filter for <code>g/collect</code> or <code>gtag</code>.</li>
+        <li>Click any "Book here" button. You should see a request like:
+          <pre>en=book_here_click&amp;placement=boat_detail_hero&amp;page_path=/fleet/dr-no-pershing-6x&amp;device=desktop&amp;boat=dr-no-pershing-6x</pre>
+        </li>
+        <li>In GA4 → Admin → <strong>DebugView</strong>, select the stream and watch live. The <code>book_here_click</code> event lands within ~5s with the parameter pills visible.</li>
+      </ol>
+      <p class="note">
+        <strong>Troubleshooting:</strong> nothing fires → cookie consent
+        declined. Re-open the banner and accept Analytics.
+      </p>
+
+      <h2>3. Register custom dimensions in GA4 <span class="pill">2 min</span></h2>
+      <p>
+        GA4 collects the params automatically, but won't display them in
+        reports until you register them as custom dimensions.
+      </p>
+      <p>
+        GA4 → Admin → <strong>Custom definitions</strong> →
+        <strong>Custom dimensions</strong> → <em>Create</em>. One per row:
+      </p>
+      <table>
+        <thead><tr><th>Dimension name</th><th>Scope</th><th>Event parameter</th></tr></thead>
+        <tbody>
+          <tr><td>Book placement</td><td>Event</td><td><code>placement</code></td></tr>
+          <tr><td>Click device</td><td>Event</td><td><code>device</code></td></tr>
+          <tr><td>Boat slug</td><td>Event</td><td><code>boat</code></td></tr>
+          <tr><td>Experience slug</td><td>Event</td><td><code>experience</code></td></tr>
+          <tr><td>Page path</td><td>Event</td><td><code>page_path</code></td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        Custom dimensions take up to 24h to start populating in
+        Explorations and reports. Real-time + DebugView see them
+        immediately.
+      </p>
+
+      <h2>4. Mark as conversion <span class="pill">1 min</span></h2>
+      <ol>
+        <li>GA4 → Admin → <strong>Events</strong> → find <code>book_here_click</code> in the list (appears after the first real fire).</li>
+        <li>Toggle <strong>Mark as conversion</strong> ON.</li>
+        <li>Conversion now appears in Reports → Engagement → Conversions, sliceable by source/medium/campaign.</li>
+      </ol>
+
+      <h2>5. Conversion dashboard <span class="pill">5 min</span></h2>
+      <p>GA4 → <strong>Explore</strong> → <strong>Free form</strong>:</p>
+      <ul>
+        <li><strong>Rows:</strong> Book placement (or Page path).</li>
+        <li><strong>Columns:</strong> Click device.</li>
+        <li><strong>Values:</strong> Event count for <code>book_here_click</code>.</li>
+      </ul>
+      <p>
+        Output looks like:
+      </p>
+      <table>
+        <thead><tr><th>Placement</th><th>Mobile</th><th>Desktop</th><th>Tablet</th></tr></thead>
+        <tbody>
+          <tr><td>home_hero</td><td>412</td><td>638</td><td>24</td></tr>
+          <tr><td>boat_detail_hero</td><td>187</td><td>410</td><td>19</td></tr>
+          <tr><td>sticky_mobile</td><td>295</td><td>—</td><td>8</td></tr>
+          <tr><td>header_pill</td><td>53</td><td>102</td><td>6</td></tr>
+        </tbody>
+      </table>
+
+      <h2>6. (Optional) Wire through Google Tag Manager</h2>
+      <p>
+        The site fires events directly via <code>gtag</code>, so GA4
+        works without GTM. Add GTM only if you want to layer a Meta
+        Pixel <em>Lead</em>, LinkedIn conversion, TikTok pixel, etc.
+        without re-deploying code.
+      </p>
+
+      <h3>6a. Install GTM (one-time)</h3>
+      <ol>
+        <li>tagmanager.google.com → create a Web container for <code>seasocietyibiza.com</code>.</li>
+        <li>You get two snippets — <strong>head</strong> and <strong>body</strong>. Paste them into <code>app/layout.tsx</code> via <code>next/script</code>:
+          <pre>&lt;Script id="gtm" strategy="afterInteractive"&gt;
+{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push(
+  {'gtm.start': new Date().getTime(), event:'gtm.js'});
+  var f=d.getElementsByTagName(s)[0], j=d.createElement(s);
+  j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i;
+  f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');`}
+&lt;/Script&gt;</pre>
+        </li>
+        <li>Replace <code>GTM-XXXXXXX</code> with your container ID.</li>
+      </ol>
+
+      <h3>6b. Create a Custom Event trigger</h3>
+      <ol>
+        <li>GTM → <strong>Triggers</strong> → New.</li>
+        <li>Trigger Type: <strong>Custom Event</strong>.</li>
+        <li>Event name: <code>book_here_click</code> (exact match).</li>
+        <li>Fires on: All Custom Events.</li>
+        <li>Name the trigger <code>CE — Book here click</code>. Save.</li>
+      </ol>
+
+      <h3>6c. Create Data Layer Variables for each parameter</h3>
+      <p>For each parameter you want to use in tags:</p>
+      <ol>
+        <li>GTM → <strong>Variables</strong> → <em>User-Defined</em> → New.</li>
+        <li>Variable Type: <strong>Data Layer Variable</strong>.</li>
+        <li>Data Layer Variable Name: one of:
+          <code>placement</code>, <code>device</code>, <code>boat</code>, <code>experience</code>, <code>page_path</code>.
+        </li>
+        <li>Name the variable <code>DLV — placement</code> (etc.). Save.</li>
+        <li>Reference in tags as <code>{{DLV — placement}}</code>.</li>
+      </ol>
+
+      <h3>6d. Example tag: Meta Pixel "Lead"</h3>
+      <ol>
+        <li>GTM → <strong>Tags</strong> → New → Tag Type: <strong>Custom HTML</strong>.</li>
+        <li>Paste:
+          <pre>&lt;script&gt;
+  fbq('track', 'Lead', {
+    content_name: '{{DLV — placement}}',
+    content_category: '{{DLV — device}}',
+    source_url: '{{Page URL}}'
+  });
+&lt;/script&gt;</pre>
+        </li>
+        <li>Triggering: <code>CE — Book here click</code>.</li>
+        <li>Save → Submit → Publish.</li>
+      </ol>
+
+      <h3>6e. Same pattern for other platforms</h3>
+      <table>
+        <thead><tr><th>Platform</th><th>Tag template</th><th>Event name</th></tr></thead>
+        <tbody>
+          <tr><td>Google Ads</td><td>Conversion Tracking</td><td>Pass <code>{{DLV — boat}}</code> as transaction_id</td></tr>
+          <tr><td>LinkedIn Insight</td><td>LinkedIn Insight Tag</td><td>Conversion ID per placement</td></tr>
+          <tr><td>TikTok Pixel</td><td>Custom HTML with <code>ttq.track('SubmitForm')</code></td><td>Pass placement as content_id</td></tr>
+        </tbody>
+      </table>
+
+      <h2>7. File reference</h2>
+      <table>
+        <thead><tr><th>File</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>lib/analytics.ts</code></td><td>The <code>trackBookHereClick()</code> helper. Single point of truth for event shape.</td></tr>
+          <tr><td><code>components/site/Analytics.tsx</code></td><td>GA4 bootstrap (gtag.js loader, consent-gated, Save-Data aware).</td></tr>
+          <tr><td><code>components/site/BookHereCTA.tsx</code></td><td>All inline + sticky Book here buttons. Calls the helper on click.</td></tr>
+          <tr><td><code>components/site/Header.tsx</code></td><td>Top-nav WhatsApp pill. Calls the helper on click.</td></tr>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
