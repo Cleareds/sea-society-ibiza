@@ -9,6 +9,7 @@ import { ArrowRight } from "lucide-react";
 import type { Boat } from "@/lib/data/types";
 import type { Locale } from "@/lib/i18n/config";
 import { imageVariant } from "@/lib/image-url";
+import { cardImageForSlug } from "@/lib/boat-card-images";
 import { localePath } from "@/lib/i18n/config";
 
 const HomeImmersiveCanvas = dynamic(
@@ -153,7 +154,7 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
                 <Link href={lp(`/fleet/${b.slug}`)} className="group block">
                   <div className="relative aspect-[5/3] overflow-hidden">
                     <Image
-                      src={imageVariant(b.cardImage ?? b.heroImage, 900)}
+                      src={imageVariant(cardImageForSlug(b.slug) ?? b.cardImage ?? b.heroImage, 900)}
                       alt={`${b.name} — ${b.modelName ?? b.brand}`}
                       fill
                       sizes="(min-width: 768px) 30vw, 90vw"
