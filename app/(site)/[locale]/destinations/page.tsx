@@ -12,6 +12,7 @@ import { getSettings } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 import { getDestinationsCopy } from "./copy";
+import { ClubsTabs } from "./ClubsTabs";
 
 export const revalidate = 3600;
 
@@ -96,19 +97,21 @@ export default async function DestinationsPage({
         </Reveal>
       </Section>
 
-      {/* 2. Ibiza from the Sea */}
+      {/* 2. Ibiza from the Sea — vertical image LEFT, text+cards RIGHT.
+          Side-by-side layout cuts the section height nearly in half vs
+          the previous banner-on-top variant. */}
       <Section>
-        <Reveal>
-          <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl">
+        <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5">
             <Image
               src="/sea-society/site/dest-ibiza.webp"
               alt="Ibiza coastline from the water"
               fill
-              sizes="(min-width: 768px) 80vw, 100vw"
+              sizes="(min-width: 768px) 40vw, 100vw"
               className="object-cover"
             />
           </div>
-          <div className="mt-10 max-w-3xl">
+          <div className="md:col-span-7">
             <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
               {c.ibizaEyebrow}
             </p>
@@ -118,39 +121,41 @@ export default async function DestinationsPage({
             <p className="mt-4 text-base text-[var(--color-on-surface-variant)] md:text-lg">
               {c.ibizaSub}
             </p>
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {c.ibizaCoves.map((cove) => (
-              <SpotCard key={cove.name} {...cove} />
-            ))}
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {c.ibizaCoves.map((cove) => (
+                <SpotCard key={cove.name} {...cove} />
+              ))}
+            </div>
           </div>
         </Reveal>
       </Section>
 
-      {/* 3. Formentera from the Sea */}
+      {/* 3. Formentera — vertical image on the RIGHT, text+cards LEFT
+          (mirror of the Ibiza block so the two sections form a visual
+          conversation rather than a stacked repeat). */}
       <Section bleed className="bg-[#f4f4f4]">
-        <Reveal>
-          <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl">
-            <Image
-              src="/sea-society/site/dest-formentera.webp"
-              alt="Formentera turquoise water and white sand"
-              fill
-              sizes="(min-width: 768px) 80vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="mt-10 max-w-3xl">
+        <Reveal className="grid items-start gap-12 md:grid-cols-12 md:gap-16">
+          <div className="md:col-span-7 md:order-1">
             <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
               {c.formenteraEyebrow}
             </p>
             <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
               {c.formenteraTitle}
             </h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {c.formenteraCoves.map((cove) => (
+                <SpotCard key={cove.name} {...cove} />
+              ))}
+            </div>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {c.formenteraCoves.map((cove) => (
-              <SpotCard key={cove.name} {...cove} />
-            ))}
+          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl md:col-span-5 md:order-2">
+            <Image
+              src="/sea-society/site/dest-formentera.webp"
+              alt="Formentera turquoise water and white sand"
+              fill
+              sizes="(min-width: 768px) 40vw, 100vw"
+              className="object-cover"
+            />
           </div>
         </Reveal>
       </Section>
@@ -240,21 +245,15 @@ export default async function DestinationsPage({
         </Reveal>
       </Section>
 
-      {/* 6. Ibiza beach clubs */}
+      {/* 6. Beach clubs — single section with Ibiza / Formentera tabs.
+          Collapsing the two previously-stacked club sections into one
+          tabbed panel saves ~1200 px of page height; only the active
+          island's cards render at any time. */}
       <Section>
         <Reveal>
-          <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl">
-            <Image
-              src="/sea-society/site/dest-ibiza-2.webp"
-              alt="Ibiza beach-club coastline"
-              fill
-              sizes="(min-width: 768px) 80vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-          <div className="mt-10 max-w-3xl">
+          <div className="max-w-3xl">
             <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-              {c.ibizaClubsEyebrow}
+              {c.ibizaClubsEyebrow.replace(" · Ibiza", "").replace(" · Formentera", "")}
             </p>
             <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
               {c.ibizaClubsTitle}
@@ -263,49 +262,43 @@ export default async function DestinationsPage({
               {c.ibizaClubsSub}
             </p>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {c.ibizaClubs.map((club) => (
-              <SpotCard key={club.name} {...club} />
-            ))}
-          </div>
-        </Reveal>
-      </Section>
 
-      {/* 7. Formentera beach clubs */}
-      <Section bleed className="bg-[#f4f4f4]">
-        <Reveal>
-          <div className="max-w-3xl">
-            <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-              {c.formenteraClubsEyebrow}
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              {c.formenteraClubsTitle}
-            </h2>
-          </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {c.formenteraClubs.map((club) => (
-              <SpotCard key={club.name} {...club} />
-            ))}
-            <div className="rounded-2xl bg-white p-6 shadow-sm md:col-span-2 md:p-8">
-              <h3 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
-                {c.calaDuoTitle}
-              </h3>
-              <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
-                {c.calaDuoLead}
-              </p>
-              <ul className="mt-4 grid gap-2 text-sm text-[var(--color-on-surface-variant)] md:grid-cols-2 md:text-base">
-                {c.calaDuoBullets.map((b) => (
-                  <li key={b} className="flex gap-3">
-                    <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#000000]" />
-                    <span>{b}</span>
-                  </li>
+          <ClubsTabs
+            labels={{ ibiza: c.ibizaTitle, formentera: c.formenteraTitle }}
+            ibiza={
+              <div className="grid gap-6 md:grid-cols-2">
+                {c.ibizaClubs.map((club) => (
+                  <SpotCard key={club.name} {...club} />
                 ))}
-              </ul>
-              <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
-                {c.calaDuoOutro}
-              </p>
-            </div>
-          </div>
+              </div>
+            }
+            formentera={
+              <div className="grid gap-6 md:grid-cols-2">
+                {c.formenteraClubs.map((club) => (
+                  <SpotCard key={club.name} {...club} />
+                ))}
+                <div className="rounded-2xl bg-white p-6 shadow-sm md:col-span-2 md:p-8">
+                  <h3 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
+                    {c.calaDuoTitle}
+                  </h3>
+                  <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
+                    {c.calaDuoLead}
+                  </p>
+                  <ul className="mt-4 grid gap-2 text-sm text-[var(--color-on-surface-variant)] md:grid-cols-2 md:text-base">
+                    {c.calaDuoBullets.map((b) => (
+                      <li key={b} className="flex gap-3">
+                        <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#000000]" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-5 text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base">
+                    {c.calaDuoOutro}
+                  </p>
+                </div>
+              </div>
+            }
+          />
         </Reveal>
       </Section>
 
