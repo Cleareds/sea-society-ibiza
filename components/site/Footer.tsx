@@ -124,16 +124,6 @@ export function Footer({ settings, locale, t }: FooterProps) {
                 {t("footer.terms")}
               </Link>
             </li>
-            <li>
-              <Link href={lp("/classic-home")} className="hover:text-[var(--color-primary)]">
-                Classic home
-              </Link>
-            </li>
-            <li>
-              <Link href={lp("/preview")} className="hover:text-[var(--color-primary)]">
-                WebGL preview
-              </Link>
-            </li>
           </ul>
         </div>
       </div>

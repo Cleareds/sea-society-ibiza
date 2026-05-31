@@ -35,7 +35,6 @@ export interface BookHereContext {
    *   header_pill           — top-nav WhatsApp pill
    *   sticky_mobile         — bottom-fixed mobile CTA (StickyBookHere)
    *   home_hero             — homepage 3D water hero
-   *   home_classic_hero     — /classic-home hero
    *   boat_detail_hero      — /fleet/[slug] above-fold hero
    *   boat_detail_below_specs — /fleet/[slug] CTA below the spec block
    *   experience_detail_hero — /experiences/[slug] hero
