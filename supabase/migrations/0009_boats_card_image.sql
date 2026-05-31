@@ -41,6 +41,15 @@ update boats set card_image = '/images/boats/cards/sensation-card.webp'
 update boats set card_image = '/images/boats/cards/majestic-card.webp'
   where slug = 'majestic-vandutch-40';
 
+-- Majestic — the previous DB row pointed hero_image + gallery at a
+-- deck-with-fruits photo; replace with the boat-exterior shot
+-- sourced from ibimarcharter.com (now in /public/images/boats/).
+update boats set
+  hero_image = '/images/boats/majestic-hero.webp',
+  card_image = '/images/boats/cards/majestic-card.webp',
+  gallery = '[{"src":"/images/boats/majestic-hero.webp","alt":"Majestic — VanDutch 40"}]'::jsonb
+  where slug = 'majestic-vandutch-40';
+
 comment on column boats.card_image is
   'Optional URL for tile/list contexts. Falls back to hero_image when null. Detail page banner always uses hero_image.';
 
