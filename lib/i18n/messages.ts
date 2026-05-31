@@ -1,9 +1,13 @@
 /**
- * Server-side loader for translation messages. The default locale (`en`) is
- * always loaded as the fallback — any key missing from another locale's file
- * resolves to the English string.
+ * Translation message loader, safe in both server and client components.
+ *
+ * The default locale (`en`) is always loaded as the fallback — any key
+ * missing from another locale's file resolves to the English string. The
+ * `server-only` guard was removed when FilterModal (a client component)
+ * needed to translate its option labels at render time. The two JSON
+ * bundles are small (~5 KB each), so shipping them in the client bundle
+ * is cheaper than the round-trip alternative.
  */
-import "server-only";
 import { defaultLocale, isLocale, type Locale } from "./config";
 
 import en from "@/messages/en.json";
