@@ -5,6 +5,23 @@ const nextConfig: NextConfig = {
   // Pin tracing to this project so Next doesn't pick up a parent yarn.lock.
   outputFileTracingRoot: __dirname,
 
+  // Public binary assets get served as static files via Vercel's CDN —
+  // they should NEVER end up in a serverless function bundle. Without
+  // this exclude, Next 16's tracer bundles public/sea-society/yacht-
+  // videos (~173 MB of mp4 + posters) into the [locale] lambda,
+  // blowing past the 300 MB Vercel cap. Exclude pattern is relative
+  // to outputFileTracingRoot.
+  outputFileTracingExcludes: {
+    "*": [
+      "public/sea-society/yacht-videos/**",
+      "public/sea-society/video/**",
+      "public/images/boats/**",
+      "sea-society/**",
+      "boats/**",
+      ".next/cache/**",
+    ],
+  },
+
   // Stable in Next 16. Babel-based auto-memoisation: cuts client-side
   // re-render cost on the interactive bits (LocaleSwitcher, EnquiryForm,
   // CookieBanner, admin forms) with zero source changes.

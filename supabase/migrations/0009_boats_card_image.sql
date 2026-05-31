@@ -40,3 +40,11 @@ update boats set card_image = '/images/boats/cards/sensation-card.webp'
 
 comment on column boats.card_image is
   'Optional URL for tile/list contexts. Falls back to hero_image when null. Detail page banner always uses hero_image.';
+
+-- Homepage swap: Chloe in, Belisa out. getFeaturedBoats(3) returns
+-- featured-true boats ordered by sort_order; Belisa was sort_order 2
+-- and Chloe sort_order 3, so flipping their `featured` flag puts
+-- Chloe in the top-3 instead of Belisa without changing the order
+-- of the remaining featured boats.
+update boats set featured = false where slug = 'belisa-mangusta-108';
+update boats set featured = true  where slug = 'chloe-princess-v58';
