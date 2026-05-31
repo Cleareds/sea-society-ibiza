@@ -10,11 +10,12 @@ const nextConfig: NextConfig = {
   // CookieBanner, admin forms) with zero source changes.
   reactCompiler: true,
 
-  // Ship source maps in production so Lighthouse + browser devtools can
-  // attribute issues to original source. Maps are .map files served
-  // alongside .js chunks; only fetched when devtools is open, so real
-  // users never download them.
-  productionBrowserSourceMaps: true,
+  // Source maps disabled at the moment — re-enable after the
+  // [locale] serverless bundle drops well below Vercel's 300 MB
+  // ceiling. Maps don't ship in the lambda directly but they
+  // measurably enlarge the build trace + standalone output, and we're
+  // tight on headroom right now.
+  productionBrowserSourceMaps: false,
 
   images: {
     // Skip Vercel's image-optimization proxy entirely. Uploaded boat

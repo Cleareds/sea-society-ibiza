@@ -5,25 +5,26 @@
  * stored unprefixed in every content table, and the fallback when a translation
  * is missing for another locale.
  */
-export const locales = ["en", "nl", "fr", "de", "es"] as const;
+// Locale set narrowed to English-only for launch. The [locale] segment
+// folder structure is kept (avoids a churn-heavy route restructure
+// 30 hours before launch), but only "en" is registered — so
+// generateStaticParams produces a single page per route instead of 5,
+// the sitemap shrinks 5x, and the [locale] serverless function bundle
+// drops below Vercel's 300 MB ceiling.
+//
+// Re-add a locale to this array to bring it back; all routing,
+// middleware and language switcher logic is already wired.
+export const locales = ["en"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
 export const localeLabels: Record<Locale, string> = {
   en: "English",
-  nl: "Nederlands",
-  fr: "Français",
-  de: "Deutsch",
-  es: "Español",
 };
 
 export const localeFlags: Record<Locale, string> = {
   en: "🇬🇧",
-  nl: "🇳🇱",
-  fr: "🇫🇷",
-  de: "🇩🇪",
-  es: "🇪🇸",
 };
 
 export function isLocale(value: string | null | undefined): value is Locale {

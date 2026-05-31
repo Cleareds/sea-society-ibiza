@@ -7,19 +7,13 @@ import "server-only";
 import { defaultLocale, isLocale, type Locale } from "./config";
 
 import en from "@/messages/en.json";
-import nl from "@/messages/nl.json";
-import fr from "@/messages/fr.json";
-import de from "@/messages/de.json";
-import es from "@/messages/es.json";
-
+// Non-English message bundles intentionally not loaded — see
+// lib/i18n/config.ts. Re-add the imports + entries here when bringing
+// a locale back.
 type Bundle = Record<string, unknown>;
 
 const bundles: Record<Locale, Bundle> = {
   en: en as Bundle,
-  nl: nl as Bundle,
-  fr: fr as Bundle,
-  de: de as Bundle,
-  es: es as Bundle,
 };
 
 function lookup(bundle: Bundle | undefined, path: string[]): string | undefined {
