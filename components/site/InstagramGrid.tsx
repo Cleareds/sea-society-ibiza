@@ -78,14 +78,22 @@ export function InstagramGrid({ handle, href, tone = "light", accentClassName }:
               i >= 6 ? "hidden md:block" : ""
             }`}
           >
-            <Image
-              src={src}
-              alt=""
-              fill
-              loading="lazy"
-              sizes="(min-width: 768px) 17vw, 50vw"
-              className="object-cover transition-transform duration-700 hover:scale-105"
-            />
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Follow ${handle} on Instagram (opens in a new tab)`}
+              className="block h-full w-full"
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                loading="lazy"
+                sizes="(min-width: 768px) 17vw, 50vw"
+                className="object-cover transition-transform duration-700 hover:scale-105"
+              />
+            </a>
           </li>
         ))}
       </ul>

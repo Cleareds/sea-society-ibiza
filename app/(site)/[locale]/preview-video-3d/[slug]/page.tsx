@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import path from "node:path";
 import fs from "node:fs";
 import { HomeWater3DScene } from "@/components/site/HomeWater3DScene";
-import { InstagramFeed } from "@/components/site/InstagramFeed";
+import { InstagramGrid } from "@/components/site/InstagramGrid";
 import { getFeaturedBoats, getSettings } from "@/lib/data";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -111,7 +111,7 @@ export default async function PreviewVideo3DPage({
         instagramHandle={settings.instagramHandle}
         instagramHref={settings.instagramUrl}
         instagramSlot={
-          <InstagramFeed
+          <InstagramGrid
             handle={settings.instagramHandle}
             href={settings.instagramUrl}
             tone="dark"

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import path from "node:path";
 import fs from "node:fs";
 import { HomeWater3DScene } from "@/components/site/HomeWater3DScene";
-import { InstagramFeed } from "@/components/site/InstagramFeed";
+import { InstagramGrid } from "@/components/site/InstagramGrid";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { websiteLd, fleetItemListLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -119,7 +119,7 @@ export default async function HomePage({
         instagramHandle={settings.instagramHandle}
         instagramHref={settings.instagramUrl}
         instagramSlot={
-          <InstagramFeed
+          <InstagramGrid
             handle={settings.instagramHandle}
             href={settings.instagramUrl}
             tone="dark"

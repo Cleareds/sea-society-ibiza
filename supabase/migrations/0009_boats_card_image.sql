@@ -50,6 +50,12 @@ update boats set
   gallery = '[{"src":"/images/boats/majestic-hero.webp","alt":"Majestic — VanDutch 40"}]'::jsonb
   where slug = 'majestic-vandutch-40';
 
+-- Instagram URL canonicalisation — point the "Follow our society"
+-- block at the real account: https://www.instagram.com/seasociety.ibiza/
+update site_settings set
+  instagram_url = 'https://www.instagram.com/seasociety.ibiza/',
+  instagram_handle = '@seasociety.ibiza';
+
 comment on column boats.card_image is
   'Optional URL for tile/list contexts. Falls back to hero_image when null. Detail page banner always uses hero_image.';
 
