@@ -8,6 +8,7 @@ import type {
   SaveBoatState,
   SavePageBlockState,
   SaveSettingsState,
+  SaveJourneyImagesState,
 } from "./actions-state";
 
 const ADMIN_COOKIE = "ssi-dev-admin";
@@ -326,6 +327,31 @@ export async function saveSettings(
     revalidatePath(`/${lc}/contact`);
   }
   return { status: "ok", message: "Settings saved.", savedAt: Date.now() };
+}
+
+export async function saveJourneyImages(
+  _prev: SaveJourneyImagesState,
+  formData: FormData,
+): Promise<SaveJourneyImagesState> {
+  if (!isSupabaseConfigured()) {
+    return { status: "error", message: "Supabase is not configured." };
+  }
+  // 18 slots — empty strings are filtered out so admins can clear a
+  // tile and the component falls back to its default for that index.
+  const tiles: Array<{ src: string }> = [];
+  for (let i = 0; i < 18; i++) {
+    const src = String(formData.get(`tile_${i}`) ?? "").trim();
+    if (src) tiles.push({ src });
+  }
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ id: 1, journey_images: tiles }, { onConflict: "id" });
+  if (error) return { status: "error", message: error.message };
+  revalidatePath("/admin/journey");
+  revalidatePath("/");
+  revalidatePath("/about");
+  return { status: "ok", message: "Journey tiles saved.", savedAt: Date.now() };
 }
 
 export async function deleteBoat(formData: FormData) {

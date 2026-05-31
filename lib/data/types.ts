@@ -148,6 +148,10 @@ export interface Settings {
   /** Locale-keyed PageCopy overrides for /about and /contact. */
   aboutI18n: Partial<Record<string, Partial<PageCopy>>>;
   contactI18n: Partial<Record<string, Partial<PageCopy>>>;
+  /** "Follow our society" tile-wall images. Editable from /admin/journey.
+   *  Each entry is a public URL (Supabase Storage upload or /public path).
+   *  Component falls back to the hardcoded defaults when this is empty. */
+  journeyImages: Array<{ src: string }>;
 }
 
 export interface EnquiryInput {

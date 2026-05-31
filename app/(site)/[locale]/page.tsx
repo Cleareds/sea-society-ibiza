@@ -112,6 +112,7 @@ export default async function HomePage({
           <InstagramGrid
             handle={settings.instagramHandle}
             href={settings.instagramUrl}
+            tiles={settings.journeyImages}
             tone="dark"
             accentClassName="wave-accent"
           />

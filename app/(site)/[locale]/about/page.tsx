@@ -142,6 +142,7 @@ export default async function AboutPage({
         <InstagramGrid
           handle={settings.instagramHandle}
           href={settings.instagramUrl}
+          tiles={settings.journeyImages}
         />
       </div>
     </>

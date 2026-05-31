@@ -13,26 +13,9 @@ import Image from "next/image";
  *   - Mobile:   2 cols × 3 rows = 6 tiles (the remaining 12 are hidden) —
  *               keeps the section compact on small screens.
  */
-const tiles = [
-  "/sea-society/site/journey-1.webp",
-  "/sea-society/site/journey-2.webp",
-  "/sea-society/site/journey-3.webp",
-  "/sea-society/site/journey-4.webp",
-  "/sea-society/site/journey-5.webp",
-  "/sea-society/site/journey-6.webp",
-  "/sea-society/site/journey-7.webp",
-  "/sea-society/site/journey-8.webp",
-  "/sea-society/site/journey-9.webp",
-  "/sea-society/site/journey-10.webp",
-  "/sea-society/site/journey-11.webp",
-  "/sea-society/site/journey-12.webp",
-  "/sea-society/site/journey-13.webp",
-  "/sea-society/site/journey-14.webp",
-  "/sea-society/site/journey-15.webp",
-  "/sea-society/site/journey-16.webp",
-  "/sea-society/site/journey-17.webp",
-  "/sea-society/site/journey-18.webp",
-];
+const DEFAULT_TILES: Array<{ src: string }> = Array.from({ length: 18 }, (_, i) => ({
+  src: `/sea-society/site/journey-${i + 1}.webp`,
+}));
 
 interface Props {
   handle: string;
@@ -43,9 +26,15 @@ interface Props {
   tone?: "light" | "dark";
   /** Extra class merged into the brand-accent span around "Follow". */
   accentClassName?: string;
+  /** Override tile URLs. Falls back to the hardcoded 18 defaults when
+   *  empty/null — set this from the page using settings.journeyImages
+   *  so the admin panel can swap them out. */
+  tiles?: Array<{ src: string }>;
 }
 
-export function InstagramGrid({ handle, href, tone = "light", accentClassName }: Props) {
+export function InstagramGrid({ handle, href, tone = "light", accentClassName, tiles }: Props) {
+  const renderTiles =
+    tiles && tiles.length > 0 ? tiles.slice(0, 18) : DEFAULT_TILES;
   const accentCls = `brand-accent ${accentClassName ?? ""}`.trim();
   const headlineCls =
     tone === "dark"
@@ -71,9 +60,9 @@ export function InstagramGrid({ handle, href, tone = "light", accentClassName }:
         </a>
       </div>
       <ul className="grid w-full grid-cols-2 md:grid-cols-6">
-        {tiles.map((src, i) => (
+        {renderTiles.map((tile, i) => (
           <li
-            key={src + i}
+            key={tile.src + i}
             className={`brand-img-hover relative aspect-square overflow-hidden ${
               i >= 6 ? "hidden md:block" : ""
             }`}
@@ -86,7 +75,7 @@ export function InstagramGrid({ handle, href, tone = "light", accentClassName }:
               className="block h-full w-full"
             >
               <Image
-                src={src}
+                src={tile.src}
                 alt=""
                 fill
                 loading="lazy"

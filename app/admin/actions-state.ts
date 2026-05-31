@@ -27,3 +27,10 @@ export interface SaveSettingsState {
   savedAt?: number;
 }
 export const initialSettingsState: SaveSettingsState = { status: "idle" };
+
+export interface SaveJourneyImagesState {
+  status: "idle" | "ok" | "error";
+  message?: string;
+  savedAt?: number;
+}
+export const initialJourneyImagesState: SaveJourneyImagesState = { status: "idle" };
