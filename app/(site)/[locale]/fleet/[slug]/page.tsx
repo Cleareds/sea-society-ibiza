@@ -354,13 +354,13 @@ export default async function BoatDetailPage({
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href={lp("/experiences")}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-primary)] px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-[#000000] bg-[#000000] px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-white transition-colors hover:bg-white hover:text-[#000000]"
             >
               Browse experiences
             </Link>
             <Link
               href={lp("/destinations")}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-outline)] px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[var(--color-on-surface)] transition-colors hover:border-[var(--color-on-surface)]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#000000] bg-white px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[#000000] transition-colors hover:bg-[#000000] hover:text-white"
             >
               View destinations
             </Link>

@@ -373,7 +373,7 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
           <button
             type="button"
             onClick={apply}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--color-primary)] px-6 text-[11px] font-medium uppercase tracking-[0.22em] text-white transition-opacity hover:opacity-90"
+            className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-[#000000] bg-[#000000] px-6 text-[11px] font-medium uppercase tracking-[0.22em] text-white transition-colors duration-300 hover:bg-white hover:text-[#000000]"
           >
             Show {matchCount} {matchCount === 1 ? "boat" : "boats"}
           </button>

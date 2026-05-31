@@ -9,16 +9,19 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        // Default CTA — black pill that inverts on hover (white bg,
+        // #000 text). Border is always #000 so the hover state has
+        // a clean stroke against white backgrounds.
         primary:
-          "bg-[var(--color-secondary)] text-[var(--color-on-secondary)] hover:bg-[var(--color-secondary-container)] shadow-sm",
+          "border-2 border-[#000000] bg-[#000000] text-white hover:bg-white hover:text-[#000000] shadow-sm",
         secondary:
-          "bg-[var(--color-primary)] text-[var(--color-on-primary)] hover:bg-[var(--color-primary-container)] shadow-sm",
+          "border-2 border-[#000000] bg-[#000000] text-white hover:bg-white hover:text-[#000000] shadow-sm",
         outline:
-          "border-2 border-current text-[var(--color-on-surface)] hover:bg-[var(--color-on-surface)]/5 bg-transparent",
+          "border-2 border-[#000000] text-[#000000] hover:bg-[#000000] hover:text-white bg-transparent",
         outlineLight:
           "border-2 border-[var(--color-on-primary)] text-[var(--color-on-primary)] hover:bg-[var(--color-on-primary)]/10 bg-transparent",
         ghost:
-          "text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10",
+          "text-[#000000] hover:bg-[#000000]/10",
         whatsapp:
           "bg-[#25D366] text-white hover:bg-[#1FAD52] shadow-sm",
       },
