@@ -86,7 +86,7 @@ export function BookHereCTA({
       <span
         className={cn(
           "relative z-10 transition-colors duration-500",
-          tone === "light" ? "group-hover:text-[#06141a]" : "",
+          tone === "light" ? "group-hover:text-[#000000]" : "",
         )}
       >
         {label}
@@ -96,7 +96,7 @@ export function BookHereCTA({
         aria-hidden
         className={cn(
           "relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
-          tone === "light" ? "group-hover:text-[#06141a]" : "",
+          tone === "light" ? "group-hover:text-[#000000]" : "",
         )}
       />
     </a>
@@ -151,18 +151,18 @@ export function StickyBookHere({
         target="_blank"
         rel="noopener noreferrer"
         onClick={onClick}
-        className="group relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-xs font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10"
+        className="group relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#000000]/85 px-7 text-xs font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10"
       >
         <span
           aria-hidden
           className="absolute inset-0 -z-0 translate-y-full bg-white transition-transform duration-500 ease-out group-hover:translate-y-0"
         />
-        <span className="relative z-10 transition-colors duration-500 group-hover:text-[#06141a]">
+        <span className="relative z-10 transition-colors duration-500 group-hover:text-[#000000]">
           {label}
         </span>
         <ArrowUpRight
           aria-hidden
-          className="relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#06141a]"
+          className="relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#000000]"
         />
       </a>
     </div>

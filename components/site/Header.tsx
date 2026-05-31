@@ -132,7 +132,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                   "relative z-10 transition-colors duration-500",
                   isSolid
                     ? "group-hover:text-white"
-                    : "group-hover:text-[#06141a]",
+                    : "group-hover:text-[#000000]",
                 )}
               >
                 Book here
@@ -143,7 +143,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                   "relative z-10 h-3.5 w-3.5 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
                   isSolid
                     ? "group-hover:text-white"
-                    : "group-hover:text-[#06141a]",
+                    : "group-hover:text-[#000000]",
                 )}
               />
             </a>
