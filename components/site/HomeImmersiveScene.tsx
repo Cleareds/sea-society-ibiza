@@ -8,6 +8,7 @@ import { BookHereCTA } from "@/components/site/BookHereCTA";
 import { ArrowRight } from "lucide-react";
 import type { Boat } from "@/lib/data/types";
 import type { Locale } from "@/lib/i18n/config";
+import { imageVariant } from "@/lib/image-url";
 import { localePath } from "@/lib/i18n/config";
 
 const HomeImmersiveCanvas = dynamic(
@@ -152,7 +153,7 @@ export function HomeImmersiveScene({ whatsappNumber, featured, locale }: Props) 
                 <Link href={lp(`/fleet/${b.slug}`)} className="group block">
                   <div className="relative aspect-[5/3] overflow-hidden">
                     <Image
-                      src={b.heroImage}
+                      src={imageVariant(b.cardImage ?? b.heroImage, 900)}
                       alt={`${b.name} — ${b.modelName ?? b.brand}`}
                       fill
                       sizes="(min-width: 768px) 30vw, 90vw"

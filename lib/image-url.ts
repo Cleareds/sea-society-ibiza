@@ -27,6 +27,15 @@ export function imageVariant(src: string, width: number): string {
     return src.replace(/-hero\.webp$/, "-hero-thumb.webp");
   }
 
+  // Local /images/boats/cards/*-card.webp — same gate, swap to thumb.
+  if (
+    src.startsWith("/images/boats/cards/") &&
+    src.endsWith("-card.webp") &&
+    width <= 1100
+  ) {
+    return src.replace(/-card\.webp$/, "-card-thumb.webp");
+  }
+
   try {
     const u = new URL(src);
     // Unsplash CDN — set w + ensure auto-format + sensible quality

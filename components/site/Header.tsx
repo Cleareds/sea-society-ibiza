@@ -112,7 +112,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 // Luxe pill — thin gold border, sliding fill on hover, never a
                 // generic button. Same height as the nav so it sits inside
                 // the optical baseline.
-                "group relative inline-flex h-10 items-center gap-2 overflow-hidden rounded-full border px-5 text-[11px] font-medium uppercase tracking-[0.22em] transition-all duration-500",
+                "group relative inline-flex h-10 items-center gap-2 overflow-hidden rounded-full border px-5 text-xs font-medium uppercase tracking-[0.22em] transition-all duration-500",
                 isSolid
                   ? "border-[var(--color-primary)]/40 text-[var(--color-primary)] hover:border-[var(--color-primary)]"
                   : "border-white/80 text-white hover:border-white",
@@ -171,7 +171,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                 type="button"
                 aria-label={labels.openMenu}
                 className={cn(
-                  "inline-flex h-10 w-10 items-center justify-center rounded-full",
+                  "inline-flex h-11 w-11 items-center justify-center rounded-full",
                   isSolid ? "text-[var(--color-on-surface)]" : "text-white",
                 )}
               >

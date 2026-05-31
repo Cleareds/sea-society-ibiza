@@ -274,7 +274,11 @@ export function FilterModal({ boats, brands, locale = "en" }: Props) {
             scrolled-under by long filter content. */}
         <div className="flex-1 overflow-y-auto px-6 pt-6 pb-6">
           <SheetTitle className="text-3xl">Filter the fleet</SheetTitle>
-          <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
+          <p
+            className="mt-2 text-sm text-[var(--color-on-surface-variant)]"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {matchCount} {matchCount === 1 ? "boat" : "boats"} match
           </p>
 

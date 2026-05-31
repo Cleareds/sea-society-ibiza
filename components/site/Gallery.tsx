@@ -106,7 +106,7 @@ export function Gallery({ images, boatName }: Props) {
             type="button"
             onClick={prev}
             aria-label="Previous image"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/20"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 hover:bg-white/20"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -117,7 +117,7 @@ export function Gallery({ images, boatName }: Props) {
             type="button"
             onClick={next}
             aria-label="Next image"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/20"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 hover:bg-white/20"
           >
             <ChevronRight className="h-5 w-5" />
           </button>

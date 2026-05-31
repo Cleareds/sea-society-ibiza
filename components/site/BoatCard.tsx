@@ -21,7 +21,7 @@ export function BoatCard({ boat, locale = "en", priority = false, fromLabel }: B
     >
       <div className="brand-img-hover relative aspect-[4/3] w-full overflow-hidden">
         <Image
-          src={imageVariant(boat.heroImage, 900)}
+          src={imageVariant(boat.cardImage ?? boat.heroImage, 900)}
           alt={`${boat.name} — ${boat.tagline}`}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 90vw"

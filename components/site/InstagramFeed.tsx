@@ -92,7 +92,7 @@ function Tile({
         href={media.permalink}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={media.caption?.slice(0, 80) ?? "Open on Instagram"}
+        aria-label={`${media.caption?.slice(0, 80) ?? "Open on Instagram"} (opens Instagram in a new tab)`}
         className="group block h-full w-full"
       >
         <Image

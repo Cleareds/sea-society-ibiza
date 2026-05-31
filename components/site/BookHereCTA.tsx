@@ -34,7 +34,7 @@ export function BookHereCTA({
   // outer footprint for body-of-page placements. Uppercase tracking
   // matches the header CTA so the hover language reads as one system.
   const sizeCls =
-    size === "lg" ? "h-14 px-9 text-xs" : "h-12 px-7 text-[11px]";
+    size === "lg" ? "h-14 px-9 text-xs" : "h-12 px-7 text-xs";
   // Outer border / colour.
   //   light  — outlined white on dark backdrops (hero pills).
   //   dark   — FILLED turquoise on light backdrops (body-of-page CTA);
@@ -74,6 +74,7 @@ export function BookHereCTA({
         )}
       >
         {label}
+        <span className="sr-only"> (opens WhatsApp in a new tab)</span>
       </span>
       <ArrowUpRight
         aria-hidden
@@ -130,7 +131,7 @@ export function StickyBookHere({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-[11px] font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10 md:text-xs"
+        className="group relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#06141a]/85 px-7 text-xs font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10"
       >
         <span
           aria-hidden

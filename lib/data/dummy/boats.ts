@@ -19,6 +19,7 @@ const standardIncluded = [
 ];
 
 const hero = (slug: string) => `/images/boats/${slug}-hero.webp`;
+const card = (stem: string) => `/images/boats/cards/${stem}-card.webp`;
 
 export const boats: Boat[] = [
   {
@@ -67,6 +68,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("ariyas"), alt: "Ariyas — Sunseeker Predator 84" }],
     heroImage: hero("ariyas"),
+    cardImage: card("ariyas"),
     pdfUrl: null,
     featured: true,
     sortOrder: 1,
@@ -173,6 +175,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("chloe"), alt: "Chloe — Princess V58" }],
     heroImage: hero("chloe"),
+    cardImage: card("chloe"),
     pdfUrl: null,
     featured: false,
     sortOrder: 3,
@@ -226,6 +229,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("dr-no"), alt: "Dr. No — Pershing 6X" }],
     heroImage: hero("dr-no"),
+    cardImage: card("dr-no"),
     pdfUrl: null,
     featured: true,
     sortOrder: 4,
@@ -279,6 +283,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("ella"), alt: "Ella — Riva Argo 90" }],
     heroImage: hero("ella"),
+    cardImage: card("ella"),
     pdfUrl: null,
     featured: true,
     sortOrder: 5,
@@ -438,6 +443,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("inspiration"), alt: "Inspiration — Pershing 90" }],
     heroImage: hero("inspiration"),
+    cardImage: card("inspiration"),
     pdfUrl: null,
     featured: true,
     sortOrder: 8,
@@ -544,6 +550,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("mazu"), alt: "Mazu — Astondoa 80" }],
     heroImage: hero("mazu"),
+    cardImage: card("mazu"),
     pdfUrl: null,
     featured: false,
     sortOrder: 10,
@@ -703,6 +710,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("sensation"), alt: "Sensation — Pershing 72" }],
     heroImage: hero("sensation"),
+    cardImage: card("sensation"),
     pdfUrl: null,
     featured: false,
     sortOrder: 13,
@@ -1053,6 +1061,7 @@ export const boats: Boat[] = [
     ],
     gallery: [{ src: hero("manbero"), alt: "Manbero II — Princess V53" }],
     heroImage: hero("manbero"),
+    cardImage: card("manbero"),
     pdfUrl: null,
     featured: false,
     sortOrder: 20,

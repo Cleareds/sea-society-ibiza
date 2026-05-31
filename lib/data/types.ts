@@ -59,6 +59,10 @@ export interface Boat {
   specs: BoatSpec[];
   gallery: BoatGalleryImage[];
   heroImage: string;
+  /** Optional override for list/tile contexts (homepage featured grid,
+   *  /fleet card grid, related-boats block on detail pages). Falls back
+   *  to heroImage when absent. Detail-page banners always use heroImage. */
+  cardImage?: string;
   pdfUrl: string | null;
   featured: boolean;
   sortOrder: number;

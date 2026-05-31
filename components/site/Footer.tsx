@@ -51,7 +51,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
             </a>
           </div>
 
-          <div>
+          <nav aria-label={t("footer.explore")}>
             <h2 className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
               {t("footer.explore")}
             </h2>
@@ -82,7 +82,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
                 </Link>
               </li>
             </ul>
-          </div>
+          </nav>
 
           <div>
             <h2 className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
@@ -91,11 +91,11 @@ export function Footer({ settings, locale, t }: FooterProps) {
             <address className="mt-4 not-italic text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
               {settings.address}
             </address>
-            {/* min-height ensures these meet WCAG 2.5.5 (24×24 touch target). */}
+            {/* min-h-[44px] meets WCAG 2.5.5 AAA touch target (44×44). */}
             <p className="mt-3 text-sm">
               <a
                 href={`mailto:${settings.email}`}
-                className="inline-flex min-h-[28px] items-center hover:text-[var(--color-primary)]"
+                className="inline-flex min-h-[44px] items-center py-2 hover:text-[var(--color-primary)]"
               >
                 {settings.email}
               </a>
@@ -103,7 +103,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
             <p className="text-sm">
               <a
                 href={`tel:${settings.phone}`}
-                className="inline-flex min-h-[28px] items-center hover:text-[var(--color-primary)]"
+                className="inline-flex min-h-[44px] items-center py-2 hover:text-[var(--color-primary)]"
               >
                 {settings.phone}
               </a>
@@ -113,7 +113,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-[var(--color-outline-variant)]/40 pt-6 text-xs text-[var(--color-on-surface-variant)] md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Sea Society Ibiza. By Ibimar.</p>
-          <ul className="flex flex-wrap gap-4">
+          <ul className="flex flex-wrap gap-4" aria-label="Legal and tools">
             <li>
               <Link href={lp("/privacy")} className="hover:text-[var(--color-primary)]">
                 {t("footer.privacy")}

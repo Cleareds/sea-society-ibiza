@@ -303,6 +303,11 @@ export function HomeWater3DCanvas({
     renderer.setClearColor(0x06141a, 1);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     container.appendChild(renderer.domElement);
+    // a11y: the canvas is a decorative animated backdrop with no
+    // interactive content. Mark it hidden + role=presentation so
+    // screen readers don't announce an empty interactive region.
+    renderer.domElement.setAttribute("aria-hidden", "true");
+    renderer.domElement.setAttribute("role", "presentation");
     Object.assign(renderer.domElement.style, {
       position: "absolute",
       inset: "0",
@@ -447,6 +452,22 @@ export function HomeWater3DCanvas({
     let raf = 0;
     let lastFrame = performance.now();
     let time = 0;
+    // a11y: respect prefers-reduced-motion. When the user opts out of
+    // motion we render ONE static frame (water + first video frame)
+    // and never start the RAF loop — no Gerstner wave animation, no
+    // scroll-driven video seek, no vestibular harm risk. The static
+    // composite is still a beautiful frame.
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const renderStaticFrame = () => {
+      waterUniforms.uTime.value = 0;
+      renderer.setRenderTarget(waterFBO);
+      renderer.clear();
+      renderer.render(waterScene, waterCamera);
+      renderer.setRenderTarget(null);
+      renderer.render(compScene, compCamera);
+    };
     const tick = () => {
       raf = requestAnimationFrame(tick);
       if (!visible) {
@@ -483,7 +504,19 @@ export function HomeWater3DCanvas({
       // PASS 2 — composite
       renderer.render(compScene, compCamera);
     };
-    tick();
+    if (reducedMotion) {
+      // Render once now (texture may be black until video loads); render
+      // again the first time the video has frame data so the static
+      // composite shows the actual photo, not a black rectangle.
+      renderStaticFrame();
+      const onFirstFrame = () => {
+        renderStaticFrame();
+        video.removeEventListener("loadeddata", onFirstFrame);
+      };
+      video.addEventListener("loadeddata", onFirstFrame);
+    } else {
+      tick();
+    }
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
