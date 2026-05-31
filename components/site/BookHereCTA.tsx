@@ -72,32 +72,22 @@ export function BookHereCTA({
         className,
       )}
     >
-      {/* Sliding fill — translates from below on hover. Light tone
-          fills with white (text becomes deep ink); dark tone (already
-          turquoise-filled) fills with deep ink so the colour change
-          is the hover signal (text stays white throughout). */}
+      {/* Sliding fill — translates from below on hover. Both tones
+          fill with white so the hover state reads as an INVERSE pill:
+          white background, black text, black border (border colour
+          is constant via toneCls above; the bg-white slide-up reveals
+          it). Text + icon flip to black on hover via group-hover. */}
       <span
         aria-hidden
-        className={cn(
-          "absolute inset-0 -z-0 translate-y-full transition-transform duration-500 ease-out group-hover:translate-y-0",
-          tone === "light" ? "bg-white" : "bg-[var(--color-on-surface)]",
-        )}
+        className="absolute inset-0 -z-0 translate-y-full bg-white transition-transform duration-500 ease-out group-hover:translate-y-0"
       />
-      <span
-        className={cn(
-          "relative z-10 transition-colors duration-500",
-          tone === "light" ? "group-hover:text-[#000000]" : "",
-        )}
-      >
+      <span className="relative z-10 transition-colors duration-500 group-hover:text-[#000000]">
         {label}
         <span className="sr-only"> (opens WhatsApp in a new tab)</span>
       </span>
       <ArrowUpRight
         aria-hidden
-        className={cn(
-          "relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
-          tone === "light" ? "group-hover:text-[#000000]" : "",
-        )}
+        className="relative z-10 h-4 w-4 transition-all duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[#000000]"
       />
     </a>
   );
