@@ -5,9 +5,9 @@ import { Section } from "@/components/site/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-// (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { getPrivacyCopy } from "./copy";
 
 export const revalidate = 3600;
 
@@ -17,16 +17,16 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const lc = isLocale(locale) ? locale : "en";
+  const c = getPrivacyCopy(lc);
   return pageMetadata({
-    title: "Privacy policy",
-    description:
-      "How Sea Society Ibiza by Ibimar collects, uses and protects your data. GDPR-aligned template — to be reviewed by counsel before launch.",
+    title: c.metaTitle,
+    description: c.metaDescription,
     path: "/privacy",
-    locale: isLocale(locale) ? locale : "en",
+    locale: lc,
   });
 }
 
-// TODO: lawyer review before launch.
 export default async function PrivacyPage({
   params,
 }: {
@@ -37,6 +37,7 @@ export default async function PrivacyPage({
   const lc = locale as Locale;
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
+  const c = getPrivacyCopy(lc);
 
   return (
     <>
@@ -48,8 +49,8 @@ export default async function PrivacyPage({
       />
 
       <PageHero
-        eyebrow="Legal"
-        title="Privacy policy"
+        eyebrow={c.heroEyebrow}
+        title={c.heroTitle}
         imageSrc="/images/boats/inspiration-hero.webp"
         breadcrumbs={[
           { name: t("breadcrumb.home"), href: lp("/") },
@@ -58,79 +59,42 @@ export default async function PrivacyPage({
       />
 
       <Section>
-        <article className="prose-ssi mx-auto max-w-3xl space-y-8 leading-relaxed text-[var(--color-on-surface)]">
-          <p className="text-sm uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-            Last updated: 21 May 2026 · TODO: lawyer review
+        <article className="mx-auto max-w-3xl space-y-8 leading-relaxed text-[var(--color-on-surface)]">
+          <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+            {c.effectiveDate}
           </p>
 
-          <section>
-            <h2 className="font-serif text-3xl">1. Who we are</h2>
-            <p className="mt-3 text-[var(--color-on-surface-variant)]">
-              Sea Society Ibiza is a trading name of Ibimar, operating from Botafoc Marina, 07800
-              Ibiza, Spain. We are the data controller for personal data processed via
-              seasocietyibiza.com.
-            </p>
-          </section>
+          <div className="space-y-5 text-base text-[var(--color-on-surface-variant)] md:text-lg">
+            {c.intro.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </div>
 
-          <section>
-            <h2 className="font-serif text-3xl">2. What we collect</h2>
-            <ul className="mt-3 list-disc space-y-2 pl-6 text-[var(--color-on-surface-variant)]">
-              <li>
-                <strong>Enquiry form data</strong>: name, email, optional phone, dates, group size,
-                boat preference, message.
-              </li>
-              <li>
-                <strong>WhatsApp messages</strong>: the contents of any message you send us via
-                WhatsApp Business.
-              </li>
-              <li>
-                <strong>Cookies</strong>: only what you consent to via the cookie banner —
-                necessary, analytics (Google Analytics) and/or marketing (Meta Pixel).
-              </li>
-              <li>
-                <strong>Server logs</strong>: IP address and request metadata for security and
-                rate-limiting, retained 30 days.
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-3xl">3. Why we use it</h2>
-            <p className="mt-3 text-[var(--color-on-surface-variant)]">
-              To respond to your charter enquiry, deliver the charter you book, send a confirmation
-              email if you opt in, and (with your consent) measure site performance and ad
-              effectiveness.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-3xl">4. Your rights</h2>
-            <p className="mt-3 text-[var(--color-on-surface-variant)]">
-              You have the right to access, rectify or erase your personal data, and to withdraw
-              consent at any time. Email{" "}
-              <a className="underline" href="mailto:hello@seasocietyibiza.com">
-                hello@seasocietyibiza.com
-              </a>
-              .
-            </p>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-3xl">5. Sharing</h2>
-            <p className="mt-3 text-[var(--color-on-surface-variant)]">
-              We share enquiry data with the captain assigned to your charter. We do not sell
-              personal data. Sub-processors: Supabase (database), Resend (email), Google Analytics,
-              Meta Pixel — the last two only if you consent.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-3xl">6. Retention</h2>
-            <p className="mt-3 text-[var(--color-on-surface-variant)]">
-              Enquiries: up to 24 months after the season they relate to. Booking records: as
-              required by Spanish tax law (typically six years).
-            </p>
-          </section>
+          {c.sections.map((section) => (
+            <section key={section.heading} className="space-y-4">
+              <h2 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
+                {section.heading}
+              </h2>
+              {section.body.map((p, i) => (
+                <p
+                  key={i}
+                  className="text-sm leading-relaxed text-[var(--color-on-surface-variant)] md:text-base"
+                >
+                  {p}
+                </p>
+              ))}
+              {section.bullets && (
+                <ul className="ml-1 space-y-2 text-sm text-[var(--color-on-surface-variant)] md:text-base">
+                  {section.bullets.map((b) => (
+                    <li key={b} className="flex gap-3">
+                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#000000]" />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
         </article>
       </Section>
     </>
