@@ -6,7 +6,7 @@ export const settings: Settings = {
   instagramUrl: "https://www.instagram.com/seasociety.ibiza/",
   instagramHandle: "@seasociety.ibiza",
   email: "hello@seasocietyibiza.com",
-  phone: "+34 600 000 000",
+  phone: "+32 479 38 80 46",
   address: "Botafoc Marina, 07800 Ibiza, Balearic Islands, Spain",
   stats: [
     { label: "Luxury yachts", value: "19" },
