@@ -64,27 +64,6 @@ const aboutCopy = {
         bio: "Always tuned into the latest trends and platforms, Leentje helps shape the voice of Sea Society. As a content creator and marketer, she focuses on bringing the brand's experiences, energy and lifestyle to life through authentic storytelling. Her goal is to create content that helps people connect with the world behind Sea Society and feel part of the journey.",
       },
     ],
-    crewEyebrow: "The crew",
-    crewTitle: "The people who run your day.",
-    crewSub:
-      "Three names you will hear repeatedly across the planning, the charter, and the follow-up. Every booking flows through them.",
-    crew: [
-      {
-        name: "Capt. Marc Vidal",
-        role: "Fleet Captain · 18 years",
-        bio: "Born in Sant Antoni. Holds a 200-ton master licence. Knows every cove on the west coast by feel — and which ones to skip when the meltemi turns.",
-      },
-      {
-        name: "Sofia Reyes",
-        role: "Charter Director",
-        bio: "Runs the day-of operation: catering, water toys, dock timings, special requests. Came from a Mallorca-side superyacht background.",
-      },
-      {
-        name: "Tomeu Riera",
-        role: "Workshop & Maintenance Lead",
-        bio: "Twenty years at the dock with Ibimar. Every engine, prop and trim system in the fleet passes through his hands twice a year.",
-      },
-    ],
     welcomeTitle: "Welcome to Sea Society.",
     welcomeSub: "A community built around unforgettable moments at sea.",
   },
@@ -114,27 +93,6 @@ const aboutCopy = {
         image: "/sea-society/site/founders/leentje.webp",
         role: "Creadora de contenido, marketer y trend watcher.",
         bio: "Siempre atenta a las últimas tendencias y plataformas, Leentje ayuda a dar forma a la voz de Sea Society. Como creadora de contenido y marketer, se centra en dar vida a las experiencias, la energía y el estilo de vida de la marca a través de un storytelling auténtico. Su objetivo es crear contenido que ayude a la gente a conectar con el mundo detrás de Sea Society y sentirse parte del viaje.",
-      },
-    ],
-    crewEyebrow: "La tripulación",
-    crewTitle: "Las personas que organizan tu día.",
-    crewSub:
-      "Tres nombres que escucharás repetidamente a lo largo de la planificación, el charter y el seguimiento. Cada reserva pasa por ellos.",
-    crew: [
-      {
-        name: "Capt. Marc Vidal",
-        role: "Capitán de flota · 18 años",
-        bio: "Nacido en Sant Antoni. Tiene la licencia de capitán hasta 200 toneladas. Conoce cada cala de la costa oeste de memoria — y cuáles evitar cuando se levanta el meltemi.",
-      },
-      {
-        name: "Sofia Reyes",
-        role: "Directora de charter",
-        bio: "Lleva la operación del día: catering, juguetes acuáticos, horarios de atraque, peticiones especiales. Viene del mundo del superyate en Mallorca.",
-      },
-      {
-        name: "Tomeu Riera",
-        role: "Responsable de taller y mantenimiento",
-        bio: "Veinte años en el muelle con Ibimar. Cada motor, hélice y sistema de trim de la flota pasa por sus manos dos veces al año.",
       },
     ],
     welcomeTitle: "Bienvenido a Sea Society.",
@@ -209,43 +167,6 @@ export default async function AboutPage({
                     {f.bio}
                   </p>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-      </Section>
-
-      {/* The day-of crew — three names guests interact with most when
-          chartering a boat. Sits between the founders (who built the
-          platform) and the closing "Welcome to Sea Society" block. */}
-      <Section>
-        <Reveal>
-          <div className="mx-auto max-w-3xl">
-            <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-              {c.crewEyebrow}
-            </p>
-            <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              {c.crewTitle}
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-              {c.crewSub}
-            </p>
-          </div>
-          <ul className="mx-auto mt-10 grid max-w-5xl gap-6 md:grid-cols-3">
-            {c.crew.map((person) => (
-              <li
-                key={person.name}
-                className="rounded-2xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-6 md:p-8"
-              >
-                <h3 className="font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
-                  {person.name}
-                </h3>
-                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]">
-                  {person.role}
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-                  {person.bio}
-                </p>
               </li>
             ))}
           </ul>
