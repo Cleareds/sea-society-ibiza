@@ -41,7 +41,9 @@ export function Analytics() {
   // GA4 measurement ID is public (visible in the script URL); the env
   // var lets us override per-env, the fallback is production.
   const ga = process.env.NEXT_PUBLIC_GA_ID ?? "G-D9XJL0VGJL";
-  const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  // Meta Pixel ID is public (visible in network requests); env var
+  // overrides per-env, fallback is production.
+  const pixel = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "1518380376361088";
 
   return (
     <>
