@@ -254,6 +254,7 @@ export default async function AboutPage({
 
       <div className="pt-12 md:pt-20">
         <InstagramGrid
+          locale={lc}
           handle={settings.instagramHandle}
           href={settings.instagramUrl}
           tiles={settings.journeyImages}

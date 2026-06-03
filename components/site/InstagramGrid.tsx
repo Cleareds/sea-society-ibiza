@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { getMessages } from "@/lib/i18n/messages";
+import type { Locale } from "@/lib/i18n/config";
 
 /**
  * "Follow the journey" — full-bleed photo wall.
@@ -30,9 +32,12 @@ interface Props {
    *  empty/null — set this from the page using settings.journeyImages
    *  so the admin panel can swap them out. */
   tiles?: Array<{ src: string }>;
+  /** Current locale — drives the headline translation. Defaults to en. */
+  locale?: Locale;
 }
 
-export function InstagramGrid({ handle, href, tone = "light", accentClassName, tiles }: Props) {
+export function InstagramGrid({ handle, href, tone = "light", accentClassName, tiles, locale = "en" }: Props) {
+  const t = getMessages(locale);
   const renderTiles =
     tiles && tiles.length > 0 ? tiles.slice(0, 18) : DEFAULT_TILES;
   const accentCls = `brand-accent ${accentClassName ?? ""}`.trim();
@@ -48,7 +53,7 @@ export function InstagramGrid({ handle, href, tone = "light", accentClassName, t
     <section aria-labelledby="ig-h" className="w-full">
       <div className="mx-auto mb-8 flex w-full max-w-(--spacing-container-max) flex-col items-baseline justify-between gap-2 px-5 md:flex-row md:px-10">
         <h2 id="ig-h" className={headlineCls}>
-          <span className={accentCls}>Follow</span> our society
+          <span className={accentCls}>{t("home.instagram.titleAccent")}</span>{t("home.instagram.titleRest")}
         </h2>
         <a
           href={href}
@@ -71,7 +76,7 @@ export function InstagramGrid({ handle, href, tone = "light", accentClassName, t
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Follow ${handle} on Instagram (opens in a new tab)`}
+              aria-label={`${t("home.instagram.titleAccent")} ${handle} on Instagram (opens in a new tab)`}
               className="block h-full w-full"
             >
               <Image

@@ -54,7 +54,9 @@
       "all": "All destinations →"
     },
     "instagram": {
-      "title": "Follow the journey"
+      "title": "Follow the journey",
+      "titleAccent": "Follow",
+      "titleRest": " our society"
     },
     "enquiry": {
       "eyebrow": "Your charter starts with a message.",

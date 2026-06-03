@@ -26,6 +26,7 @@ export interface HeaderLabels {
   contact: string;
   menu: string;
   openMenu: string;
+  bookHere: string;
 }
 
 interface HeaderProps {
@@ -152,7 +153,7 @@ export function Header({ transparentOnHero = false, locale, labels, whatsappNumb
                     : "group-hover:text-[#000000]",
                 )}
               >
-                Book here
+                {labels.bookHere}
               </span>
               <ArrowUpRight
                 aria-hidden

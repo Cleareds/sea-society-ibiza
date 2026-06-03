@@ -184,6 +184,7 @@ export default async function HomePage({
         instagramHref={settings.instagramUrl}
         instagramSlot={
           <InstagramGrid
+            locale={lc}
             handle={settings.instagramHandle}
             href={settings.instagramUrl}
             tiles={settings.journeyImages}

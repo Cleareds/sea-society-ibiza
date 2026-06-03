@@ -54,7 +54,9 @@
       "all": "Ver todos los destinos →"
     },
     "instagram": {
-      "title": "Sigue el viaje"
+      "title": "Sigue el viaje",
+      "titleAccent": "Sigue",
+      "titleRest": " a nuestra sociedad"
     },
     "enquiry": {
       "eyebrow": "Tu charter empieza con un mensaje.",

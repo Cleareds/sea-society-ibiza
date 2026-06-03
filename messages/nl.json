@@ -54,7 +54,9 @@
       "all": "Alle bestemmingen →"
     },
     "instagram": {
-      "title": "Volg de reis"
+      "title": "Volg de reis",
+      "titleAccent": "Volg",
+      "titleRest": " onze society"
     },
     "enquiry": {
       "eyebrow": "Uw charter begint met een bericht.",

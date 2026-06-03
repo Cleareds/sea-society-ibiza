@@ -15,6 +15,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { getFaqs, getSettings } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
+import { getContactCopy } from "./copy";
 
 export const revalidate = 3600;
 
@@ -24,12 +25,13 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const lc = isLocale(locale) ? locale : "en";
+  const c = getContactCopy(lc);
   return pageMetadata({
-    title: "Contact & FAQ",
-    description:
-      "Frequently asked questions about Sea Society Ibiza charters — pricing, what's included, departure, weather policy. Send us a WhatsApp to book.",
+    title: c.metaTitle,
+    description: c.metaDescription,
     path: "/contact",
-    locale: isLocale(locale) ? locale : "en",
+    locale: lc,
   });
 }
 
@@ -43,6 +45,7 @@ export default async function ContactPage({
   const lc = locale as Locale;
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
+  const c = getContactCopy(lc);
 
   const [faqs, settings] = await Promise.all([getFaqs(), getSettings()]);
 
@@ -61,7 +64,7 @@ export default async function ContactPage({
       <PageHero
         title={
           <>
-            Have a <span className="brand-accent">question</span>?
+            {c.heroBefore}<span className="brand-accent">{c.heroAccent}</span>{c.heroAfter}
           </>
         }
         imageSrc="/sea-society/site/contact-hero.webp"
@@ -76,15 +79,13 @@ export default async function ContactPage({
           {/* FAQs (main column) */}
           <div className="lg:col-span-8">
             <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-              FAQ
+              {c.faqEyebrow}
             </p>
             <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
-              Frequently asked.
+              {c.faqTitle}
             </h2>
             <p className="mt-4 max-w-xl text-[var(--color-on-surface-variant)]">
-              Most enquiries cover the same handful of things — pricing,
-              what is included, where we depart from, what happens if the
-              weather turns. Everything is below.
+              {c.faqIntro}
             </p>
 
             <Accordion type="single" collapsible className="mt-10 w-full">
@@ -105,21 +106,20 @@ export default async function ContactPage({
           <aside className="lg:col-span-4">
             <div className="sticky top-28 rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface-container-low)] p-6 md:p-8">
               <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-primary)]">
-                Contact
+                {c.sidebarEyebrow}
               </p>
               <h3 className="mt-3 font-serif text-2xl text-[var(--color-on-surface)] md:text-3xl">
-                Ready to <span className="brand-accent">book</span>?
+                {c.sidebarHeadingBefore}<span className="brand-accent">{c.sidebarHeadingAccent}</span>{c.sidebarHeadingAfter}
               </h3>
               <p className="mt-4 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-                Send us a WhatsApp with your dates and group size. We
-                respond within a few hours from Botafoc Marina.
+                {c.sidebarBody}
               </p>
               <div className="mt-6">
                 <BookHereCTA
                   number={settings.whatsappNumber}
                   tone="dark"
                   size="lg"
-                  label="Book via WhatsApp"
+                  label={t("cta.bookWhatsApp")}
                   placement="contact_sidebar"
                 />
               </div>

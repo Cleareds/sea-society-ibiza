@@ -39,6 +39,7 @@ export default async function SiteLayout({
     contact: t("nav.contact"),
     menu: t("nav.menu"),
     openMenu: t("nav.openMenu"),
+    bookHere: t("cta.bookHere"),
   };
   const cookieLabels: CookieLabels = {
     title: t("cookies.title"),
