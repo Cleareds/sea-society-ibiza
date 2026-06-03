@@ -41,7 +41,7 @@
     "featured": {
       "eyebrow": "Kies uw boot",
       "title": "Uitgelichte vloot",
-      "all": "Alle {count} boten →"
+      "all": "Alle {count} jachten →"
     },
     "experiences": {
       "eyebrow": "Voor elk soort dag",
@@ -66,10 +66,10 @@
   },
   "fleet": {
     "title": "De vloot",
-    "subtitle": "{count} boten gebaseerd in Marina Botafoc. Filter de juiste — of beschrijf uw dag en wij kiezen er een voor u.",
-    "boatsMatchSingular": "{count} boot komt overeen",
-    "boatsMatchPlural": "{count} boten komen overeen",
-    "noResults": "Geen enkele boot komt overeen met die filters.",
+    "subtitle": "{count} jachten gebaseerd in Marina Botafoc. Filter het juiste — of beschrijf uw dag en wij kiezen er een voor u.",
+    "boatsMatchSingular": "{count} jacht komt overeen",
+    "boatsMatchPlural": "{count} jachten komen overeen",
+    "noResults": "Geen enkel jacht komt overeen met die filters.",
     "noResultsHint": "Reset de filters of stuur ons een bericht — we stellen iets voor uit de bredere vloot.",
     "reset": "Filters resetten",
     "filters": {
@@ -82,15 +82,16 @@
       "motor": "Motor",
       "sailing": "Zeilen",
       "catamaran": "Catamaran",
-      "dayBoat": "Dagboot",
+      "dayBoat": "Dagjacht",
       "sport": "Sport",
       "guestsOrMore": "{n} of meer",
       "upToPerDay": "Tot € {amount} / dag",
       "clearAll": "Alles wissen",
-      "showSingular": "Toon {count} boot",
-      "showPlural": "Toon {count} boten"
+      "showSingular": "Toon {count} jacht",
+      "showPlural": "Toon {count} jachten"
     },
-    "fromPrice": "Vanaf € {amount}"
+    "fromPrice": "Vanaf € {amount}",
+    "highSeasonNote": "Hoogseizoen: 20 juni – 31 augustus"
   },
   "boat": {
     "checkAvailability": "Beschikbaarheid checken",
@@ -98,8 +99,8 @@
     "confirmWithin": "We bevestigen de beschikbaarheid van de {name} binnen enkele uren.",
     "whatsIncluded": "Wat is inbegrepen",
     "specifications": "Specificaties",
-    "similar": "Vergelijkbare boten",
-    "allBoats": "Alle {count} boten →",
+    "similar": "Vergelijkbare jachten",
+    "allBoats": "Alle {count} jachten →",
     "orWhatsApp": "Of stuur ons direct een WhatsApp"
   },
   "form": {

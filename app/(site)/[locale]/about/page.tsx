@@ -45,7 +45,7 @@ const aboutCopy = {
   en: {
     heroTitle: "Meet the Founders",
     paragraphs: [
-      "Sea Society was born from a shared passion for unforgettable experiences, meaningful connections and the magic of life on the water.",
+      "Sea Society started from a shared passion for unforgettable experiences, meaningful connections and the magic of life on the water.",
       "Behind the platform are three Belgian women who believe that chartering a yacht should be about much more than simply booking a boat. Together with our trusted partner Ibimar, we curate experiences that turn a day at sea into a story worth telling.",
       "Whether you're looking for the perfect proposal setup, a wellness morning, a private chef experience or simply advice on the best hidden spots around Ibiza, we're here to help.",
       "We personally oversee the Sea Society platform, its marketing, collaborations and community, and we're always just a message away for any questions about the experiences featured on our website.",
@@ -54,7 +54,7 @@ const aboutCopy = {
       {
         name: "Lauren",
         image: "/sea-society/site/founders/lauren.webp",
-        role: "Photographer, marketer & content creator.",
+        role: "Photographer, marketeer & content creator.",
         bio: "Lauren is the visual storyteller behind Sea Society. Always chasing the perfect light, authentic moments and inspiring destinations, she brings the Sea Society lifestyle to life through photography and content. If you've fallen in love with an image on our website or Instagram, chances are Lauren was behind the camera.",
       },
       {
@@ -66,8 +66,8 @@ const aboutCopy = {
       {
         name: "Leentje",
         image: "/sea-society/site/founders/leentje.webp",
-        role: "Content creator, marketer & trend watcher.",
-        bio: "Always tuned into the latest trends and platforms, Leentje helps shape the voice of Sea Society. As a content creator and marketer, she focuses on bringing the brand's experiences, energy and lifestyle to life through authentic storytelling. Her goal is to create content that helps people connect with the world behind Sea Society and feel part of the journey.",
+        role: "Content creator, marketeer & trend watcher.",
+        bio: "Always tuned into the latest trends and platforms, Leentje helps shape the voice of Sea Society. As a content creator and marketeer, she focuses on bringing the brand's experiences, energy and lifestyle to life through authentic storytelling. Her goal is to create content that helps people connect with the world behind Sea Society and feel part of the journey.",
       },
     ],
     welcomeTitle: "Welcome to Sea Society.",
@@ -85,7 +85,7 @@ const aboutCopy = {
       {
         name: "Lauren",
         image: "/sea-society/site/founders/lauren.webp",
-        role: "Fotógrafa, marketer y creadora de contenido.",
+        role: "Fotógrafa, marketeer y creadora de contenido.",
         bio: "Lauren es la narradora visual detrás de Sea Society. Siempre persiguiendo la luz perfecta, momentos auténticos y destinos inspiradores, da vida al estilo Sea Society a través de la fotografía y el contenido. Si te has enamorado de alguna imagen en nuestra web o Instagram, lo más probable es que Lauren estuviera detrás de la cámara.",
       },
       {
@@ -97,8 +97,8 @@ const aboutCopy = {
       {
         name: "Leentje",
         image: "/sea-society/site/founders/leentje.webp",
-        role: "Creadora de contenido, marketer y trend watcher.",
-        bio: "Siempre atenta a las últimas tendencias y plataformas, Leentje ayuda a dar forma a la voz de Sea Society. Como creadora de contenido y marketer, se centra en dar vida a las experiencias, la energía y el estilo de vida de la marca a través de un storytelling auténtico. Su objetivo es crear contenido que ayude a la gente a conectar con el mundo detrás de Sea Society y sentirse parte del viaje.",
+        role: "Creadora de contenido, marketeer y trend watcher.",
+        bio: "Siempre atenta a las últimas tendencias y plataformas, Leentje ayuda a dar forma a la voz de Sea Society. Como creadora de contenido y marketeer, se centra en dar vida a las experiencias, la energía y el estilo de vida de la marca a través de un storytelling auténtico. Su objetivo es crear contenido que ayude a la gente a conectar con el mundo detrás de Sea Society y sentirse parte del viaje.",
       },
     ],
     welcomeTitle: "Bienvenido a Sea Society.",

@@ -11,9 +11,10 @@ export interface WhatsappLinkOptions {
   page?: string;
 }
 
-const GENERIC = "Hi Sea Society, I'd like to enquire about a charter.";
+const GENERIC =
+  "Hi Sea Society, I'd like to enquire about a charter.\nNumber of guests: \nDate(s): \nYacht type or budget: ";
 const perBoat = (name: string) =>
-  `Hi Sea Society, I'm interested in the ${name}. Could you tell me more about availability?`;
+  `Hi Sea Society, I'm interested in the ${name}. Could you tell me more about availability?\nNumber of guests: \nDate(s): `;
 
 export function whatsappLink({ number, message, boatName, page }: WhatsappLinkOptions): string {
   const e164 = number.replace(/\D/g, "").replace(/^0+/, "");

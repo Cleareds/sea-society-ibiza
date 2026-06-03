@@ -41,7 +41,7 @@
     "featured": {
       "eyebrow": "Choisissez votre bateau",
       "title": "Flotte à la une",
-      "all": "Tous les {count} bateaux →"
+      "all": "Tous les {count} yachts →"
     },
     "experiences": {
       "eyebrow": "Pour chaque type de journée",
@@ -66,10 +66,10 @@
   },
   "fleet": {
     "title": "La flotte",
-    "subtitle": "{count} bateaux basés à Marina Botafoc. Filtrez celui qu'il vous faut — ou racontez-nous votre journée et nous choisirons pour vous.",
-    "boatsMatchSingular": "{count} bateau correspond",
-    "boatsMatchPlural": "{count} bateaux correspondent",
-    "noResults": "Aucun bateau ne correspond à ces filtres.",
+    "subtitle": "{count} yachts basés à Marina Botafoc. Filtrez celui qu'il vous faut — ou racontez-nous votre journée et nous choisirons pour vous.",
+    "boatsMatchSingular": "{count} yacht correspond",
+    "boatsMatchPlural": "{count} yachts correspondent",
+    "noResults": "Aucun yacht ne correspond à ces filtres.",
     "noResultsHint": "Réinitialisez les filtres ou écrivez-nous — nous proposerons quelque chose dans la flotte élargie.",
     "reset": "Réinitialiser les filtres",
     "filters": {
@@ -82,15 +82,16 @@
       "motor": "Moteur",
       "sailing": "Voilier",
       "catamaran": "Catamaran",
-      "dayBoat": "Bateau de jour",
+      "dayBoat": "Yacht de jour",
       "sport": "Sport",
       "guestsOrMore": "{n} ou plus",
       "upToPerDay": "Jusqu'à {amount} € / jour",
       "clearAll": "Tout effacer",
-      "showSingular": "Voir {count} bateau",
-      "showPlural": "Voir {count} bateaux"
+      "showSingular": "Voir {count} yacht",
+      "showPlural": "Voir {count} yachts"
     },
-    "fromPrice": "À partir de {amount} €"
+    "fromPrice": "À partir de {amount} €",
+    "highSeasonNote": "Haute saison : 20 juin – 31 août"
   },
   "boat": {
     "checkAvailability": "Vérifier la disponibilité",
@@ -98,8 +99,8 @@
     "confirmWithin": "Nous confirmons la disponibilité du {name} en quelques heures.",
     "whatsIncluded": "Ce qui est inclus",
     "specifications": "Caractéristiques",
-    "similar": "Bateaux similaires",
-    "allBoats": "Tous les {count} bateaux →",
+    "similar": "Yachts similaires",
+    "allBoats": "Tous les {count} yachts →",
     "orWhatsApp": "Ou écrivez-nous directement sur WhatsApp"
   },
   "form": {

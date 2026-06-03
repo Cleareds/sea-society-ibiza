@@ -41,7 +41,7 @@
     "featured": {
       "eyebrow": "Descubre tu barco",
       "title": "Flota destacada",
-      "all": "Ver los {count} barcos →"
+      "all": "Ver los {count} yates →"
     },
     "experiences": {
       "eyebrow": "Para cada tipo de día",
@@ -66,10 +66,10 @@
   },
   "fleet": {
     "title": "La flota",
-    "subtitle": "{count} barcos con base en Marina Botafoc. Filtra el adecuado — o cuéntanos cómo quieres que sea tu día y te elegimos uno.",
-    "boatsMatchSingular": "{count} barco coincide",
-    "boatsMatchPlural": "{count} barcos coinciden",
-    "noResults": "Ningún barco coincide con esos filtros.",
+    "subtitle": "{count} yates con base en Marina Botafoc. Filtra el adecuado — o cuéntanos cómo quieres que sea tu día y te elegimos uno.",
+    "boatsMatchSingular": "{count} yate coincide",
+    "boatsMatchPlural": "{count} yates coinciden",
+    "noResults": "Ningún yate coincide con esos filtros.",
     "noResultsHint": "Reinicia los filtros o escríbenos — te sugeriremos algo dentro de la flota más amplia.",
     "reset": "Reiniciar filtros",
     "filters": {
@@ -82,15 +82,16 @@
       "motor": "Motor",
       "sailing": "Vela",
       "catamaran": "Catamarán",
-      "dayBoat": "Embarcación de día",
+      "dayBoat": "Yate de día",
       "sport": "Sport",
       "guestsOrMore": "{n} o más",
       "upToPerDay": "Hasta €{amount} / día",
       "clearAll": "Borrar todo",
-      "showSingular": "Mostrar {count} barco",
-      "showPlural": "Mostrar {count} barcos"
+      "showSingular": "Mostrar {count} yate",
+      "showPlural": "Mostrar {count} yates"
     },
-    "fromPrice": "Desde €{amount}"
+    "fromPrice": "Desde €{amount}",
+    "highSeasonNote": "Temporada alta: 20 jun – 31 ago"
   },
   "boat": {
     "checkAvailability": "Consultar disponibilidad",
@@ -98,8 +99,8 @@
     "confirmWithin": "Confirmamos la disponibilidad de {name} en pocas horas.",
     "whatsIncluded": "Qué incluye",
     "specifications": "Especificaciones",
-    "similar": "Barcos similares",
-    "allBoats": "Ver los {count} barcos →",
+    "similar": "Yates similares",
+    "allBoats": "Ver los {count} yates →",
     "orWhatsApp": "O escríbenos directamente por WhatsApp"
   },
   "form": {

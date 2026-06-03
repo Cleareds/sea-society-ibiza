@@ -23,6 +23,32 @@ function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      {...props}
+    >
+      <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+    </svg>
+  );
+}
+
+function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+      {...props}
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V9.05a8.16 8.16 0 0 0 4.83 1.55v-3.45a4.74 4.74 0 0 1-1.9-.46z" />
+    </svg>
+  );
+}
+
 interface FooterProps {
   settings: Settings;
   locale: Locale;
@@ -40,15 +66,42 @@ export function Footer({ settings, locale, t }: FooterProps) {
             <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
               {t("footer.summary")}
             </p>
-            <a
-              href={settings.instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 text-sm text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
-            >
-              <InstagramIcon className="h-4 w-4" />
-              {settings.instagramHandle}
-            </a>
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+              <a
+                href={settings.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                aria-label="Sea Society on Instagram"
+              >
+                <InstagramIcon className="h-4 w-4" />
+                {settings.instagramHandle}
+              </a>
+              {settings.facebookUrl && (
+                <a
+                  href={settings.facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                  aria-label="Sea Society on Facebook"
+                >
+                  <FacebookIcon className="h-4 w-4" />
+                  Facebook
+                </a>
+              )}
+              {settings.tiktokUrl && (
+                <a
+                  href={settings.tiktokUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                  aria-label="Sea Society on TikTok"
+                >
+                  <TikTokIcon className="h-4 w-4" />
+                  TikTok
+                </a>
+              )}
+            </div>
           </div>
 
           <nav aria-label={t("footer.explore")}>

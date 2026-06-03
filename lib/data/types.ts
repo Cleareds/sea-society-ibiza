@@ -136,6 +136,10 @@ export interface Settings {
   whatsappDefaultMessage: string;
   instagramUrl: string;
   instagramHandle: string;
+  /** Optional Facebook page URL — rendered in footer when present. */
+  facebookUrl?: string;
+  /** Optional TikTok profile URL — rendered in footer when present. */
+  tiktokUrl?: string;
   email: string;
   phone: string;
   address: string;

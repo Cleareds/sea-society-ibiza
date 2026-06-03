@@ -2,9 +2,12 @@ import type { Settings } from "../types";
 
 export const settings: Settings = {
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+32 479 38 80 46",
-  whatsappDefaultMessage: "Hi Sea Society, I'd like to enquire about a charter.",
+  whatsappDefaultMessage:
+    "Hi Sea Society, I'd like to enquire about a charter.\nNumber of guests: \nDate(s): \nYacht type or budget: ",
   instagramUrl: "https://www.instagram.com/seasociety.ibiza/",
   instagramHandle: "@seasociety.ibiza",
+  facebookUrl: "https://www.facebook.com/profile.php?id=61590214507668",
+  tiktokUrl: "https://www.tiktok.com/@sea.society.ibiza",
   email: "hello@seasocietyibiza.com",
   phone: "+32 479 38 80 46",
   address: "Botafoc Marina, 07800 Ibiza, Balearic Islands, Spain",

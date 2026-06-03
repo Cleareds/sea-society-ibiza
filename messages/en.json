@@ -41,7 +41,7 @@
     "featured": {
       "eyebrow": "Discover your vessel",
       "title": "Featured fleet",
-      "all": "All {count} boats →"
+      "all": "All {count} yachts →"
     },
     "experiences": {
       "eyebrow": "For every kind of day",
@@ -66,10 +66,10 @@
   },
   "fleet": {
     "title": "The fleet",
-    "subtitle": "{count} boats based at Botafoc Marina. Filter to the right one — or send us the shape of your day and we will choose for you.",
-    "boatsMatchSingular": "{count} boat matches",
-    "boatsMatchPlural": "{count} boats match",
-    "noResults": "No boats match those filters.",
+    "subtitle": "{count} yachts based at Botafoc Marina. Filter to the right one — or share your plan for the day and we will choose for you.",
+    "boatsMatchSingular": "{count} yacht matches",
+    "boatsMatchPlural": "{count} yachts match",
+    "noResults": "No yachts match those filters.",
     "noResultsHint": "Reset the filters or send us a message — we will suggest something from the wider fleet.",
     "reset": "Reset filters",
     "filters": {
@@ -82,15 +82,16 @@
       "motor": "Motor",
       "sailing": "Sailing",
       "catamaran": "Catamaran",
-      "dayBoat": "Day boat",
+      "dayBoat": "Day yacht",
       "sport": "Sport",
       "guestsOrMore": "{n} or more",
       "upToPerDay": "Up to €{amount} / day",
       "clearAll": "Clear all",
-      "showSingular": "Show {count} boat",
-      "showPlural": "Show {count} boats"
+      "showSingular": "Show {count} yacht",
+      "showPlural": "Show {count} yachts"
     },
-    "fromPrice": "From €{amount}"
+    "fromPrice": "From €{amount}",
+    "highSeasonNote": "High season: 20 June – 31 August"
   },
   "boat": {
     "checkAvailability": "Check availability",
@@ -98,8 +99,8 @@
     "confirmWithin": "We confirm availability for the {name} within a few hours.",
     "whatsIncluded": "What's included",
     "specifications": "Specifications",
-    "similar": "Similar boats",
-    "allBoats": "All {count} boats →",
+    "similar": "Similar yachts",
+    "allBoats": "All {count} yachts →",
     "orWhatsApp": "Or WhatsApp us directly"
   },
   "form": {

@@ -246,6 +246,9 @@ export default async function BoatDetailPage({
                       €{eurFmt.format(boat.priceHigh)}
                     </p>
                     <p className="mt-1 text-xs text-[var(--color-on-surface-variant)]">Day + VAT</p>
+                    <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-[var(--color-primary)]">
+                      {t("fleet.highSeasonNote")}
+                    </p>
                   </div>
                 </div>
                 <p className="mt-3 text-xs text-[var(--color-on-surface-variant)]">
