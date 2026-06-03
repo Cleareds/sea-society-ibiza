@@ -4,13 +4,14 @@ import { logout } from "./actions";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { Logo } from "@/components/site/Logo";
 
+// Enquiries + FAQs intentionally omitted from the nav per the launch
+// plan. The routes still exist under /admin/enquiries and /admin/faqs
+// and can be re-enabled by re-adding their entries here.
 const nav = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/boats", label: "Boats" },
-  { href: "/admin/enquiries", label: "Enquiries" },
+  { href: "/admin/boats", label: "Yachts" },
   { href: "/admin/experiences", label: "Experiences" },
   { href: "/admin/destinations", label: "Destinations" },
-  { href: "/admin/faqs", label: "FAQs" },
   { href: "/admin/journey", label: "Journey tiles" },
   { href: "/admin/integrations", label: "Integrations" },
   { href: "/admin/settings", label: "Settings" },

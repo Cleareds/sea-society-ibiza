@@ -6,6 +6,7 @@ import { Check, Ruler, Users, BedDouble, Gauge, Calendar, Cog, Bath, Anchor } fr
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
 import { BoatHeroVideo } from "@/components/site/BoatHeroVideo";
+import { Gallery } from "@/components/site/Gallery";
 import { boatVideoForSlug } from "@/lib/boat-videos";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { BookHereCTA } from "@/components/site/BookHereCTA";
@@ -182,6 +183,12 @@ export default async function BoatDetailPage({
             })}
           </div>
         </section>
+      )}
+
+      {boat.gallery.length > 0 && (
+        <Section bleed className="bg-[var(--color-surface-container-low)]">
+          <Gallery images={boat.gallery} boatName={boat.name} />
+        </Section>
       )}
 
       <Section>
