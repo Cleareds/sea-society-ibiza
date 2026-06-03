@@ -185,15 +185,14 @@ export default async function BoatDetailPage({
         </section>
       )}
 
-      {boat.gallery.length > 0 && (
-        <Section bleed className="bg-[var(--color-surface-container-low)]">
-          <Gallery images={boat.gallery} boatName={boat.name} />
-        </Section>
-      )}
-
       <Section>
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-8">
+            {boat.gallery.length > 0 && (
+              <div className="mb-10">
+                <Gallery images={boat.gallery} boatName={boat.name} />
+              </div>
+            )}
             <p className="font-serif text-2xl leading-relaxed text-[var(--color-on-surface)] md:text-3xl">
               {boat.description}
             </p>

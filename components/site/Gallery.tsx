@@ -44,48 +44,46 @@ export function Gallery({ images, boatName }: Props) {
   }, [open, prev, next]);
 
   if (images.length === 0) return null;
-  const first = images[0]!;
-  const rest = images.slice(1, 4);
+
+  // Compact single-row thumbnail strip — 4 cols mobile, 6 on tablet,
+  // 8 on desktop. Clicking any tile opens the lightbox at that index;
+  // the lightbox is where the large viewing experience lives. Keeps
+  // the gallery to a couple hundred px of vertical space at most so
+  // the booking aside on the right stays visible alongside it.
+  const visible = images.slice(0, 8);
+  const overflow = Math.max(0, images.length - visible.length);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <DialogTrigger asChild>
-          <button
-            type="button"
-            onClick={() => openAt(0)}
-            className="relative col-span-3 aspect-[16/10] overflow-hidden rounded-2xl focus-visible:outline-offset-4"
-            aria-label={`Open gallery — ${boatName}, image 1 of ${images.length}`}
-          >
-            <Image
-              src={first.src}
-              alt={first.alt || `${boatName} — main image`}
-              fill
-              priority
-              sizes="(min-width: 1024px) 65vw, 100vw"
-              className="object-cover transition-transform duration-700 hover:scale-[1.02]"
-            />
-          </button>
-        </DialogTrigger>
-        {rest.map((img, i) => (
-          <DialogTrigger key={img.src + i} asChild>
-            <button
-              type="button"
-              onClick={() => openAt(i + 1)}
-              className="relative aspect-square overflow-hidden rounded-xl focus-visible:outline-offset-4"
-              aria-label={`Open gallery — ${boatName}, image ${i + 2} of ${images.length}`}
-            >
-              <Image
-                src={img.src}
-                alt={img.alt || `${boatName} — image ${i + 2}`}
-                fill
-                sizes="(min-width: 1024px) 22vw, 33vw"
-                loading="lazy"
-                className="object-cover transition-transform duration-700 hover:scale-[1.02]"
-              />
-            </button>
-          </DialogTrigger>
-        ))}
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 sm:gap-3 lg:grid-cols-8">
+        {visible.map((img, i) => {
+          const isLastVisible = i === visible.length - 1;
+          const showOverflow = overflow > 0 && isLastVisible;
+          return (
+            <DialogTrigger key={img.src + i} asChild>
+              <button
+                type="button"
+                onClick={() => openAt(i)}
+                className="relative aspect-square overflow-hidden rounded-xl focus-visible:outline-offset-4"
+                aria-label={`Open gallery — ${boatName}, image ${i + 1} of ${images.length}`}
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt || `${boatName} — image ${i + 1}`}
+                  fill
+                  sizes="(min-width: 1024px) 11vw, (min-width: 640px) 16vw, 24vw"
+                  loading={i < 4 ? "eager" : "lazy"}
+                  className="object-cover transition-transform duration-700 hover:scale-[1.04]"
+                />
+                {showOverflow && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-sm font-medium tracking-[0.1em] text-white">
+                    +{overflow}
+                  </span>
+                )}
+              </button>
+            </DialogTrigger>
+          );
+        })}
       </div>
 
       <DialogContent className="max-w-5xl border-none bg-[var(--color-on-surface)]/95 p-0 sm:rounded-3xl">
