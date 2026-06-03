@@ -226,6 +226,219 @@ const es: TermsCopy = {
   ],
 };
 
+const fr: TermsCopy = {
+  metaTitle: "Conditions d'utilisation — Sea Society Ibiza",
+  metaDescription:
+    "Conditions régissant l'utilisation de seasocietyibiza.com — un site marketing de Sea Society Ibiza (opérée par Ibimar). Aucune réservation n'est conclue sur le site ; les contrats de charter sont gérés séparément.",
+  heroEyebrow: "Mentions légales",
+  heroTitle: "Conditions d'utilisation",
+  effectiveDate: "En vigueur depuis le 1er juin 2026",
+  intro: [
+    "Les présentes Conditions d'utilisation (« Conditions ») régissent votre utilisation de seasocietyibiza.com (« le site »), un site web marketing exploité par Sea Society Ibiza, nom commercial d'Ibimar Charter S.L. (« Sea Society », « nous »). En utilisant le site, vous acceptez ces Conditions.",
+    "Le site est informatif. Aucune réservation, aucun contrat ni aucun paiement ne sont conclus sur le site. Si vous décidez d'affréter un bateau avec nous, ce contrat est géré séparément par Ibimar Charter S.L. selon ses propres conditions.",
+  ],
+  sections: [
+    {
+      heading: "1. À propos du site",
+      body: [
+        "Seasocietyibiza.com présente la flotte, les expériences et les destinations Sea Society et permet aux visiteurs de nous contacter via le formulaire ou WhatsApp. Toute information affichée — prix, disponibilités, caractéristiques des navires, itinéraires — est indicative et reste soumise à confirmation écrite dans le cadre d'un contrat de charter distinct.",
+      ],
+    },
+    {
+      heading: "2. Utilisation autorisée",
+      body: [
+        "Vous pouvez consulter et partager le site à des fins personnelles et non commerciales.",
+      ],
+      bullets: [
+        "N'essayez pas d'accéder à des zones non publiques, à des endpoints d'administration ou aux données d'autres utilisateurs.",
+        "Ne réalisez pas de scraping, de mirroring, de framing ni de copie systématique du site.",
+        "N'introduisez pas de logiciels malveillants, n'effectuez pas de requêtes automatisées à un rythme affectant la disponibilité, et n'abusez pas de l'infrastructure.",
+        "N'utilisez pas le site ni notre marque pour tromper, simuler une affiliation ou à des fins illégales.",
+      ],
+    },
+    {
+      heading: "3. Les demandes ne sont pas des contrats",
+      body: [
+        "L'envoi d'une demande via le formulaire, WhatsApp ou email est une demande d'information. En soi, elle ne crée aucun contrat de service. Un contrat de charter n'existe qu'une fois que Sea Society / Ibimar Charter S.L. et vous-même avez accordé séparément des conditions par écrit.",
+        "Les informations que vous nous envoyez via le site sont traitées conformément à notre Politique de confidentialité.",
+      ],
+    },
+    {
+      heading: "4. Exactitude des informations",
+      body: [
+        "Nous mettons en œuvre des efforts raisonnables pour que les prix, disponibilités, caractéristiques des navires et itinéraires restent exacts, mais les informations du site peuvent évoluer sans préavis et peuvent contenir des erreurs. Le site ne constitue pas une offre contraignante.",
+        "Les photographies, vidéos et autres visuels sont illustratifs et peuvent ne pas refléter exactement le navire, la configuration ou les conditions de mer que vous rencontrerez.",
+      ],
+    },
+    {
+      heading: "5. Propriété intellectuelle",
+      body: [
+        "Le site, son design, ses textes, ses photographies, ses vidéos, ses logos et ses marques appartiennent à Sea Society / Ibimar Charter S.L. ou nous sont concédés sous licence. Ils sont protégés par la législation sur la propriété intellectuelle.",
+        "Vous ne pouvez ni les reproduire, ni les distribuer, ni les modifier, ni les afficher publiquement, ni les utiliser à des fins commerciales sans notre consentement écrit préalable. Partager un lien vers le site ou une page précise est bienvenu.",
+      ],
+    },
+    {
+      heading: "6. Contenu et liens de tiers",
+      body: [
+        "Le site peut renvoyer ou charger du contenu de tiers (Instagram, Google, Vercel, WhatsApp et autres). Nous ne contrôlons pas ces services et ne sommes pas responsables de leur contenu, de leurs politiques ni de leur disponibilité.",
+        "En cliquant sur un bouton Réserver ici, vous êtes redirigé vers WhatsApp, qui est régi par ses propres conditions et sa propre politique de confidentialité.",
+      ],
+    },
+    {
+      heading: "7. Disponibilité et modifications",
+      body: [
+        "Nous mettons en œuvre des efforts raisonnables pour maintenir le site disponible mais ne garantissons pas un accès ininterrompu. Nous pouvons modifier, suspendre ou interrompre le site (ou toute partie) à tout moment, sans préavis.",
+      ],
+    },
+    {
+      heading: "8. Avertissement et limitation de responsabilité",
+      body: [
+        "Le site est fourni « en l'état » et « selon disponibilité ». Dans la mesure maximale autorisée par le droit espagnol, nous excluons les garanties implicites et toute responsabilité pour dommages indirects ou consécutifs découlant de votre utilisation du site.",
+        "Rien dans les présentes Conditions ne limite la responsabilité en cas de décès, de dommages corporels causés par négligence, de fraude ou de toute responsabilité qui ne peut être limitée selon le droit espagnol. Les droits légaux des consommateurs ne sont pas affectés.",
+      ],
+    },
+    {
+      heading: "9. Confidentialité et cookies",
+      body: [
+        "L'utilisation du site est également régie par notre Politique de confidentialité, qui explique comment nous traitons les données personnelles, et par la bannière de cookies affichée lors de la première visite. Vous pouvez modifier vos préférences cookies à tout moment.",
+      ],
+    },
+    {
+      heading: "10. Droits des consommateurs",
+      body: [
+        "Rien dans les présentes Conditions ne limite vos droits légaux en tant que consommateur au titre du droit espagnol ou de l'UE, notamment la Loi générale pour la défense des consommateurs et usagers (TRLGDCU, Real Decreto Legislativo 1/2007) et la directive (UE) 2011/83.",
+        "La plateforme de règlement en ligne des litiges de l'UE est disponible à l'adresse https://ec.europa.eu/consumers/odr.",
+      ],
+    },
+    {
+      heading: "11. Droit applicable et juridiction",
+      body: [
+        "Les présentes Conditions sont régies par le droit espagnol. Tout litige relatif au site relève de la compétence des tribunaux d'Ibiza, Îles Baléares (Juzgados de Ibiza), sans préjudice du droit du consommateur à saisir les tribunaux de son propre domicile au titre des règles de compétence consommateurs de l'UE.",
+      ],
+    },
+    {
+      heading: "12. Modifications des présentes Conditions",
+      body: [
+        "Nous pouvons mettre à jour ces Conditions de manière occasionnelle. La date d'entrée en vigueur en haut de cette page change lorsque nous le faisons. La poursuite de l'utilisation du site après une modification implique l'acceptation des Conditions mises à jour.",
+      ],
+    },
+    {
+      heading: "13. Contact",
+      body: [
+        "Questions sur ces Conditions ou sur le site : hello@seasocietyibiza.com.",
+      ],
+    },
+  ],
+};
+
+const nl: TermsCopy = {
+  metaTitle: "Gebruiksvoorwaarden — Sea Society Ibiza",
+  metaDescription:
+    "Voorwaarden voor het gebruik van seasocietyibiza.com — een marketingsite van Sea Society Ibiza (uitgebaat door Ibimar). Op de site worden geen boekingen afgesloten; chartercontracten worden apart afgehandeld.",
+  heroEyebrow: "Juridisch",
+  heroTitle: "Gebruiksvoorwaarden",
+  effectiveDate: "Van kracht sinds 1 juni 2026",
+  intro: [
+    "Deze Gebruiksvoorwaarden (\"Voorwaarden\") regelen uw gebruik van seasocietyibiza.com (\"de site\"), een marketingwebsite uitgebaat door Sea Society Ibiza, handelsnaam van Ibimar Charter S.L. (\"Sea Society\", \"wij\"). Door de site te gebruiken aanvaardt u deze Voorwaarden.",
+    "De site is informatief. Op de site worden geen boekingen, contracten of betalingen afgesloten. Als u beslist een charter bij ons te boeken, wordt dat contract apart afgehandeld door Ibimar Charter S.L. onder zijn eigen voorwaarden.",
+  ],
+  sections: [
+    {
+      heading: "1. Over de site",
+      body: [
+        "Seasocietyibiza.com toont de Sea Society-vloot, -ervaringen en -bestemmingen en laat bezoekers contact opnemen via het aanvraagformulier of WhatsApp. Alle getoonde informatie — prijzen, beschikbaarheid, schipspecificaties, routes — is indicatief en blijft onderhevig aan schriftelijke bevestiging in het kader van een afzonderlijke charterovereenkomst.",
+      ],
+    },
+    {
+      heading: "2. Toegestaan gebruik",
+      body: [
+        "U mag de site bekijken en delen voor persoonlijke, niet-commerciële doeleinden.",
+      ],
+      bullets: [
+        "Probeer geen toegang te krijgen tot niet-openbare zones, admin-endpoints of gegevens van andere gebruikers.",
+        "Doe geen scraping, mirroring, framing of systematische kopie van de site.",
+        "Introduceer geen malware, voer geen geautomatiseerde verzoeken uit aan een tempo dat de beschikbaarheid aantast, en misbruik de infrastructuur niet.",
+        "Gebruik de site of ons merk niet om te misleiden, een affiliatie te suggereren of voor onwettige doeleinden.",
+      ],
+    },
+    {
+      heading: "3. Aanvragen zijn geen contracten",
+      body: [
+        "Een aanvraag indienen via het formulier, via WhatsApp of via e-mail is een informatieverzoek. Op zich creëert het geen overeenkomst voor enige dienst. Een charterovereenkomst bestaat pas wanneer Sea Society / Ibimar Charter S.L. en u apart schriftelijk voorwaarden zijn overeengekomen.",
+        "Informatie die u ons via de site stuurt wordt verwerkt volgens ons Privacybeleid.",
+      ],
+    },
+    {
+      heading: "4. Nauwkeurigheid van de informatie",
+      body: [
+        "We doen redelijke inspanningen om prijzen, beschikbaarheid, schipdetails en routes accuraat te houden, maar de informatie op de site kan zonder voorafgaande kennisgeving wijzigen en kan fouten bevatten. De site vormt geen bindend aanbod.",
+        "Foto's, video's en andere beelden zijn illustratief en geven mogelijk niet het exacte schip, de configuratie of de zeecondities weer die u zult aantreffen.",
+      ],
+    },
+    {
+      heading: "5. Intellectuele eigendom",
+      body: [
+        "De site, het ontwerp, de teksten, foto's, video's, logo's en merknamen zijn eigendom van Sea Society / Ibimar Charter S.L. of in licentie aan ons gegeven. Ze worden beschermd door het recht op intellectuele eigendom.",
+        "U mag ze niet reproduceren, verspreiden, wijzigen, publiekelijk vertonen of commercieel gebruiken zonder onze voorafgaande schriftelijke toestemming. Een link delen naar de site of naar een specifieke pagina is welkom.",
+      ],
+    },
+    {
+      heading: "6. Inhoud en links van derden",
+      body: [
+        "De site kan inhoud van derden bevatten of laden (Instagram, Google, Vercel, WhatsApp en andere). We hebben geen controle over die diensten en zijn niet verantwoordelijk voor hun inhoud, beleid of beschikbaarheid.",
+        "Wanneer u op een Boek hier-knop klikt, wordt u doorgestuurd naar WhatsApp, dat valt onder de eigen voorwaarden en het privacybeleid van WhatsApp.",
+      ],
+    },
+    {
+      heading: "7. Beschikbaarheid en wijzigingen",
+      body: [
+        "We doen redelijke inspanningen om de site beschikbaar te houden, maar garanderen geen ononderbroken toegang. We kunnen de site (of enig onderdeel) op elk moment zonder voorafgaande kennisgeving wijzigen, opschorten of stopzetten.",
+      ],
+    },
+    {
+      heading: "8. Disclaimer en beperking van aansprakelijkheid",
+      body: [
+        "De site wordt geleverd \"zoals het is\" en \"naargelang beschikbaar\". Voor zover maximaal toegestaan onder het Spaanse recht sluiten we impliciete garanties uit, evenals elke aansprakelijkheid voor indirecte schade of gevolgschade die voortvloeit uit uw gebruik van de site.",
+        "Niets in deze Voorwaarden beperkt de aansprakelijkheid voor overlijden, persoonlijk letsel door nalatigheid, fraude of enige aansprakelijkheid die onder Spaans recht niet kan worden beperkt. Wettelijke consumentenrechten blijven onaangetast.",
+      ],
+    },
+    {
+      heading: "9. Privacy en cookies",
+      body: [
+        "Het gebruik van de site valt ook onder ons Privacybeleid, dat uitlegt hoe we persoonsgegevens verwerken, en onder de cookiebanner die bij het eerste bezoek verschijnt. U kunt uw cookievoorkeuren op elk moment wijzigen.",
+      ],
+    },
+    {
+      heading: "10. Consumentenrechten",
+      body: [
+        "Niets in deze Voorwaarden beperkt uw wettelijke rechten als consument onder Spaans of EU-recht, met name de Algemene wet ter verdediging van consumenten en gebruikers (TRLGDCU, Real Decreto Legislativo 1/2007) en Richtlijn (EU) 2011/83.",
+        "Het Europese platform voor online geschillenbeslechting is beschikbaar op https://ec.europa.eu/consumers/odr.",
+      ],
+    },
+    {
+      heading: "11. Toepasselijk recht en bevoegde rechter",
+      body: [
+        "Deze Voorwaarden vallen onder het Spaanse recht. Elk geschil met betrekking tot de site valt onder de bevoegdheid van de rechtbanken van Ibiza, Balearen (Juzgados de Ibiza), zonder afbreuk aan het recht van de consument om de zaak voor de rechtbanken van zijn eigen woonplaats te brengen onder de EU-consumentenbevoegdheidsregels.",
+      ],
+    },
+    {
+      heading: "12. Wijzigingen aan deze Voorwaarden",
+      body: [
+        "We kunnen deze Voorwaarden af en toe bijwerken. De ingangsdatum bovenaan deze pagina verandert wanneer we dat doen. Voortgezet gebruik van de site na een wijziging betekent dat u de bijgewerkte Voorwaarden aanvaardt.",
+      ],
+    },
+    {
+      heading: "13. Contact",
+      body: [
+        "Vragen over deze Voorwaarden of over de site: hello@seasocietyibiza.com.",
+      ],
+    },
+  ],
+};
+
 export function getTermsCopy(locale: Locale): TermsCopy {
-  return locale === "es" ? es : en;
+  if (locale === "es") return es;
+  if (locale === "fr") return fr;
+  if (locale === "nl") return nl;
+  return en;
 }

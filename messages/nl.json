@@ -15,10 +15,10 @@
     "explore": "Ontdek",
     "visitUs": "Bezoek ons",
     "byIbimar": "by Ibimar",
-    "summary": "Luxe jachtcharter vanuit Botafoc Marina, Ibiza. Negentien boten, twintig jaar op het water, één telefoontje.",
+    "summary": "Luxe jachtcharter vanuit Marina Botafoc, Ibiza. Twintig jaar op het water, één telefoontje.",
     "rightsReserved": "Alle rechten voorbehouden",
     "privacy": "Privacy",
-    "terms": "Voorwaarden & cookies"
+    "terms": "Voorwaarden en cookies"
   },
   "cta": {
     "exploreTheFleet": "Ontdek de vloot",
@@ -26,13 +26,120 @@
     "browseFleet": "Bekijk de vloot",
     "messageWhatsApp": "Stuur ons een WhatsApp",
     "openWhatsApp": "WhatsApp openen",
+    "bookHere": "Boek hier",
     "bookWhatsApp": "Boek via WhatsApp",
     "sendEnquiry": "Aanvraag versturen",
     "scroll": "Scrol"
   },
+  "home": {
+    "tagline": "Eén platform. Eindeloze ervaringen op zee.",
+    "intro": {
+      "eyebrow": "De ervaring",
+      "title": "Een dag op het water. Een herinnering voor het leven.",
+      "body": "Vanaf het moment dat u aan boord stapt in Marina Botafoc tot het moment waarop u de zon ziet oplossen in de Middellandse Zee, wordt elk detail verzorgd. De kapitein weet waar de andere boten niet liggen. De chef weet wat de zee u wil laten eten. U brengt enkel de mensen mee."
+    },
+    "featured": {
+      "eyebrow": "Kies uw boot",
+      "title": "Uitgelichte vloot",
+      "all": "Alle {count} boten →"
+    },
+    "experiences": {
+      "eyebrow": "Voor elk soort dag",
+      "title": "Ervaringen",
+      "all": "Alle ervaringen →"
+    },
+    "destinations": {
+      "eyebrow": "Waar u naartoe gaat",
+      "title": "Bestemmingen",
+      "all": "Alle bestemmingen →"
+    },
+    "instagram": {
+      "title": "Volg de reis"
+    },
+    "enquiry": {
+      "eyebrow": "Uw charter begint met een bericht.",
+      "title": "Vertel ons uw data en gezelschap — wij regelen de rest.",
+      "orWhatsApp": "Of bericht ons rechtstreeks via"
+    }
+  },
+  "fleet": {
+    "title": "De vloot",
+    "subtitle": "{count} boten gebaseerd in Marina Botafoc. Filter de juiste — of beschrijf uw dag en wij kiezen er een voor u.",
+    "boatsMatchSingular": "{count} boot komt overeen",
+    "boatsMatchPlural": "{count} boten komen overeen",
+    "noResults": "Geen enkele boot komt overeen met die filters.",
+    "noResultsHint": "Reset de filters of stuur ons een bericht — we stellen iets voor uit de bredere vloot.",
+    "reset": "Filters resetten",
+    "filters": {
+      "button": "Filters",
+      "title": "Vloot filteren",
+      "type": "Type",
+      "brand": "Merk",
+      "for": "Voor",
+      "budget": "Budget",
+      "motor": "Motor",
+      "sailing": "Zeilen",
+      "catamaran": "Catamaran",
+      "dayBoat": "Dagboot",
+      "sport": "Sport",
+      "guestsOrMore": "{n} of meer",
+      "upToPerDay": "Tot € {amount} / dag",
+      "clearAll": "Alles wissen",
+      "showSingular": "Toon {count} boot",
+      "showPlural": "Toon {count} boten"
+    },
+    "fromPrice": "Vanaf € {amount}"
+  },
+  "boat": {
+    "checkAvailability": "Beschikbaarheid checken",
+    "tellDates": "Vertel ons uw data.",
+    "confirmWithin": "We bevestigen de beschikbaarheid van de {name} binnen enkele uren.",
+    "whatsIncluded": "Wat is inbegrepen",
+    "specifications": "Specificaties",
+    "similar": "Vergelijkbare boten",
+    "allBoats": "Alle {count} boten →",
+    "orWhatsApp": "Of stuur ons direct een WhatsApp"
+  },
+  "form": {
+    "name": "Uw naam",
+    "email": "E-mail",
+    "phone": "Telefoon (optioneel)",
+    "dates": "Data",
+    "datesPlaceholder": "bv. 12–14 juli",
+    "groupSize": "Grootte van het gezelschap",
+    "boatPreference": "Bootvoorkeur",
+    "boatNotSure": "Nog niet zeker",
+    "message": "Bericht",
+    "messagePlaceholder": "Vertel ons over uw charter — gelegenheid, route, alles wat bijzonder is.",
+    "responseTime": "We antwoorden binnen enkele uren. Door te versturen aanvaardt u onze",
+    "privacyPolicy": "privacyverklaring",
+    "submitting": "Verzenden…",
+    "successTitle": "Bedankt.",
+    "successBody": "We hebben uw bericht ontvangen en nemen binnen enkele uren contact op.",
+    "errorGeneric": "Er ging iets mis. Probeer het opnieuw."
+  },
+  "contact": {
+    "orMessageDirect": "Of bericht ons rechtstreeks",
+    "fasterWhatsApp": "Sneller via WhatsApp.",
+    "whatsAppHint": "Voor data binnen zeven dagen krijgt u via WhatsApp het snelste antwoord.",
+    "email": "E-mail",
+    "phone": "Telefoon",
+    "marina": "Marina",
+    "mapTitle": "Marina Botafoc op de kaart",
+    "mapAttribution": "Kaart © OpenStreetMap-bijdragers",
+    "faqEyebrow": "Veelgestelde vragen",
+    "faqTitle": "Voor u schrijft",
+    "moreQuestions": "Meer vragen?",
+    "sendMessage": "Stuur een bericht",
+    "personally": "— we beantwoorden elke vraag persoonlijk."
+  },
+  "breadcrumb": {
+    "home": "Start",
+    "fleet": "Vloot"
+  },
   "errors": {
     "notFound": {
-      "eyebrow": "Verdwaald",
+      "eyebrow": "Uit koers",
       "title": "Pagina niet gevonden.",
       "body": "We kunnen die pagina niet vinden. De vloot ligt nog steeds in Botafoc.",
       "back": "Terug naar de startpagina"
@@ -40,9 +147,24 @@
     "serverError": {
       "eyebrow": "Ruw weer",
       "title": "Er ging iets mis aan onze kant.",
-      "body": "We hebben het probleem geregistreerd. Probeer het over een moment opnieuw — of stuur ons een bericht.",
+      "body": "We hebben het probleem geregistreerd. Probeer het over een moment opnieuw — of stuur ons een bericht en we lossen het op.",
       "retry": "Opnieuw proberen",
       "back": "Terug naar de startpagina"
     }
+  },
+  "cookies": {
+    "title": "Cookies, de korte versie.",
+    "body": "We gebruiken cookies die de site laten werken, plus optionele cookies voor analytics en marketing. Kies wat u wilt toestaan.",
+    "necessary": "Noodzakelijk",
+    "necessaryHint": "vereist om de site te laten werken.",
+    "analytics": "Analytics",
+    "analyticsHint": "anoniem gebruik om de site te verbeteren (Google Analytics).",
+    "marketing": "Marketing",
+    "marketingHint": "advertentieprestaties meten (Meta Pixel).",
+    "acceptAll": "Alles aanvaarden",
+    "choose": "Kiezen",
+    "saveSelection": "Selectie opslaan",
+    "rejectAll": "Alles weigeren",
+    "preferences": "Voorkeuren"
   }
 }

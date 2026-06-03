@@ -5,7 +5,7 @@
     "destinations": "Destinations",
     "about": "À propos",
     "contact": "Contact",
-    "enquireNow": "Demander",
+    "enquireNow": "Réserver",
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "skipToContent": "Aller au contenu",
@@ -15,10 +15,10 @@
     "explore": "Explorer",
     "visitUs": "Nous trouver",
     "byIbimar": "by Ibimar",
-    "summary": "Affrètement de yachts de luxe depuis Botafoc Marina, Ibiza. Dix-neuf bateaux, vingt ans sur l'eau, un seul appel.",
+    "summary": "Affrètement de yachts de luxe depuis Marina Botafoc, Ibiza. Vingt ans sur l'eau, un seul appel.",
     "rightsReserved": "Tous droits réservés",
     "privacy": "Confidentialité",
-    "terms": "Conditions & cookies"
+    "terms": "Conditions et cookies"
   },
   "cta": {
     "exploreTheFleet": "Découvrir la flotte",
@@ -26,9 +26,116 @@
     "browseFleet": "Voir la flotte",
     "messageWhatsApp": "Nous écrire sur WhatsApp",
     "openWhatsApp": "Ouvrir WhatsApp",
+    "bookHere": "Réserver ici",
     "bookWhatsApp": "Réserver via WhatsApp",
     "sendEnquiry": "Envoyer la demande",
     "scroll": "Défiler"
+  },
+  "home": {
+    "tagline": "Une plateforme. Des expériences sans fin en mer.",
+    "intro": {
+      "eyebrow": "L'expérience",
+      "title": "Une journée sur l'eau. Un souvenir pour la vie.",
+      "body": "Du moment où vous montez à bord à Marina Botafoc jusqu'à celui où vous regardez le soleil se fondre dans la Méditerranée, chaque détail est pris en charge. Le capitaine sait où les autres bateaux ne sont pas. Le chef sait ce que la mer veut que vous mangiez. Vous, vous amenez les gens."
+    },
+    "featured": {
+      "eyebrow": "Choisissez votre bateau",
+      "title": "Flotte à la une",
+      "all": "Tous les {count} bateaux →"
+    },
+    "experiences": {
+      "eyebrow": "Pour chaque type de journée",
+      "title": "Expériences",
+      "all": "Toutes les expériences →"
+    },
+    "destinations": {
+      "eyebrow": "Où vous irez",
+      "title": "Destinations",
+      "all": "Toutes les destinations →"
+    },
+    "instagram": {
+      "title": "Suivez le voyage"
+    },
+    "enquiry": {
+      "eyebrow": "Votre charter commence par un message.",
+      "title": "Dites-nous vos dates et votre groupe — nous nous occupons du reste.",
+      "orWhatsApp": "Ou écrivez-nous directement sur"
+    }
+  },
+  "fleet": {
+    "title": "La flotte",
+    "subtitle": "{count} bateaux basés à Marina Botafoc. Filtrez celui qu'il vous faut — ou racontez-nous votre journée et nous choisirons pour vous.",
+    "boatsMatchSingular": "{count} bateau correspond",
+    "boatsMatchPlural": "{count} bateaux correspondent",
+    "noResults": "Aucun bateau ne correspond à ces filtres.",
+    "noResultsHint": "Réinitialisez les filtres ou écrivez-nous — nous proposerons quelque chose dans la flotte élargie.",
+    "reset": "Réinitialiser les filtres",
+    "filters": {
+      "button": "Filtres",
+      "title": "Filtrer la flotte",
+      "type": "Type",
+      "brand": "Marque",
+      "for": "Pour",
+      "budget": "Budget",
+      "motor": "Moteur",
+      "sailing": "Voilier",
+      "catamaran": "Catamaran",
+      "dayBoat": "Bateau de jour",
+      "sport": "Sport",
+      "guestsOrMore": "{n} ou plus",
+      "upToPerDay": "Jusqu'à {amount} € / jour",
+      "clearAll": "Tout effacer",
+      "showSingular": "Voir {count} bateau",
+      "showPlural": "Voir {count} bateaux"
+    },
+    "fromPrice": "À partir de {amount} €"
+  },
+  "boat": {
+    "checkAvailability": "Vérifier la disponibilité",
+    "tellDates": "Dites-nous vos dates.",
+    "confirmWithin": "Nous confirmons la disponibilité du {name} en quelques heures.",
+    "whatsIncluded": "Ce qui est inclus",
+    "specifications": "Caractéristiques",
+    "similar": "Bateaux similaires",
+    "allBoats": "Tous les {count} bateaux →",
+    "orWhatsApp": "Ou écrivez-nous directement sur WhatsApp"
+  },
+  "form": {
+    "name": "Votre nom",
+    "email": "Email",
+    "phone": "Téléphone (facultatif)",
+    "dates": "Dates",
+    "datesPlaceholder": "ex. 12–14 juillet",
+    "groupSize": "Taille du groupe",
+    "boatPreference": "Préférence de bateau",
+    "boatNotSure": "Pas encore décidé",
+    "message": "Message",
+    "messagePlaceholder": "Parlez-nous de votre charter — occasion, itinéraire, ce qui est spécial.",
+    "responseTime": "Nous répondons en quelques heures. En envoyant, vous acceptez notre",
+    "privacyPolicy": "politique de confidentialité",
+    "submitting": "Envoi…",
+    "successTitle": "Merci.",
+    "successBody": "Nous avons bien reçu votre message et reviendrons vers vous en quelques heures.",
+    "errorGeneric": "Une erreur s'est produite. Veuillez réessayer."
+  },
+  "contact": {
+    "orMessageDirect": "Ou écrivez-nous directement",
+    "fasterWhatsApp": "Plus rapide sur WhatsApp.",
+    "whatsAppHint": "Pour des dates dans les sept jours, WhatsApp est la voie la plus rapide.",
+    "email": "Email",
+    "phone": "Téléphone",
+    "marina": "Marina",
+    "mapTitle": "Marina Botafoc sur la carte",
+    "mapAttribution": "Carte © contributeurs OpenStreetMap",
+    "faqEyebrow": "Questions fréquentes",
+    "faqTitle": "Avant d'écrire",
+    "moreQuestions": "D'autres questions ?",
+    "sendMessage": "Envoyer un message",
+    "personally": "— nous y répondons personnellement."
+  },
+  "breadcrumb": {
+    "home": "Accueil",
+    "fleet": "Flotte"
   },
   "errors": {
     "notFound": {
@@ -39,10 +146,25 @@
     },
     "serverError": {
       "eyebrow": "Eaux agitées",
-      "title": "Une erreur s'est produite.",
-      "body": "Nous avons enregistré le problème. Réessayez dans un instant — ou envoyez-nous un message.",
+      "title": "Une erreur s'est produite de notre côté.",
+      "body": "Nous avons enregistré le problème. Réessayez dans un instant — ou envoyez-nous un message et nous nous en occupons.",
       "retry": "Réessayer",
       "back": "Retour à l'accueil"
     }
+  },
+  "cookies": {
+    "title": "Cookies, version courte.",
+    "body": "Nous utilisons des cookies nécessaires au fonctionnement du site, plus des cookies optionnels pour les statistiques et le marketing. Choisissez ce que vous souhaitez autoriser.",
+    "necessary": "Nécessaires",
+    "necessaryHint": "indispensables au fonctionnement du site.",
+    "analytics": "Statistiques",
+    "analyticsHint": "usage anonyme pour améliorer le site (Google Analytics).",
+    "marketing": "Marketing",
+    "marketingHint": "mesurer la performance des publicités (Meta Pixel).",
+    "acceptAll": "Tout accepter",
+    "choose": "Choisir",
+    "saveSelection": "Enregistrer la sélection",
+    "rejectAll": "Tout refuser",
+    "preferences": "Préférences"
   }
 }

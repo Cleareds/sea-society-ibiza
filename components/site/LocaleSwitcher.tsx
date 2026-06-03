@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   locales,
   localeLabels,
+  localeFullLabels,
   localePath,
   stripLocale,
   type Locale,
@@ -22,11 +23,13 @@ interface Props {
 }
 
 /**
- * Inline text-only language toggle — `EN | ES`. No flags, no icons,
- * no dropdown. The active locale is bold and at full opacity; the
- * other is interactive at reduced contrast. Click swaps the locale
- * and navigates to the same path under the new prefix (`/about`
- * &harr; `/es/about`).
+ * Inline text-only language toggle — `EN · ES · FR · NL`. No flags,
+ * no icons, no dropdown. The active locale is bold at full opacity;
+ * the others are interactive at reduced contrast. Click swaps the
+ * locale and navigates to the same path under the new prefix
+ * (`/about` ↔ `/fr/about`). Driven by the `locales` tuple in
+ * lib/i18n/config.ts — adding a fifth locale there extends the
+ * switcher automatically.
  */
 export function LocaleSwitcher({ currentLocale, variant = "solid", className }: Props) {
   const router = useRouter();
@@ -60,15 +63,15 @@ export function LocaleSwitcher({ currentLocale, variant = "solid", className }: 
       {locales.map((l, i) => (
         <React.Fragment key={l}>
           {i > 0 && (
-            <span aria-hidden className={cn("px-1.5", sepCls)}>
-              /
+            <span aria-hidden className={cn("px-1", sepCls)}>
+              ·
             </span>
           )}
           <button
             type="button"
             onClick={() => switchTo(l)}
             aria-current={l === currentLocale ? "true" : undefined}
-            aria-label={`Switch to ${l === "en" ? "English" : "Spanish"}`}
+            aria-label={`Switch to ${localeFullLabels[l]}`}
             className={cn(
               "transition-colors duration-300",
               l === currentLocale

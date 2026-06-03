@@ -5,15 +5,15 @@
  * stored unprefixed in every content table, and the fallback when a translation
  * is missing for another locale.
  */
-// Site supports English (default, no URL prefix) and Spanish (/es/...).
+// Site supports four locales: EN (default, no URL prefix), ES, FR, NL.
 // All routing helpers below + the LocaleSwitcher in the header are
 // driven from this array — to add another locale later, append it
 // here, add its message bundle in lib/i18n/messages.ts, add an entry
 // to OG_LOCALE_MAP in lib/seo/metadata.ts, populate boats.i18n /
 // site_settings.about_i18n / etc. with translations, and add the
 // inline locale-keyed copy in static pages (destinations / about /
-// privacy / terms).
-export const locales = ["en", "es"] as const;
+// privacy / terms). See CLAUDE.md for the translation-parity rule.
+export const locales = ["en", "es", "fr", "nl"] as const;
 export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
@@ -22,12 +22,16 @@ export const defaultLocale: Locale = "en";
 export const localeLabels: Record<Locale, string> = {
   en: "EN",
   es: "ES",
+  fr: "FR",
+  nl: "NL",
 };
 
 /** Long display label (used elsewhere if a wider control needs it). */
 export const localeFullLabels: Record<Locale, string> = {
   en: "English",
   es: "Español",
+  fr: "Français",
+  nl: "Nederlands",
 };
 
 export function isLocale(value: string | null | undefined): value is Locale {

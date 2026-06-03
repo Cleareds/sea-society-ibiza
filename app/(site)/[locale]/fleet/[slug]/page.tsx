@@ -286,9 +286,12 @@ export default async function BoatDetailPage({
                   {boat.baseHarbour ? ` · ${boat.baseHarbour}` : ""}
                 </p>
                 <p className="mt-6 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
-                  {lc === "es"
-                    ? "Escríbenos por WhatsApp con tus fechas y el tamaño del grupo — respondemos en pocas horas desde Marina Botafoc."
-                    : "Send us a WhatsApp with your dates and group size — we respond within a few hours from Botafoc Marina."}
+                  {{
+                    en: "Send us a WhatsApp with your dates and group size — we respond within a few hours from Botafoc Marina.",
+                    es: "Escríbenos por WhatsApp con tus fechas y el tamaño del grupo — respondemos en pocas horas desde Marina Botafoc.",
+                    fr: "Envoyez-nous un WhatsApp avec vos dates et la taille de votre groupe — nous répondons en quelques heures depuis Marina Botafoc.",
+                    nl: "Stuur ons een WhatsApp met uw data en gezelschap — we antwoorden binnen enkele uren vanuit Marina Botafoc.",
+                  }[lc]}
                 </p>
                 <div className="mt-6">
                   <BookHereCTA
@@ -342,22 +345,40 @@ export default async function BoatDetailPage({
       <Section>
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
-            {lc === "es" ? "Más que un barco" : "Not just a boat"}
+            {{
+              en: "Not just a boat",
+              es: "Más que un barco",
+              fr: "Plus qu'un bateau",
+              nl: "Meer dan een boot",
+            }[lc]}
           </p>
           <h2 className="mt-3 font-serif text-3xl text-[var(--color-on-surface)] md:text-4xl">
-            {lc === "es" ? "Combínalo con una experiencia" : "Pair it with an experience"}
+            {{
+              en: "Pair it with an experience",
+              es: "Combínalo con una experiencia",
+              fr: "Associez-le à une expérience",
+              nl: "Combineer met een ervaring",
+            }[lc]}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[var(--color-on-surface-variant)] md:text-lg">
-            {lc === "es"
-              ? `Crucero al atardecer, charter multidía por las Baleares, pedida, cumpleaños o evento corporativo — cada charter en ${boat.name} puede convertirse en una experiencia completa: catering, juguetes acuáticos, fotógrafo, florales, champagne.`
-              : `Sunset cruise, multi-day Balearic charter, proposal, birthday or corporate hire — every charter on ${boat.name} can be wrapped in a fully-handled experience: catering, water toys, photographer, florals, champagne.`}
+            {{
+              en: `Sunset cruise, multi-day Balearic charter, proposal, birthday or corporate hire — every charter on ${boat.name} can be wrapped in a fully-handled experience: catering, water toys, photographer, florals, champagne.`,
+              es: `Crucero al atardecer, charter multidía por las Baleares, pedida, cumpleaños o evento corporativo — cada charter en ${boat.name} puede convertirse en una experiencia completa: catering, juguetes acuáticos, fotógrafo, florales, champagne.`,
+              fr: `Croisière au coucher du soleil, charter de plusieurs jours aux Baléares, demande en mariage, anniversaire ou journée corporate — chaque charter sur ${boat.name} peut devenir une expérience complète : traiteur, jouets nautiques, photographe, fleurs, champagne.`,
+              nl: `Zonsondergangcruise, meerdaagse charter door de Balearen, huwelijksaanzoek, verjaardag of bedrijfsevenement — elke charter op ${boat.name} kan worden uitgebouwd tot een volledig verzorgde ervaring: catering, watersport-speelgoed, fotograaf, bloemen, champagne.`,
+            }[lc]}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href={lp("/destinations")}
               className="inline-flex items-center gap-2 rounded-full border border-[#000000] bg-white px-6 py-3 text-sm font-medium uppercase tracking-[0.22em] text-[#000000] transition-colors hover:bg-[#000000] hover:text-white"
             >
-              {lc === "es" ? "Ver destinos" : "View destinations"}
+              {{
+                en: "View destinations",
+                es: "Ver destinos",
+                fr: "Voir les destinations",
+                nl: "Bekijk bestemmingen",
+              }[lc]}
             </Link>
           </div>
         </div>

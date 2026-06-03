@@ -499,6 +499,449 @@ const es: DestinationCopy = {
   tipCta: "Pregunta a Sea Society",
 };
 
+const fr: DestinationCopy = {
+  metaTitle: "Destinations — Ibiza et Formentera en bateau",
+  metaDescription:
+    "Un guide local Sea Society des Baléares : les plus belles criques, les mouillages cachés, l'itinéraire d'une journée parfaite autour d'Ibiza et Formentera, et les beach clubs où nous revenons sans cesse.",
+  heroTitle: "Découvrez Ibiza et Formentera avec un regard local",
+  seaTabLabel: "Depuis la mer",
+  clubsTabLabel: "Beach clubs",
+  introLead: "Les meilleurs souvenirs ne se font pas toujours sur l'eau.",
+  introBody:
+    "Au fil des années, nous avons découvert des beach clubs confidentiels, des restaurants inoubliables, des criques secrètes et des endroits magnifiques qui font le charme unique de ces îles. Des longs déjeuners face à la mer aux verres au coucher du soleil dans des lieux que vous ne trouverez pas dans la plupart des guides — voici les adresses que nous aimons vraiment et que nous recommandons.",
+  introTagline: "Considérez ceci comme votre guide personnel Sea Society des Baléares.",
+
+  ibizaEyebrow: "Depuis la mer",
+  ibizaTitle: "Ibiza",
+  ibizaSub: "À vivre depuis l'eau :",
+  ibizaCoves: [
+    {
+      name: "Cala Comte",
+      bullets: [
+        "Célèbre pour son eau turquoise cristalline et ses petits îlots.",
+        "L'un des meilleurs spots de baignade et de snorkeling de l'île.",
+        "Couchers de soleil spectaculaires.",
+      ],
+    },
+    {
+      name: "Cala d'Hort et Es Vedrà",
+      bullets: [
+        "Le paysage côtier le plus iconique d'Ibiza.",
+        "Vues spectaculaires sur le légendaire îlot rocheux qui émerge de la mer.",
+        "Excellent mouillage pour le coucher de soleil.",
+      ],
+    },
+    {
+      name: "Atlantis (Sa Pedrera)",
+      bullets: [
+        "Un paysage unique de bassins naturels taillés dans la roche.",
+        "Beaucoup plus accessible en bateau qu'à pied.",
+        "Idéal pour le snorkeling et la photographie.",
+      ],
+    },
+    {
+      name: "Cala Salada et Cala Saladeta",
+      bullets: [
+        "Encerclée de falaises couvertes de pins.",
+        "Eau calme et transparente, atmosphère plus confidentielle.",
+        "Particulièrement belle le matin.",
+      ],
+    },
+    {
+      name: "Benirràs",
+      bullets: [
+        "Connue pour sa formation rocheuse caractéristique au large.",
+        "Excellent mouillage pour une baignade en fin d'après-midi.",
+        "Un superbe écrin au coucher du soleil.",
+      ],
+    },
+  ],
+
+  formenteraEyebrow: "Depuis la mer",
+  formenteraTitle: "Formentera",
+  formenteraCoves: [
+    {
+      name: "Ses Illetes",
+      bullets: [
+        "Régulièrement classée parmi les plus belles plages d'Europe.",
+        "Sable blanc poudreux, eau digne des Caraïbes.",
+        "À voir absolument en bateau.",
+      ],
+    },
+    {
+      name: "S'Espalmador",
+      bullets: [
+        "Petite île inhabitée entre Ibiza et Formentera.",
+        "Accessible uniquement par bateau.",
+        "Parmi les eaux les plus claires de Méditerranée.",
+      ],
+    },
+    {
+      name: "Caló des Mort",
+      bullets: [
+        "Crique minuscule entourée de falaises rocheuses.",
+        "Eau turquoise éblouissante.",
+        "L'un des endroits les plus photogéniques de l'île.",
+      ],
+    },
+    {
+      name: "Cala Saona",
+      bullets: [
+        "Baie protégée encadrée de falaises rouges.",
+        "Excellente pour la baignade et le mouillage au coucher du soleil.",
+        "Très prisée des yachts et des voiliers.",
+      ],
+    },
+    {
+      name: "Cala en Baster",
+      bullets: [
+        "Plus sauvage, moins fréquentée.",
+        "Grottes marines, formations rocheuses et snorkeling excellent.",
+        "Une perle cachée face aux plages plus connues.",
+      ],
+    },
+  ],
+
+  routeEyebrow: "Itinéraire recommandé · journée complète",
+  routeTitle: "Notre boucle signature Sea Society.",
+  routeStops: [
+    "Ibiza",
+    "S'Espalmador",
+    "Ses Illetes",
+    "Caló des Mort",
+    "Es Vedrà",
+    "Coucher de soleil à Cala Comte",
+  ],
+  routeCombinesTitle: "Ce que cet itinéraire combine",
+  routeCombines: [
+    "Les eaux les plus claires autour de Formentera",
+    "Plages de sable blanc et criques préservées pour la baignade",
+    "L'emblème côtier d'Ibiza (Es Vedrà)",
+    "L'un des plus beaux couchers de soleil des Baléares",
+  ],
+  topFiveTitle: "Top 5 des mouillages spectaculaires",
+  topFiveSub: "Pour une journée de luxe en yacht",
+  topFive: [
+    "S'Espalmador",
+    "Ses Illetes",
+    "Es Vedrà / Cala d'Hort",
+    "Cala Comte",
+    "Caló des Mort",
+  ],
+
+  pasEyebrow: "Incontournable · Expérience Sea Society",
+  pasTitle: "Pas des Trucadors.",
+  pasBody: [
+    "Entre S'Espalmador et la pointe nord de Ses Illetes s'étend un banc de sable connu sous le nom de Pas des Trucadors. Les jours de mer très calme, beaucoup le traversent à pied — l'eau monte généralement du genou à la taille, selon le vent et l'état de la mer. La traversée n'est pas toujours possible : courants et niveau d'eau peuvent changer.",
+    "Depuis le bateau, on dirait deux îles reliées par une bande de sable blanc entourée d'une eau turquoise cristalline. C'est l'un des lieux les plus photographiés des Baléares. La combinaison sable blanc, eau transparente et la sensation de marcher sur la mer crée une scène que beaucoup comparent aux Maldives ou aux Caraïbes.",
+  ],
+
+  ibizaClubsEyebrow: "Beach clubs · Ibiza",
+  ibizaClubsTitle: "Ceux où nous retournons toujours.",
+  ibizaClubsSub: "Tous accessibles en bateau — la plupart acceptent les arrivées en annexe depuis votre mouillage.",
+  ibizaClubs: [
+    {
+      name: "Casa Jondal",
+      bullets: [
+        "Sans doute la réservation déjeuner la plus convoitée d'Ibiza.",
+        "Produits de la mer d'exception et cuisine méditerranéenne haut de gamme.",
+        "Beaucoup d'invités arrivent directement de leur yacht.",
+        "Élégant et stylé, sans tomber dans le « clubby ».",
+      ],
+    },
+    {
+      name: "Blue Marlin Ibiza",
+      bullets: [
+        "Le beach club d'Ibiza le plus célèbre vu depuis l'eau.",
+        "Attendez-vous à des superyachts, des DJ, des cocktails et une foule glamour.",
+        "Idéal pour des déjeuners qui se prolongent en after de l'après-midi.",
+        "Meilleur jour de la semaine : le dimanche.",
+      ],
+    },
+    {
+      name: "Amante Ibiza",
+      bullets: [
+        "Décor spectaculaire au sommet d'une falaise dominant une baie préservée.",
+        "Plus romantique et détendu que les grands beach clubs.",
+        "Excellente cuisine méditerranéenne et panorama saisissant.",
+        "Parfait pour les couples ou une expérience de luxe plus tranquille.",
+      ],
+    },
+    {
+      name: "El Silencio Ibiza",
+      bullets: [
+        "Beach club au design soigné avec une clientèle internationale.",
+        "Cocktails remarquables et cuisine méditerranéenne créative.",
+        "Mouillage magnifique, atmosphère plus contemporaine.",
+      ],
+    },
+  ],
+
+  formenteraClubsEyebrow: "Beach clubs · Formentera",
+  formenteraClubsTitle: "Déjeuner sur l'eau, sans presse.",
+  formenteraClubs: [
+    {
+      name: "Beso Beach Formentera",
+      bullets: [
+        "L'un des beach clubs les plus iconiques des Baléares.",
+        "Luxe pieds nus, belle musique et atmosphère animée.",
+        "Arrivée en annexe depuis votre bateau mouillé à Ses Illetes.",
+        "Célèbre pour ses longs déjeuners qui se terminent en fête l'après-midi.",
+      ],
+    },
+    {
+      name: "Juan y Andrea",
+      bullets: [
+        "Un classique du déjeuner en yacht.",
+        "Poisson et fruits de mer ultra-frais, langouste, cuisine méditerranéenne.",
+        "Posé directement sur les sables magnifiques de Ses Illetes.",
+        "Favori des propriétaires de yachts et des célébrités depuis des décennies.",
+      ],
+    },
+  ],
+  calaDuoTitle: "Cala Duo",
+  calaDuoLead:
+    "L'une des ouvertures les plus commentées de Formentera ces dernières saisons. Le lieu a repris l'ancien emplacement de Sa Sequi, juste sur l'eau près de La Savina, et s'est rapidement positionné comme une alternative plus glamour et plus énergique à des adresses comme Beso Beach. Imaginez :",
+  calaDuoBullets: [
+    "DJ au coucher de soleil",
+    "Foule yachting",
+    "Sushi, fruits de mer, champagne",
+    "Luxe pieds nus avec une ambiance de fête plus marquée",
+  ],
+  calaDuoOutro:
+    "Beaucoup le décrivent comme ce qui se rapproche le plus d'un beach club « style Ibiza » que Formentera ait connu, tout en respectant l'esthétique de l'île. Certains voyageurs le mentionnent même comme l'alternative principale lorsque Beso Beach Formentera est complet. N'oubliez pas de jeter un œil au staff de Cala Duo — on dirait qu'ils sortent du défilé ;-)",
+
+  tipEyebrow: "Le conseil Sea Society",
+  tipTitle: "Vous ne savez pas où aller ?",
+  tipBody:
+    "Notre équipe se fera un plaisir de partager des recommandations personnalisées selon votre séjour — un dîner romantique, une plage cachée, le meilleur sushi de l'île ou un beach club avec l'ambiance parfaite.",
+  tipItalic: "Parce que les meilleures expériences sont souvent celles qui ne figurent pas encore au programme.",
+  tipCta: "Demandez à Sea Society",
+};
+
+const nl: DestinationCopy = {
+  metaTitle: "Bestemmingen — Ibiza en Formentera per boot",
+  metaDescription:
+    "Een lokale gids van Sea Society door de Balearen: de mooiste baaien, verborgen ankerplaatsen, de perfecte dagcharterroute rond Ibiza en Formentera, en de beach clubs waar we steeds opnieuw naartoe gaan.",
+  heroTitle: "Ontdek Ibiza en Formentera met lokale ogen",
+  seaTabLabel: "Vanaf de zee",
+  clubsTabLabel: "Beach clubs",
+  introLead: "De mooiste herinneringen ontstaan niet altijd op het water.",
+  introBody:
+    "In de loop der jaren hebben we verborgen beach clubs ontdekt, onvergetelijke restaurants, geheime baaien en prachtige plekken die deze eilanden zo bijzonder maken. Van lange lunches aan zee tot zonsondergangsborrels op plekken die u niet in de meeste reisgidsen vindt — dit zijn de adressen die wij oprecht aanraden.",
+  introTagline: "Beschouw dit als uw persoonlijke Sea Society-gids door de Balearen.",
+
+  ibizaEyebrow: "Vanaf de zee",
+  ibizaTitle: "Ibiza",
+  ibizaSub: "Op zijn best vanaf het water:",
+  ibizaCoves: [
+    {
+      name: "Cala Comte",
+      bullets: [
+        "Beroemd om zijn kristalheldere turquoise water en kleine eilandjes.",
+        "Een van de beste plekken op het eiland om te zwemmen en te snorkelen.",
+        "Spectaculaire zonsondergangen.",
+      ],
+    },
+    {
+      name: "Cala d'Hort en Es Vedrà",
+      bullets: [
+        "Het meest iconische kustlandschap van Ibiza.",
+        "Adembenemend uitzicht op het legendarische rotseiland dat oprijst uit zee.",
+        "Uitstekende ankerplaats voor de zonsondergang.",
+      ],
+    },
+    {
+      name: "Atlantis (Sa Pedrera)",
+      bullets: [
+        "Een uniek landschap van uit de rots gehouwen natuurlijke zwembaden.",
+        "Veel makkelijker bereikbaar per boot dan te voet.",
+        "Geweldig om te snorkelen en te fotograferen.",
+      ],
+    },
+    {
+      name: "Cala Salada en Cala Saladeta",
+      bullets: [
+        "Omringd door met pijnbomen begroeide kliffen.",
+        "Rustig, transparant water en een meer afgeschermde sfeer.",
+        "Vooral 's ochtends bijzonder mooi.",
+      ],
+    },
+    {
+      name: "Benirràs",
+      bullets: [
+        "Bekend om zijn karakteristieke rotsformatie voor de kust.",
+        "Uitstekende ankerplaats voor een namiddagduik.",
+        "Prachtige zonsondergang.",
+      ],
+    },
+  ],
+
+  formenteraEyebrow: "Vanaf de zee",
+  formenteraTitle: "Formentera",
+  formenteraCoves: [
+    {
+      name: "Ses Illetes",
+      bullets: [
+        "Regelmatig onder de mooiste stranden van Europa gerekend.",
+        "Poederwit zand en Caraïbisch aandoend water.",
+        "Een must per boot.",
+      ],
+    },
+    {
+      name: "S'Espalmador",
+      bullets: [
+        "Een klein onbewoond eiland tussen Ibiza en Formentera.",
+        "Enkel per boot bereikbaar.",
+        "Een van de helderste wateren van de Middellandse Zee.",
+      ],
+    },
+    {
+      name: "Caló des Mort",
+      bullets: [
+        "Piepkleine baai omringd door rotskliffen.",
+        "Adembenemend turquoise water.",
+        "Een van de meest fotogenieke plekken van het eiland.",
+      ],
+    },
+    {
+      name: "Cala Saona",
+      bullets: [
+        "Beschutte baai ingelijst door rode kliffen.",
+        "Uitstekend zwemwater en ankerplek bij zonsondergang.",
+        "Populair bij jachten en zeilboten.",
+      ],
+    },
+    {
+      name: "Cala en Baster",
+      bullets: [
+        "Ruiger en minder druk.",
+        "Zeegrotten, rotsformaties en uitzonderlijk snorkelen.",
+        "Een verborgen pareltje tegenover de bekendere stranden.",
+      ],
+    },
+  ],
+
+  routeEyebrow: "Aanbevolen route · volledige dag",
+  routeTitle: "Onze signatuur Sea Society-lus.",
+  routeStops: [
+    "Ibiza",
+    "S'Espalmador",
+    "Ses Illetes",
+    "Caló des Mort",
+    "Es Vedrà",
+    "Zonsondergang bij Cala Comte",
+  ],
+  routeCombinesTitle: "Wat deze route combineert",
+  routeCombines: [
+    "Het helderste water rond Formentera",
+    "Witte zandstranden en afgeschermde zwemplekken",
+    "Het meest iconische landmark van Ibiza (Es Vedrà)",
+    "Een van de mooiste zonsondergangen van de Balearen",
+  ],
+  topFiveTitle: "Top 5 wow-ankerplaatsen",
+  topFiveSub: "Voor een luxedag op een jacht",
+  topFive: [
+    "S'Espalmador",
+    "Ses Illetes",
+    "Es Vedrà / Cala d'Hort",
+    "Cala Comte",
+    "Caló des Mort",
+  ],
+
+  pasEyebrow: "Een must · Sea Society-ervaring",
+  pasTitle: "Pas des Trucadors.",
+  pasBody: [
+    "Tussen S'Espalmador en de noordpunt van Ses Illetes ligt een ondiepe zandbank, bekend als Pas des Trucadors. Op zeer rustige dagen lopen of waden veel mensen erover — het water staat meestal ergens tussen kniediep en taillehoogte, afhankelijk van zee en wind. De oversteek is niet altijd mogelijk: stromingen en waterstand kunnen veranderen.",
+    "Vanaf een boot lijkt het op twee eilanden verbonden door een strook wit zand, omringd door kristalhelder turquoise water. Het is een van de meest gefotografeerde plekken van de Balearen. De combinatie van wit zand, transparant water en het gevoel door de zee te wandelen creëert een tafereel dat veel bezoekers vergelijken met de Malediven of de Caraïben.",
+  ],
+
+  ibizaClubsEyebrow: "Beach clubs · Ibiza",
+  ibizaClubsTitle: "De plekken waar we steeds terugkeren.",
+  ibizaClubsSub: "Allemaal per boot bereikbaar — de meeste aanvaarden aanlanding met de tender vanaf uw ankerplaats.",
+  ibizaClubs: [
+    {
+      name: "Casa Jondal",
+      bullets: [
+        "Wellicht de meest begeerde lunchreservatie van Ibiza.",
+        "Uitzonderlijke vis- en zeevruchten en verfijnde mediterrane keuken.",
+        "Veel gasten komen rechtstreeks vanaf hun jacht.",
+        "Elegant en stijlvol zonder al te clubby te worden.",
+      ],
+    },
+    {
+      name: "Blue Marlin Ibiza",
+      bullets: [
+        "De bekendste beach club van Ibiza gezien vanaf het water.",
+        "Verwacht superjachten, dj's, cocktails en een glamoureus publiek.",
+        "Ideaal voor een lunch die uitloopt in een namiddagfeest.",
+        "Beste dag van de week: zondag.",
+      ],
+    },
+    {
+      name: "Amante Ibiza",
+      bullets: [
+        "Spectaculaire ligging op een klif boven een afgeschermde baai.",
+        "Romantischer en relaxter dan de grote beach clubs.",
+        "Uitstekende mediterrane keuken en adembenemend uitzicht.",
+        "Ideaal voor koppels of een rustigere luxe-ervaring.",
+      ],
+    },
+    {
+      name: "El Silencio Ibiza",
+      bullets: [
+        "Stijlvolle, design-gerichte beach club met een internationaal publiek.",
+        "Uitstekende cocktails en creatieve mediterrane keuken.",
+        "Mooie ankerplek en een meer hedendaagse sfeer.",
+      ],
+    },
+  ],
+
+  formenteraClubsEyebrow: "Beach clubs · Formentera",
+  formenteraClubsTitle: "Lunchen op het water, op uw gemak.",
+  formenteraClubs: [
+    {
+      name: "Beso Beach Formentera",
+      bullets: [
+        "Een van de meest iconische beach clubs van de Balearen.",
+        "Chique blootsvoetse luxe, sterke muziek en een levendige sfeer.",
+        "Aankomst met de tender vanaf uw boot voor anker bij Ses Illetes.",
+        "Beroemd om lange lunches die vaak uitlopen in een namiddagfeest.",
+      ],
+    },
+    {
+      name: "Juan y Andrea",
+      bullets: [
+        "Een klassieker voor de jachtlunch.",
+        "Uitstekende verse vis, kreeft en mediterrane keuken.",
+        "Direct gelegen op het schitterende zand van Ses Illetes.",
+        "Al decennialang een favoriet bij jachteigenaars en celebrities.",
+      ],
+    },
+  ],
+  calaDuoTitle: "Cala Duo",
+  calaDuoLead:
+    "Een van de meest besproken nieuwe openingen op Formentera van de laatste seizoenen. De plek nam de voormalige Sa Sequi-locatie over, vlak aan het water bij La Savina, en positioneerde zich snel als een glamoureuzer, energieker alternatief voor plekken zoals Beso Beach. Denk:",
+  calaDuoBullets: [
+    "Zonsondergang-dj's",
+    "Jachtpubliek",
+    "Sushi, zeevruchten, champagne",
+    "Blootsvoetse luxe met een sterker feestkarakter",
+  ],
+  calaDuoOutro:
+    "Veel bezoekers omschrijven het als wat het dichtst in de buurt komt van een Ibiza-stijl beach club die Formentera ooit gehad heeft, zonder de esthetiek van het eiland te verraden. Sommige reizigers noemen het zelfs als hoofdalternatief wanneer Beso Beach Formentera volgeboekt is. Vergeet niet om eens naar het personeel van Cala Duo te kijken — alsof ze zo van de catwalk komen ;-)",
+
+  tipEyebrow: "De Sea Society-tip",
+  tipTitle: "Niet zeker waar naartoe?",
+  tipBody:
+    "Ons team deelt graag persoonlijke aanbevelingen op basis van uw trip — of het nu om een romantisch diner gaat, een verborgen strand, de beste sushi van het eiland of een beach club met de perfecte sfeer.",
+  tipItalic: "Want de mooiste ervaringen zijn vaak die welke nog niet op het programma stonden.",
+  tipCta: "Vraag het Sea Society",
+};
+
 export function getDestinationsCopy(locale: Locale): DestinationCopy {
-  return locale === "es" ? es : en;
+  if (locale === "es") return es;
+  if (locale === "fr") return fr;
+  if (locale === "nl") return nl;
+  return en;
 }

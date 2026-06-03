@@ -12,12 +12,16 @@ import { defaultLocale, isLocale, type Locale } from "./config";
 
 import en from "@/messages/en.json";
 import es from "@/messages/es.json";
+import fr from "@/messages/fr.json";
+import nl from "@/messages/nl.json";
 
 type Bundle = Record<string, unknown>;
 
 const bundles: Record<Locale, Bundle> = {
   en: en as Bundle,
   es: es as Bundle,
+  fr: fr as Bundle,
+  nl: nl as Bundle,
 };
 
 function lookup(bundle: Bundle | undefined, path: string[]): string | undefined {

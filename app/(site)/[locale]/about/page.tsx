@@ -21,15 +21,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const lc = isLocale(locale) ? locale : "en";
+  const titleByLocale: Record<typeof lc, string> = {
+    en: "Meet the Founders — Sea Society Ibiza",
+    es: "Conoce a las fundadoras — Sea Society Ibiza",
+    fr: "Les fondatrices — Sea Society Ibiza",
+    nl: "Maak kennis met de oprichtsters — Sea Society Ibiza",
+  };
+  const descByLocale: Record<typeof lc, string> = {
+    en: "Sea Society is built by three Belgian women — Lauren, Dorine and Leentje — who curate unforgettable charter experiences from Botafoc Marina, Ibiza, in partnership with Ibimar.",
+    es: "Sea Society está creada por tres mujeres belgas — Lauren, Dorine y Leentje — que curan experiencias inolvidables de charter desde Botafoc Marina, Ibiza, junto a nuestro socio Ibimar.",
+    fr: "Sea Society est créée par trois Belges — Lauren, Dorine et Leentje — qui orchestrent des expériences de charter inoubliables depuis Marina Botafoc, Ibiza, en partenariat avec Ibimar.",
+    nl: "Sea Society wordt gerund door drie Belgische vrouwen — Lauren, Dorine en Leentje — die onvergetelijke charterervaringen samenstellen vanuit Marina Botafoc, Ibiza, in samenwerking met Ibimar.",
+  };
   return pageMetadata({
-    title:
-      lc === "es"
-        ? "Conoce a las fundadoras — Sea Society Ibiza"
-        : "Meet the Founders — Sea Society Ibiza",
-    description:
-      lc === "es"
-        ? "Sea Society está creada por tres mujeres belgas — Lauren, Dorine y Leentje — que curan experiencias inolvidables de charter desde Botafoc Marina, Ibiza, junto a nuestro socio Ibimar."
-        : "Sea Society is built by three Belgian women — Lauren, Dorine and Leentje — who curate unforgettable charter experiences from Botafoc Marina, Ibiza, in partnership with Ibimar.",
+    title: titleByLocale[lc],
+    description: descByLocale[lc],
     path: "/about",
     locale: lc,
   });
@@ -97,6 +103,68 @@ const aboutCopy = {
     ],
     welcomeTitle: "Bienvenido a Sea Society.",
     welcomeSub: "Una comunidad construida en torno a momentos inolvidables en el mar.",
+  },
+  fr: {
+    heroTitle: "Les fondatrices",
+    paragraphs: [
+      "Sea Society est née d'une passion partagée pour les expériences inoubliables, les rencontres qui comptent et la magie de la vie sur l'eau.",
+      "Derrière la plateforme, trois Belges convaincues qu'affréter un yacht devrait être bien plus que simplement réserver un bateau. Avec notre partenaire de confiance Ibimar, nous orchestrons des expériences qui transforment une journée en mer en une histoire que l'on a envie de raconter.",
+      "Que vous cherchiez la mise en scène parfaite pour une demande en mariage, une matinée bien-être, une expérience avec chef privé ou simplement des conseils sur les meilleurs coins secrets d'Ibiza, nous sommes là pour vous aider.",
+      "Nous supervisons personnellement la plateforme Sea Society, son marketing, ses collaborations et sa communauté, et nous sommes toujours à un message près pour toute question sur les expériences présentées sur notre site.",
+    ],
+    founders: [
+      {
+        name: "Lauren",
+        image: "/sea-society/site/founders/lauren.webp",
+        role: "Photographe, marketeuse et créatrice de contenu.",
+        bio: "Lauren est la conteuse visuelle derrière Sea Society. Toujours en quête de la lumière parfaite, de moments authentiques et de destinations inspirantes, elle donne vie au style Sea Society à travers la photographie et le contenu. Si vous êtes tombé sous le charme d'une image sur notre site ou Instagram, il y a de fortes chances que Lauren était derrière l'objectif.",
+      },
+      {
+        name: "Dorine",
+        image: "/sea-society/site/founders/dorine.webp",
+        role: "Spécialiste des ventes et chasseuse de collaborations.",
+        bio: "Dorine connecte sans cesse les gens, les marques et les idées. Avec un talent naturel pour la vente et les relations, elle est toujours à l'affût de partenariats uniques, d'expériences singulières et de nouvelles façons de rendre Sea Society encore plus spécial.",
+      },
+      {
+        name: "Leentje",
+        image: "/sea-society/site/founders/leentje.webp",
+        role: "Créatrice de contenu, marketeuse et observatrice des tendances.",
+        bio: "Toujours à l'écoute des dernières tendances et plateformes, Leentje façonne la voix de Sea Society. En tant que créatrice de contenu et marketeuse, elle s'attache à donner vie aux expériences, à l'énergie et à l'art de vivre de la marque à travers un storytelling authentique. Son objectif : créer du contenu qui aide les gens à se connecter au monde derrière Sea Society et à faire partie du voyage.",
+      },
+    ],
+    welcomeTitle: "Bienvenue chez Sea Society.",
+    welcomeSub: "Une communauté construite autour de moments inoubliables en mer.",
+  },
+  nl: {
+    heroTitle: "Maak kennis met de oprichtsters",
+    paragraphs: [
+      "Sea Society is geboren uit een gedeelde passie voor onvergetelijke ervaringen, betekenisvolle ontmoetingen en de magie van het leven op het water.",
+      "Achter het platform staan drie Belgische vrouwen die geloven dat een jacht charteren over veel meer moet gaan dan simpelweg een boot boeken. Samen met onze vertrouwde partner Ibimar stellen we ervaringen samen die een dag op zee veranderen in een verhaal dat het vertellen waard is.",
+      "Of u nu de perfecte huwelijksaanzoek-setting zoekt, een wellnessochtend, een ervaring met een privéchef of gewoon advies over de mooiste verborgen plekken van Ibiza — we helpen u graag.",
+      "We zien persoonlijk toe op het Sea Society-platform, de marketing, de samenwerkingen en de community, en zijn altijd bereikbaar voor vragen over de ervaringen die op onze website staan.",
+    ],
+    founders: [
+      {
+        name: "Lauren",
+        image: "/sea-society/site/founders/lauren.webp",
+        role: "Fotograaf, marketeer en content creator.",
+        bio: "Lauren is de visuele verteller achter Sea Society. Altijd op jacht naar het perfecte licht, authentieke momenten en inspirerende bestemmingen, brengt ze de Sea Society-levensstijl tot leven via fotografie en content. Als u verliefd bent geworden op een beeld op onze website of Instagram, dan stond Lauren waarschijnlijk achter de camera.",
+      },
+      {
+        name: "Dorine",
+        image: "/sea-society/site/founders/dorine.webp",
+        role: "Sales specialist en jaagster op samenwerkingen.",
+        bio: "Dorine verbindt voortdurend mensen, merken en ideeën. Met een natuurlijk talent voor sales en relatieopbouw is ze altijd op zoek naar unieke partnerships, bijzondere ervaringen en nieuwe manieren om Sea Society nog specialer te maken.",
+      },
+      {
+        name: "Leentje",
+        image: "/sea-society/site/founders/leentje.webp",
+        role: "Content creator, marketeer en trend watcher.",
+        bio: "Altijd afgestemd op de nieuwste trends en platforms helpt Leentje de stem van Sea Society vormgeven. Als content creator en marketeer richt ze zich op het tot leven brengen van de ervaringen, de energie en de levensstijl van het merk via authentieke storytelling. Haar doel: content creëren die mensen helpt connecteren met de wereld achter Sea Society en deel laat uitmaken van de reis.",
+      },
+    ],
+    welcomeTitle: "Welkom bij Sea Society.",
+    welcomeSub: "Een community gebouwd rond onvergetelijke momenten op zee.",
   },
 } as const;
 

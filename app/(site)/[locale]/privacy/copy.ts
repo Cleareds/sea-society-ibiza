@@ -278,6 +278,271 @@ const es: PrivacyCopy = {
   ],
 };
 
+const fr: PrivacyCopy = {
+  metaTitle: "Politique de confidentialité — Sea Society Ibiza",
+  metaDescription:
+    "Comment Sea Society Ibiza (opérée par Ibimar) collecte, utilise et protège les données personnelles sur seasocietyibiza.com. Conforme au RGPD et à la LOPDGDD espagnole.",
+  heroEyebrow: "Mentions légales",
+  heroTitle: "Politique de confidentialité",
+  effectiveDate: "En vigueur depuis le 1er juin 2026",
+  intro: [
+    "Sea Society Ibiza prend votre vie privée au sérieux. La présente Politique de confidentialité explique quelles données personnelles nous collectons lorsque vous utilisez seasocietyibiza.com — un site marketing présentant notre flotte et nos services —, pourquoi nous les collectons, comment nous les utilisons, avec qui nous les partageons, et les droits dont vous disposez au titre du Règlement général sur la protection des données de l'UE (RGPD — Règlement 2016/679) et de la loi organique espagnole sur la protection des données (LOPDGDD, Loi organique 3/2018).",
+    "Aucune réservation ni paiement ne sont effectués sur ce site. Si vous décidez d'affréter un bateau avec nous, ce contrat est géré séparément, selon ses propres conditions.",
+  ],
+  sections: [
+    {
+      heading: "1. Responsable du traitement",
+      body: [
+        "Le responsable du traitement des données personnelles collectées via ce site est Sea Society Ibiza, nom commercial d'Ibimar Charter S.L. (« Sea Society », « nous »).",
+        "Adresse enregistrée : Marina Botafoc, 07800 Ibiza-Ville, Îles Baléares, Espagne.",
+        "Contact pour les questions de protection des données : hello@seasocietyibiza.com.",
+      ],
+    },
+    {
+      heading: "2. Données personnelles que nous collectons",
+      body: [
+        "Nous collectons uniquement les données nécessaires pour répondre aux demandes et faire fonctionner le site.",
+      ],
+      bullets: [
+        "Formulaire de demande : nom, email, téléphone facultatif, et toute information que vous choisissez d'inclure dans le champ message.",
+        "Interactions WhatsApp : lorsque vous cliquez sur un bouton Réserver ici, vous êtes redirigé vers WhatsApp et pouvez choisir de nous envoyer un message. Nous traitons le contenu de ce message.",
+        "Données techniques : adresse IP (tronquée pour l'analytique), type d'appareil et navigateur, pages consultées, URL de provenance.",
+        "Données de cookies et de consentement : les catégories de cookies que vous avez autorisées (nécessaires / statistiques / marketing).",
+      ],
+    },
+    {
+      heading: "3. Bases légales (Article 6 RGPD)",
+      body: [
+        "Nous traitons vos données uniquement sur la base d'au moins l'un des fondements juridiques suivants :",
+      ],
+      bullets: [
+        "Intérêt légitime (Art. 6.1.f) : répondre aux demandes, qualifier les prospects, sécuriser le site contre les abus, tenue de registres internes. Notre intérêt légitime est toujours pondéré par rapport à vos droits.",
+        "Consentement (Art. 6.1.a) : cookies statistiques et, le cas échéant, cookies marketing. Vous pouvez retirer votre consentement à tout moment, sans incidence sur le traitement antérieur.",
+        "Obligation légale (Art. 6.1.c) : conservation imposée par la loi applicable, réponse aux demandes légitimes des autorités.",
+      ],
+    },
+    {
+      heading: "4. Sous-traitants tiers",
+      body: [
+        "Nous ne partageons les données qu'avec les prestataires nécessaires au fonctionnement de ce site. Chacun est lié par un accord de sous-traitance conforme au RGPD.",
+      ],
+      bullets: [
+        "Supabase Inc. — hébergement de la base de données et authentification de l'administration. Régions UE privilégiées.",
+        "Vercel Inc. — hébergement et diffusion en edge. Les nœuds UE servent le trafic UE.",
+        "Google LLC — Google Analytics 4 pour des statistiques anonymisées, uniquement avec votre consentement.",
+        "Meta Platforms Ireland Ltd. — pixels marketing si activés, uniquement avec votre consentement.",
+        "Resend Inc. — envoi d'emails transactionnels en réponse aux demandes.",
+        "WhatsApp (Meta Platforms Ireland Ltd.) — uniquement lorsque vous cliquez sur un bouton Réserver ici et choisissez d'envoyer un message. Le message est régi par la politique de confidentialité de WhatsApp.",
+        "Ibimar Charter S.L. — notre partenaire opérationnel ; reçoit les données de la demande pour donner suite à une demande de charter.",
+      ],
+    },
+    {
+      heading: "5. Transferts internationaux",
+      body: [
+        "Certains de nos sous-traitants sont établis hors de l'Espace économique européen ou y transfèrent des données. Pour ces transferts, nous nous appuyons sur les clauses contractuelles types de la Commission européenne et, le cas échéant, sur des mécanismes d'adéquation reconnus tels que le EU–US Data Privacy Framework.",
+        "Vous pouvez demander une copie des garanties mises en place en écrivant à hello@seasocietyibiza.com.",
+      ],
+    },
+    {
+      heading: "6. Conservation",
+      body: [
+        "Nous conservons vos données personnelles uniquement pendant la durée nécessaire à la finalité pour laquelle elles ont été collectées et au respect des obligations légales applicables. Au-delà, les données sont supprimées ou anonymisées.",
+        "Pour des informations spécifiques sur la durée de conservation d'une catégorie de données vous concernant, veuillez nous contacter.",
+      ],
+    },
+    {
+      heading: "7. Vos droits au titre du RGPD",
+      body: [
+        "Vous avez le droit de :",
+      ],
+      bullets: [
+        "Accès — demander une copie des données personnelles que nous détenons à votre sujet.",
+        "Rectification — corriger des données inexactes ou incomplètes.",
+        "Effacement — nous demander de supprimer vos données, sous réserve des obligations légales de conservation.",
+        "Limitation — nous demander de suspendre le traitement pendant la résolution d'un litige.",
+        "Portabilité — recevoir vos données dans un format structuré et lisible par machine.",
+        "Opposition — vous opposer au traitement fondé sur l'intérêt légitime, y compris la prospection directe.",
+        "Retrait du consentement — à tout moment, sans incidence sur le traitement antérieur.",
+        "Plainte — introduire une réclamation auprès de l'autorité espagnole de protection des données (Agencia Española de Protección de Datos, www.aepd.es) ou de l'autorité de votre pays de résidence.",
+      ],
+    },
+    {
+      heading: "8. Comment exercer vos droits",
+      body: [
+        "Envoyez un email à hello@seasocietyibiza.com depuis l'adresse enregistrée chez nous. Nous répondrons dans le délai prévu par le RGPD (Art. 12.3).",
+        "Nous pouvons demander une preuve d'identité avant de divulguer des données personnelles.",
+      ],
+    },
+    {
+      heading: "9. Cookies",
+      body: [
+        "Nous utilisons des cookies strictement nécessaires au fonctionnement du site (session, authentification, stockage du consentement) et, avec votre consentement séparé, des cookies optionnels de statistiques et de marketing.",
+        "Vous pouvez modifier vos préférences de cookies à tout moment via la bannière qui apparaît lors de la première visite et via le lien « Préférences » dans le pied de page. Le retrait du consentement n'efface pas les événements passés ; il empêche la collecte de nouveaux.",
+      ],
+    },
+    {
+      heading: "10. Mineurs",
+      body: [
+        "Ce site s'adresse aux adultes. Nous ne collectons pas sciemment de données personnelles concernant des mineurs en dessous de l'âge de consentement numérique fixé par la loi espagnole (Art. 7 LOPDGDD). Si vous pensez que nous détenons de telles données, contactez-nous et nous les supprimerons.",
+      ],
+    },
+    {
+      heading: "11. Sécurité",
+      body: [
+        "Nous appliquons des mesures organisationnelles et techniques conformes aux standards de l'industrie pour protéger les données personnelles : chiffrement en transit (TLS), chiffrement au repos, accès administrateur basé sur les rôles, identifiants restreints et journaux d'audit.",
+        "Aucun système n'est totalement sécurisé. En cas de violation de données personnelles affectant vos droits, nous notifierons l'AEPD et, le cas échéant, les personnes concernées, conformément aux articles 33–34 RGPD.",
+      ],
+    },
+    {
+      heading: "12. Modifications de cette politique",
+      body: [
+        "Nous pouvons mettre à jour la présente politique en cas d'évolution de nos pratiques ou pour refléter des évolutions légales. La date d'entrée en vigueur en haut de cette page change lorsque nous le faisons. Les modifications importantes sont annoncées sur le site pendant une période raisonnable avant leur prise d'effet.",
+      ],
+    },
+    {
+      heading: "13. Contact et réclamations",
+      body: [
+        "Pour toute question relative à la protection des données ou pour exercer un droit : hello@seasocietyibiza.com.",
+        "Pour saisir directement l'autorité de contrôle : Agencia Española de Protección de Datos, C/ Jorge Juan 6, 28001 Madrid — www.aepd.es.",
+      ],
+    },
+  ],
+};
+
+const nl: PrivacyCopy = {
+  metaTitle: "Privacybeleid — Sea Society Ibiza",
+  metaDescription:
+    "Hoe Sea Society Ibiza (uitgebaat door Ibimar) persoonsgegevens verzamelt, gebruikt en beschermt op seasocietyibiza.com. AVG- en Spaanse LOPDGDD-compliant.",
+  heroEyebrow: "Juridisch",
+  heroTitle: "Privacybeleid",
+  effectiveDate: "Van kracht sinds 1 juni 2026",
+  intro: [
+    "Sea Society Ibiza neemt uw privacy ernstig. Dit Privacybeleid legt uit welke persoonsgegevens we verzamelen wanneer u seasocietyibiza.com gebruikt — een marketingwebsite die onze vloot en diensten toont —, waarom we ze verzamelen, hoe we ze gebruiken, met wie we ze delen, en welke rechten u hebt op grond van de Algemene Verordening Gegevensbescherming van de EU (AVG/GDPR — Verordening 2016/679) en de Spaanse organieke wet op de gegevensbescherming (LOPDGDD, Wet 3/2018).",
+    "Op deze website worden geen boekingen of betalingen verricht. Als u beslist een charter bij ons te boeken, wordt dat contract apart afgehandeld onder zijn eigen voorwaarden.",
+  ],
+  sections: [
+    {
+      heading: "1. Verwerkingsverantwoordelijke",
+      body: [
+        "De verwerkingsverantwoordelijke voor de persoonsgegevens die via deze website worden verwerkt is Sea Society Ibiza, handelsnaam van Ibimar Charter S.L. (\"Sea Society\", \"wij\").",
+        "Geregistreerd adres: Marina Botafoc, 07800 Ibiza-Stad, Balearen, Spanje.",
+        "Contact voor gegevensbescherming: hello@seasocietyibiza.com.",
+      ],
+    },
+    {
+      heading: "2. Persoonsgegevens die we verzamelen",
+      body: [
+        "We verzamelen enkel de gegevens die we nodig hebben om vragen te beantwoorden en de website te laten werken.",
+      ],
+      bullets: [
+        "Aanvraagformulier: naam, e-mail, optioneel telefoonnummer en alle informatie die u in het berichtveld opneemt.",
+        "WhatsApp-interacties: wanneer u op een Boek hier-knop klikt wordt u naar WhatsApp geleid en kunt u kiezen om ons een bericht te sturen. We verwerken de inhoud van dat bericht.",
+        "Technische gegevens: IP-adres (afgekapt voor analytics), type apparaat en browser, bezochte pagina's, verwijzende URL.",
+        "Cookie- en toestemmingsgegevens: welke cookiecategorieën u hebt toegestaan (noodzakelijk / analytics / marketing).",
+      ],
+    },
+    {
+      heading: "3. Rechtsgronden (Artikel 6 AVG)",
+      body: [
+        "We verwerken uw gegevens uitsluitend op basis van ten minste één van de volgende rechtsgronden:",
+      ],
+      bullets: [
+        "Gerechtvaardigd belang (Art. 6.1.f): vragen beantwoorden, leads kwalificeren, de site beveiligen tegen misbruik, interne registratie. Ons gerechtvaardigd belang wordt steeds afgewogen tegen uw rechten.",
+        "Toestemming (Art. 6.1.a): analytics-cookies en eventuele marketingcookies. U kunt uw toestemming op elk moment intrekken zonder dat dit de eerder verrichte verwerking aantast.",
+        "Wettelijke verplichting (Art. 6.1.c): bewaring die door toepasselijke wetgeving wordt vereist, beantwoording van rechtmatige verzoeken van autoriteiten.",
+      ],
+    },
+    {
+      heading: "4. Externe verwerkers",
+      body: [
+        "We delen gegevens enkel met de dienstverleners die we nodig hebben om deze website te laten werken. Elk is gebonden door een verwerkersovereenkomst die voldoet aan de AVG.",
+      ],
+      bullets: [
+        "Supabase Inc. — databasehosting en admin-authenticatie. EU-regio's worden gebruikt waar mogelijk.",
+        "Vercel Inc. — hosting en edge-serving. EU-edges bedienen EU-verkeer.",
+        "Google LLC — Google Analytics 4 voor geanonimiseerde site-statistieken, alleen met uw toestemming.",
+        "Meta Platforms Ireland Ltd. — marketingpixels indien geactiveerd, alleen met uw toestemming.",
+        "Resend Inc. — transactionele e-mailverzending voor antwoorden op aanvragen.",
+        "WhatsApp (Meta Platforms Ireland Ltd.) — enkel wanneer u op een Boek hier-knop klikt en kiest om een bericht te sturen. Het bericht valt onder het privacybeleid van WhatsApp zelf.",
+        "Ibimar Charter S.L. — onze operationele partner; ontvangt aanvraaggegevens om een charteraanvraag op te volgen.",
+      ],
+    },
+    {
+      heading: "5. Internationale doorgiften",
+      body: [
+        "Een aantal van onze verwerkers is gevestigd in landen buiten de Europese Economische Ruimte of geeft gegevens daarheen door. Voor die doorgiften baseren we ons op de modelcontractbepalingen van de Europese Commissie en, waar van toepassing, op erkende adequaatheidsmechanismen zoals het EU–US Data Privacy Framework.",
+        "U kunt een kopie van de geldende waarborgen opvragen via hello@seasocietyibiza.com.",
+      ],
+    },
+    {
+      heading: "6. Bewaring",
+      body: [
+        "We bewaren uw persoonsgegevens enkel zolang dat nodig is voor het doel waarvoor ze werden verzameld en om aan de toepasselijke wettelijke verplichtingen te voldoen. Daarna worden de gegevens verwijderd of geanonimiseerd.",
+        "Wenst u specifieke bewaartermijnen voor een categorie van gegevens die wij over u bewaren, neem dan contact met ons op.",
+      ],
+    },
+    {
+      heading: "7. Uw rechten onder de AVG",
+      body: [
+        "U hebt het recht op:",
+      ],
+      bullets: [
+        "Toegang — een kopie opvragen van de persoonsgegevens die we over u bewaren.",
+        "Rectificatie — onjuiste of onvolledige gegevens laten corrigeren.",
+        "Wissing — vragen om uw gegevens te verwijderen, onder voorbehoud van wettelijke bewaarplichten.",
+        "Beperking — vragen om de verwerking te pauzeren terwijl een geschil wordt opgelost.",
+        "Overdraagbaarheid — uw gegevens ontvangen in een gestructureerd, machineleesbaar formaat.",
+        "Bezwaar — bezwaar maken tegen verwerking op basis van gerechtvaardigd belang, met inbegrip van direct marketing.",
+        "Toestemming intrekken — op elk moment, zonder afbreuk aan eerder verwerkte gegevens.",
+        "Klacht — een klacht indienen bij de Spaanse gegevensbeschermingsautoriteit (Agencia Española de Protección de Datos, www.aepd.es) of bij de toezichthouder van uw land van verblijf.",
+      ],
+    },
+    {
+      heading: "8. Hoe u uw rechten uitoefent",
+      body: [
+        "Stuur een e-mail naar hello@seasocietyibiza.com vanaf het adres dat bij ons bekend is. We antwoorden binnen de termijn die de AVG voorschrijft (Art. 12.3).",
+        "We kunnen om een identiteitsbewijs vragen voordat we persoonsgegevens vrijgeven.",
+      ],
+    },
+    {
+      heading: "9. Cookies",
+      body: [
+        "We gebruiken cookies die strikt noodzakelijk zijn om de site te laten werken (sessie, authenticatie, opslag van toestemming) en, met uw aparte toestemming, optionele cookies voor analytics en marketing.",
+        "U kunt uw cookievoorkeuren op elk moment wijzigen via de banner die bij het eerste bezoek verschijnt en via de link \"Voorkeuren\" in de footer. Het intrekken van toestemming wist geen eerdere gebeurtenissen; het stopt de verzameling van nieuwe.",
+      ],
+    },
+    {
+      heading: "10. Minderjarigen",
+      body: [
+        "Deze site is bedoeld voor volwassenen. We verzamelen niet bewust persoonsgegevens van kinderen onder de leeftijd voor digitale toestemming zoals bepaald door de Spaanse wet (Art. 7 LOPDGDD). Als u meent dat we dergelijke gegevens bewaren, neem contact op en we verwijderen ze.",
+      ],
+    },
+    {
+      heading: "11. Beveiliging",
+      body: [
+        "We passen organisatorische en technische maatregelen toe volgens de industriestandaarden om persoonsgegevens te beschermen: versleuteling tijdens transit (TLS), versleuteling at rest, rolgebaseerde admin-toegang, beperkte inloggegevens en auditlogs.",
+        "Geen enkel systeem is volledig veilig. In het geval van een datalek dat uw rechten aantast, melden we dit aan de AEPD en, indien vereist, aan de betrokken personen, conform artikelen 33–34 AVG.",
+      ],
+    },
+    {
+      heading: "12. Wijzigingen aan dit beleid",
+      body: [
+        "We kunnen dit Privacybeleid bijwerken wanneer onze praktijken veranderen of om wettelijke ontwikkelingen te weerspiegelen. De ingangsdatum bovenaan deze pagina verandert wanneer we dat doen. Belangrijke wijzigingen worden gedurende een redelijke termijn op de site aangekondigd voordat ze van kracht worden.",
+      ],
+    },
+    {
+      heading: "13. Contact en klachten",
+      body: [
+        "Voor elke vraag over gegevensbescherming of om een recht uit te oefenen: hello@seasocietyibiza.com.",
+        "Om rechtstreeks klacht in te dienen bij de toezichthouder: Agencia Española de Protección de Datos, C/ Jorge Juan 6, 28001 Madrid — www.aepd.es.",
+      ],
+    },
+  ],
+};
+
 export function getPrivacyCopy(locale: Locale): PrivacyCopy {
-  return locale === "es" ? es : en;
+  if (locale === "es") return es;
+  if (locale === "fr") return fr;
+  if (locale === "nl") return nl;
+  return en;
 }
