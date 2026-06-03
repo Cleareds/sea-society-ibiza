@@ -373,6 +373,33 @@ export async function saveBoat(
   }
   const supabase = await createSupabaseServerClient();
   const id = (formData.get("id") as string) || null;
+
+  // Parse JSONB textareas defensively — a bad paste shouldn't wipe the
+  // row, it should bounce back as an "error" state so the editor can fix it.
+  let specsParsed: unknown = [];
+  let highlightsParsed: unknown = [];
+  let galleryParsed: unknown = [];
+  try {
+    specsParsed = JSON.parse(String(formData.get("specsRaw") ?? "[]") || "[]");
+  } catch {
+    return { status: "error", message: "Specs JSON is invalid — fix and resave." };
+  }
+  try {
+    highlightsParsed = JSON.parse(String(formData.get("highlightsRaw") ?? "[]") || "[]");
+  } catch {
+    return { status: "error", message: "Highlights JSON is invalid — fix and resave." };
+  }
+  try {
+    galleryParsed = JSON.parse(String(formData.get("gallery") ?? "[]") || "[]");
+  } catch {
+    return { status: "error", message: "Gallery payload is malformed — refresh and try again." };
+  }
+
+  const whatIncluded = String(formData.get("whatIncludedRaw") ?? "")
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   const row = {
     slug: String(formData.get("slug") ?? "").trim(),
     name: String(formData.get("name") ?? "").trim(),
@@ -380,13 +407,29 @@ export async function saveBoat(
     description: String(formData.get("description") ?? "") || null,
     long_description: String(formData.get("longDescription") ?? "") || null,
     length_m: Number(formData.get("lengthM") ?? 0) || null,
+    beam_m: Number(formData.get("beamM") ?? 0) || null,
     guests: Number(formData.get("guests") ?? 0) || null,
+    guests_night: Number(formData.get("guestsNight") ?? 0) || null,
     cabins: Number(formData.get("cabins") ?? 0) || null,
     type: String(formData.get("type") ?? "motor_yacht"),
     brand: String(formData.get("brand") ?? "") || null,
+    model_name: String(formData.get("modelName") ?? "") || null,
+    base_harbour: String(formData.get("baseHarbour") ?? "") || null,
     build_year: Number(formData.get("buildYear") ?? 0) || null,
+    refit_year: Number(formData.get("refitYear") ?? 0) || null,
+    cruise_knots: Number(formData.get("cruiseKnots") ?? 0) || null,
+    max_knots: Number(formData.get("maxKnots") ?? 0) || null,
+    engines: String(formData.get("engines") ?? "") || null,
+    consumption: String(formData.get("consumption") ?? "") || null,
     price_from: Number(formData.get("priceFrom") ?? 0) || null,
+    price_high: Number(formData.get("priceHigh") ?? 0) || null,
     hero_image: String(formData.get("heroImage") ?? "") || null,
+    what_included: whatIncluded,
+    specs: specsParsed,
+    highlights: highlightsParsed,
+    gallery: galleryParsed,
+    meta_title: String(formData.get("metaTitle") ?? "") || null,
+    meta_description: String(formData.get("metaDescription") ?? "") || null,
     featured: formData.get("featured") === "on",
     is_published: formData.get("isPublished") === "on",
     sort_order: Number(formData.get("sortOrder") ?? 0) || 0,
