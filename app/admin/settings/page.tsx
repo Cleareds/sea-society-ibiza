@@ -16,11 +16,11 @@ export default async function AdminSettingsPage() {
         <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-on-surface-variant)]">
           Site
         </p>
-        <h1 className="mt-2 font-serif text-4xl">Settings & page copy</h1>
+        <h1 className="mt-2 font-serif text-4xl">Settings</h1>
         <p className="mt-3 max-w-2xl text-sm text-[var(--color-on-surface-variant)]">
-          Brand contact details + the editable text on the About and Contact pages. The body
-          fields render markdown — headings (##, ###), bold (**), italic (*), bullet lists
-          (-) and links ([text](url)) all work.
+          Contact details, WhatsApp pre-fill and social links. These power
+          the footer, the contact page sidebar and every Book here CTA
+          across all four locales — edits go live on the next ISR rebuild.
         </p>
       </div>
       <SettingsForm settings={settings} editable={isSupabaseConfigured()} />

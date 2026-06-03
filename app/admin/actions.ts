@@ -296,21 +296,40 @@ export async function saveSettings(
   if (!isSupabaseConfigured()) {
     return { status: "error", message: "Supabase is not configured." };
   }
-  const row = {
-    whatsapp_number: String(formData.get("whatsappNumber") ?? "") || null,
-    whatsapp_default_message: String(formData.get("whatsappDefaultMessage") ?? "") || null,
-    instagram_url: String(formData.get("instagramUrl") ?? "") || null,
-    instagram_handle: String(formData.get("instagramHandle") ?? "") || null,
-    email: String(formData.get("email") ?? "") || null,
-    phone: String(formData.get("phone") ?? "") || null,
-    address: String(formData.get("address") ?? "") || null,
-    hero_headline: String(formData.get("heroHeadline") ?? "") || null,
-    hero_sub: String(formData.get("heroSub") ?? "") || null,
-    about: readCopy(formData, "about"),
-    contact: readCopy(formData, "contact"),
-    about_i18n: readI18nOverrides(formData, "about"),
-    contact_i18n: readI18nOverrides(formData, "contact"),
+
+  // Partial update — only touch columns whose form keys are actually
+  // present. This means trimming the SettingsForm (e.g. dropping the
+  // zombie About/Contact PageCopy sections) cannot silently null-out
+  // the underlying DB columns: absent key → unchanged column.
+  const row: Record<string, unknown> = {};
+  const text = (key: string, col: string) => {
+    if (formData.has(key)) row[col] = String(formData.get(key) ?? "") || null;
   };
+
+  text("whatsappNumber", "whatsapp_number");
+  text("whatsappDefaultMessage", "whatsapp_default_message");
+  text("instagramUrl", "instagram_url");
+  text("instagramHandle", "instagram_handle");
+  text("facebookUrl", "facebook_url");
+  text("tiktokUrl", "tiktok_url");
+  text("email", "email");
+  text("phone", "phone");
+  text("address", "address");
+  text("heroHeadline", "hero_headline");
+  text("heroSub", "hero_sub");
+
+  // Page-copy blocks: only re-write the JSON column if the form
+  // includes the canonical EN field for that block. Otherwise the
+  // existing column stays untouched.
+  if (formData.has("aboutTitle")) row.about = readCopy(formData, "about");
+  if (formData.has("contactTitle")) row.contact = readCopy(formData, "contact");
+  if (formData.has("about_es" + "Title") || formData.has("about_fr" + "Title") || formData.has("about_nl" + "Title")) {
+    row.about_i18n = readI18nOverrides(formData, "about");
+  }
+  if (formData.has("contact_es" + "Title") || formData.has("contact_fr" + "Title") || formData.has("contact_nl" + "Title")) {
+    row.contact_i18n = readI18nOverrides(formData, "contact");
+  }
+
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("site_settings")

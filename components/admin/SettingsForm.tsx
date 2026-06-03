@@ -6,15 +6,7 @@ import { useRouter } from "next/navigation";
 import { saveSettings } from "@/app/admin/actions";
 import { initialSettingsState, type SaveSettingsState } from "@/app/admin/actions-state";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { MarkdownField } from "@/components/admin/MarkdownField";
-import {
-  defaultLocale,
-  locales,
-  localeLabels,
-  type Locale,
-} from "@/lib/i18n/config";
-import { cn } from "@/lib/utils";
-import type { PageCopy, Settings } from "@/lib/data/types";
+import type { Settings } from "@/lib/data/types";
 
 const FLASH_MS = 2000;
 
@@ -23,10 +15,6 @@ interface Props {
   editable: boolean;
 }
 
-const NON_DEFAULT_LOCALES = locales.filter((l) => l !== defaultLocale);
-
-const EMPTY_COPY: PageCopy = { heroEyebrow: "", heroTitle: "", heroSub: "", body: "" };
-
 export function SettingsForm({ settings, editable }: Props) {
   const router = useRouter();
   const [state, formAction] = useActionState<SaveSettingsState, FormData>(
@@ -34,8 +22,6 @@ export function SettingsForm({ settings, editable }: Props) {
     initialSettingsState,
   );
   const [justSavedTick, setJustSavedTick] = React.useState(0);
-  const [aboutTab, setAboutTab] = React.useState<Locale>(defaultLocale);
-  const [contactTab, setContactTab] = React.useState<Locale>(defaultLocale);
 
   React.useEffect(() => {
     if (state.status !== "ok" || !state.savedAt) return;
@@ -49,54 +35,62 @@ export function SettingsForm({ settings, editable }: Props) {
 
   return (
     <form action={formAction} className="space-y-10">
-      <Section title="Brand & contact">
-        <p className="text-xs text-[var(--color-on-surface-variant)]">
-          Locale-invariant — applies to every language.
-        </p>
+      <Section
+        title="Contact details"
+        hint="The phone, email, marina address and social links that appear in the footer + contact page sidebar across every locale."
+      >
         <fieldset className="grid gap-4 md:grid-cols-2" disabled={!editable}>
-          <Field label="Hero headline" name="heroHeadline" defaultValue={settings.heroHeadline} />
-          <Field label="Hero sub" name="heroSub" defaultValue={settings.heroSub} />
-          <Field label="WhatsApp number" name="whatsappNumber" defaultValue={settings.whatsappNumber} />
+          <Field label="Email" name="email" defaultValue={settings.email} />
+          <Field label="Phone" name="phone" defaultValue={settings.phone} />
           <Field
-            label="WhatsApp default message"
+            label="WhatsApp number"
+            name="whatsappNumber"
+            defaultValue={settings.whatsappNumber}
+          />
+          <Field
+            label="Address"
+            name="address"
+            defaultValue={settings.address}
+          />
+        </fieldset>
+      </Section>
+
+      <Section
+        title="WhatsApp pre-filled message"
+        hint="The text that pre-fills when a visitor taps any Book here CTA. Keep the qualifying lines (guests / dates / yacht type) so the team can triage fast."
+      >
+        <fieldset disabled={!editable}>
+          <TextArea
+            label="Message"
             name="whatsappDefaultMessage"
+            rows={5}
             defaultValue={settings.whatsappDefaultMessage}
           />
+        </fieldset>
+      </Section>
+
+      <Section title="Social links" hint="Each link renders an icon in the footer when filled in; leave blank to hide that icon.">
+        <fieldset className="grid gap-4 md:grid-cols-2" disabled={!editable}>
           <Field label="Instagram URL" name="instagramUrl" defaultValue={settings.instagramUrl} />
           <Field
             label="Instagram handle"
             name="instagramHandle"
             defaultValue={settings.instagramHandle}
           />
-          <Field label="Email" name="email" defaultValue={settings.email} />
-          <Field label="Phone" name="phone" defaultValue={settings.phone} />
-        </fieldset>
-        <fieldset disabled={!editable}>
-          <Field label="Address" name="address" defaultValue={settings.address} />
+          <Field
+            label="Facebook URL"
+            name="facebookUrl"
+            defaultValue={settings.facebookUrl ?? ""}
+            placeholder="https://www.facebook.com/…"
+          />
+          <Field
+            label="TikTok URL"
+            name="tiktokUrl"
+            defaultValue={settings.tiktokUrl ?? ""}
+            placeholder="https://www.tiktok.com/@…"
+          />
         </fieldset>
       </Section>
-
-      <PageCopySection
-        title="About page"
-        slug="about"
-        tab={aboutTab}
-        onTab={setAboutTab}
-        canonical={settings.about}
-        i18n={settings.aboutI18n}
-        editable={editable}
-        bodyRows={18}
-      />
-
-      <PageCopySection
-        title="Contact page"
-        slug="contact"
-        tab={contactTab}
-        onTab={setContactTab}
-        canonical={settings.contact}
-        i18n={settings.contactI18n}
-        editable={editable}
-        bodyRows={12}
-      />
 
       <div className="flex flex-wrap items-center gap-4">
         <SubmitButton
@@ -126,156 +120,23 @@ export function SettingsForm({ settings, editable }: Props) {
   );
 }
 
-interface PageCopySectionProps {
-  title: string;
-  /** Form field prefix — "about" or "contact". */
-  slug: "about" | "contact";
-  tab: Locale;
-  onTab: (lc: Locale) => void;
-  canonical: PageCopy;
-  i18n: Settings["aboutI18n"];
-  editable: boolean;
-  bodyRows: number;
-}
-
-/**
- * Renders a tab strip and one fieldset per locale. All locale fieldsets stay
- * mounted (just hidden via `display:none`) so values persist across tabs and
- * are submitted in one go. Non-EN locales show the EN value in the
- * placeholder as a hint of what to translate — leaving them empty makes the
- * public site fall back to EN.
- */
-function PageCopySection({
+function Section({
   title,
-  slug,
-  tab,
-  onTab,
-  canonical,
-  i18n,
-  editable,
-  bodyRows,
-}: PageCopySectionProps) {
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <Section title={title}>
-      <div role="tablist" aria-label={`${title} language`} className="flex flex-wrap gap-1.5">
-        {locales.map((lc) => (
-          <button
-            key={lc}
-            type="button"
-            role="tab"
-            aria-selected={tab === lc}
-            onClick={() => onTab(lc)}
-            className={cn(
-              "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs uppercase tracking-[0.15em] transition-colors",
-              tab === lc
-                ? "bg-[var(--color-primary)] text-white"
-                : "bg-[var(--color-surface-container)] text-[var(--color-on-surface)] hover:bg-[var(--color-surface-container-high)]",
-            )}
-          >
-            {localeLabels[lc]}
-            {lc === defaultLocale && (
-              <span className="ml-1 text-[9px] opacity-70">canonical</span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* English (canonical) — these write to the top-level `about`/`contact` columns */}
-      <PageCopyFields
-        prefix={slug}
-        copy={canonical}
-        editable={editable}
-        bodyRows={bodyRows}
-        hidden={tab !== defaultLocale}
-        canonicalCopy={null}
-      />
-
-      {/* Per-locale overrides — write to about_i18n[locale] / contact_i18n[locale] */}
-      {NON_DEFAULT_LOCALES.map((lc) => (
-        <PageCopyFields
-          key={lc}
-          prefix={`${slug}_${lc}`}
-          copy={(i18n[lc] as PageCopy | undefined) ?? EMPTY_COPY}
-          editable={editable}
-          bodyRows={bodyRows}
-          hidden={tab !== lc}
-          canonicalCopy={canonical}
-          locale={lc}
-        />
-      ))}
-
-      {tab !== defaultLocale && (
-        <p className="text-[11px] text-[var(--color-on-surface-variant)]">
-          Empty fields will fall back to English at render time.
-        </p>
-      )}
-    </Section>
-  );
-}
-
-interface PageCopyFieldsProps {
-  prefix: string;
-  copy: PageCopy;
-  editable: boolean;
-  bodyRows: number;
-  hidden: boolean;
-  /**
-   * When set, the EN canonical value is shown as placeholder text — helpful
-   * for translators who need to see the source while writing the override.
-   */
-  canonicalCopy: PageCopy | null;
-  locale?: Locale;
-}
-
-function PageCopyFields({
-  prefix,
-  copy,
-  editable,
-  bodyRows,
-  hidden,
-  canonicalCopy,
-  locale,
-}: PageCopyFieldsProps) {
-  return (
-    <div className={hidden ? "hidden" : "space-y-4"} aria-hidden={hidden}>
-      <fieldset className="grid gap-4 md:grid-cols-2" disabled={!editable}>
-        <Field
-          label="Hero eyebrow"
-          name={`${prefix}Eyebrow`}
-          defaultValue={copy.heroEyebrow}
-          placeholder={canonicalCopy?.heroEyebrow}
-        />
-        <Field
-          label="Hero title"
-          name={`${prefix}Title`}
-          defaultValue={copy.heroTitle}
-          placeholder={canonicalCopy?.heroTitle}
-        />
-      </fieldset>
-      <fieldset disabled={!editable}>
-        <Field
-          label="Hero sub"
-          name={`${prefix}Sub`}
-          defaultValue={copy.heroSub}
-          placeholder={canonicalCopy?.heroSub}
-        />
-      </fieldset>
-      <fieldset disabled={!editable}>
-        <MarkdownField
-          name={`${prefix}Body`}
-          defaultValue={copy.body}
-          rows={bodyRows}
-          label={locale ? `Body (markdown, ${localeLabels[locale]})` : "Body (markdown)"}
-        />
-      </fieldset>
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="space-y-4">
-      <h2 className="text-xs uppercase tracking-[0.2em] text-[var(--color-primary)]">{title}</h2>
+    <section className="space-y-4 rounded-3xl border border-[var(--color-outline-variant)]/40 bg-[var(--color-surface)] p-5 md:p-6">
+      <header>
+        <h2 className="font-serif text-xl text-[var(--color-on-surface)]">{title}</h2>
+        {hint && (
+          <p className="mt-1 text-xs text-[var(--color-on-surface-variant)]">{hint}</p>
+        )}
+      </header>
       {children}
     </section>
   );
@@ -300,6 +161,30 @@ function Field({
         defaultValue={defaultValue}
         placeholder={placeholder}
         className="mt-2 h-11 w-full rounded-full border border-[var(--color-outline)] bg-transparent px-4 text-sm normal-case tracking-normal text-[var(--color-on-surface)] placeholder:text-[var(--color-on-surface-variant)]/60 focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
+      />
+    </label>
+  );
+}
+
+function TextArea({
+  label,
+  name,
+  rows = 4,
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  rows?: number;
+  defaultValue?: string;
+}) {
+  return (
+    <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
+      {label}
+      <textarea
+        name={name}
+        rows={rows}
+        defaultValue={defaultValue}
+        className="mt-2 w-full rounded-2xl border border-[var(--color-outline)] bg-transparent p-3 text-sm normal-case tracking-normal focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
       />
     </label>
   );
