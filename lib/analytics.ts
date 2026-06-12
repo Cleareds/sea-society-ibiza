@@ -1,19 +1,17 @@
 "use client";
 
 /**
- * Thin wrapper around gtag for our custom GA4 events.
+ * Thin wrapper for our custom GTM dataLayer events.
  *
  * Single source of truth so any UI component fires events with a
- * consistent name + parameter shape. GTM tags can listen on the same
- * event name (gtag('event', …) pushes to window.dataLayer under the
- * hood, so GTM Triggers of type "Custom Event" with the matching
- * name will fire).
+ * consistent name + parameter shape. GTM Triggers of type "Custom
+ * Event" matching the `event` name pick these up and fan out to
+ * GA4 / Meta Pixel / etc.
  */
 
 declare global {
   interface Window {
-    gtag?: (...args: unknown[]) => void;
-    dataLayer?: unknown[];
+    dataLayer?: Record<string, unknown>[];
   }
 }
 
@@ -54,22 +52,21 @@ export interface BookHereContext {
 
 /**
  * Fire a `book_here_click` event. Always safe to call — no-ops if
- * gtag isn't loaded (e.g. user declined analytics in the cookie banner).
+ * GTM hasn't loaded (e.g. user declined consent in the cookie banner,
+ * so the dataLayer was never initialised).
  *
  * The page path is read live from window.location; the device class
  * is computed from innerWidth at click time so it reflects current
  * viewport, not viewport at hydration.
  */
 export function trackBookHereClick(ctx: BookHereContext): void {
-  if (typeof window === "undefined" || !window.gtag) return;
-  window.gtag("event", "book_here_click", {
+  if (typeof window === "undefined" || !window.dataLayer) return;
+  window.dataLayer.push({
+    event: "book_here_click",
     placement: ctx.placement,
     page_path: window.location.pathname,
     device: detectDevice(),
     boat: ctx.boat,
     experience: ctx.experience,
-    // sendBeacon transport so the request survives the navigation /
-    // new-tab open without being aborted.
-    transport_type: "beacon",
   });
 }
