@@ -1,7 +1,7 @@
-import Link from "next/link";
 import type { Settings } from "@/lib/data/types";
 import { localePath, type Locale } from "@/lib/i18n/config";
 import type { Translator } from "@/lib/i18n/messages";
+import { FooterLink } from "@/components/site/FooterLink";
 import { Logo } from "@/components/site/Logo";
 
 function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -66,12 +66,12 @@ export function Footer({ settings, locale, t }: FooterProps) {
             <p className="mt-6 max-w-md text-sm leading-relaxed text-[var(--color-on-surface-variant)]">
               {t("footer.summary")}
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
               <a
                 href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                className="inline-flex min-h-[44px] items-center gap-2 py-2 text-[var(--color-on-surface)] transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
                 aria-label="Sea Society on Instagram"
               >
                 <InstagramIcon className="h-4 w-4" />
@@ -82,7 +82,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
                   href={settings.facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                  className="inline-flex min-h-[44px] items-center gap-2 py-2 text-[var(--color-on-surface)] transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
                   aria-label="Sea Society on Facebook"
                 >
                   <FacebookIcon className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function Footer({ settings, locale, t }: FooterProps) {
                   href={settings.tiktokUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-[var(--color-on-surface)] hover:text-[var(--color-primary)]"
+                  className="inline-flex min-h-[44px] items-center gap-2 py-2 text-[var(--color-on-surface)] transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
                   aria-label="Sea Society on TikTok"
                 >
                   <TikTokIcon className="h-4 w-4" />
@@ -108,26 +108,44 @@ export function Footer({ settings, locale, t }: FooterProps) {
             <h2 className="text-xs uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
               {t("footer.explore")}
             </h2>
-            <ul className="mt-4 space-y-2 text-sm">
+            {/*
+             * Each link is an inline-flex 44px-tall row so the tap
+             * target meets WCAG 2.5.5 AAA / Apple HIG. Bare text-sm
+             * lines were too easy to miss on a trackpad, especially
+             * when the sticky CTA wrapper sat over the page bottom.
+             */}
+            <ul className="mt-2 flex flex-col text-sm">
               <li>
-                <Link href={lp("/fleet")} className="hover:text-[var(--color-primary)]">
+                <FooterLink
+                  href={lp("/fleet")}
+                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+                >
                   {t("nav.fleet")}
-                </Link>
+                </FooterLink>
               </li>
               <li>
-                <Link href={lp("/destinations")} className="hover:text-[var(--color-primary)]">
+                <FooterLink
+                  href={lp("/destinations")}
+                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+                >
                   {t("nav.destinations")}
-                </Link>
+                </FooterLink>
               </li>
               <li>
-                <Link href={lp("/about")} className="hover:text-[var(--color-primary)]">
+                <FooterLink
+                  href={lp("/about")}
+                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+                >
                   {t("nav.about")}
-                </Link>
+                </FooterLink>
               </li>
               <li>
-                <Link href={lp("/contact")} className="hover:text-[var(--color-primary)]">
+                <FooterLink
+                  href={lp("/contact")}
+                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+                >
                   {t("nav.contact")}
-                </Link>
+                </FooterLink>
               </li>
             </ul>
           </nav>
@@ -161,16 +179,22 @@ export function Footer({ settings, locale, t }: FooterProps) {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-[var(--color-outline-variant)]/40 pt-6 text-xs text-[var(--color-on-surface-variant)] md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Sea Society Ibiza. By Ibimar.</p>
-          <ul className="flex flex-wrap gap-4" aria-label="Legal and tools">
+          <ul className="flex flex-wrap gap-x-4" aria-label="Legal and tools">
             <li>
-              <Link href={lp("/privacy")} className="hover:text-[var(--color-primary)]">
+              <FooterLink
+                href={lp("/privacy")}
+                className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+              >
                 {t("footer.privacy")}
-              </Link>
+              </FooterLink>
             </li>
             <li>
-              <Link href={lp("/terms")} className="hover:text-[var(--color-primary)]">
+              <FooterLink
+                href={lp("/terms")}
+                className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+              >
                 {t("footer.terms")}
-              </Link>
+              </FooterLink>
             </li>
           </ul>
         </div>

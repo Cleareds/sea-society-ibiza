@@ -127,13 +127,15 @@ export function StickyBookHere({
 
   return (
     <div
+      // pointer-events stays `none` on the wrapper at all times so the
+      // empty flex space alongside the centred pill never intercepts
+      // clicks on whatever is behind it (the footer, page CTAs, etc).
+      // Only the anchor itself opts back in via pointer-events-auto.
       className={cn(
         // Mobile: stretches edge-to-edge inset-x-4. Desktop: shrinks to
         // a centred pill (auto width via w-auto on the anchor below).
         "pointer-events-none fixed inset-x-4 bottom-[max(env(safe-area-inset-bottom),0.75rem)] z-40 flex justify-center transition-all duration-300 md:inset-x-0 md:bottom-6",
-        show
-          ? "pointer-events-auto translate-y-0 opacity-100"
-          : "translate-y-4 opacity-0",
+        show ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
       )}
     >
       <a
@@ -141,7 +143,14 @@ export function StickyBookHere({
         target="_blank"
         rel="noopener noreferrer"
         onClick={onClick}
-        className="group relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#000000]/85 px-7 text-xs font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10"
+        className={cn(
+          "group pointer-events-auto relative inline-flex h-12 w-full max-w-md items-center justify-center gap-3 overflow-hidden rounded-full border border-white/30 bg-[#000000]/85 px-7 text-xs font-medium uppercase tracking-[0.22em] text-white shadow-2xl backdrop-blur-md transition-all duration-500 md:h-14 md:w-auto md:px-10",
+          // Disable the anchor too when hidden so it can't steal focus
+          // or be tab-activated while invisible.
+          !show && "pointer-events-none",
+        )}
+        tabIndex={show ? undefined : -1}
+        aria-hidden={show ? undefined : true}
       >
         <span
           aria-hidden
