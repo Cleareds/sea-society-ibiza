@@ -104,9 +104,9 @@ export default async function BoatDetailPage({
       />
 
       {/* Hero — full-bleed boat photo + name + model + tagline. For
-          the 9 boats with shipped footage, a yoyo-looped video plays
-          behind the copy; the poster is still the LCP element so
-          first paint is unchanged. */}
+          boats with shipped footage, a video plays once behind the
+          copy; the poster is still the LCP element so first paint is
+          unchanged. */}
       <section data-cursor-bg="dark" className="relative isolate min-h-[80vh] w-full overflow-hidden bg-[#06141a]">
         {heroVideo ? (
           <BoatHeroVideo

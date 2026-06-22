@@ -15,15 +15,11 @@ interface Props {
 }
 
 /**
- * Detail-page hero video player for the 9 boats with shipped footage.
+ * Detail-page hero video player for the boats with shipped footage.
  *
  * Playback model:
- *   - Plays the source clip forward ONCE on mount (no loop attribute,
- *     no yoyo encoding) and freezes on the last frame.
- *   - One replay is allowed PER PAGE VISIT: it fires when the user
- *     has scrolled to the bottom of the page and then scrolls back to
- *     the top. After that single replay, no more autoplay — the user
- *     can reload to see it again.
+ *   - Plays the source clip forward on mount and loops continuously
+ *     (restarts from the first frame each time it ends).
  *
  * Performance:
  *   - The poster image is rendered as a Next/Image with `priority` +
@@ -79,38 +75,6 @@ export function BoatHeroVideo({ poster, posterMobile, src1080, src720, alt }: Pr
     };
   }, [src]);
 
-  // One-time scroll-to-top replay. The user has to actually reach the
-  // bottom of the page (within 64px) and then scroll back to the top
-  // (within 32px). After firing once, the listener never fires again
-  // for this page mount.
-  React.useEffect(() => {
-    if (reduced || !src) return;
-    let hasReachedBottom = false;
-    let hasReplayed = false;
-    const onScroll = () => {
-      if (hasReplayed) return;
-      const y = window.scrollY;
-      const max =
-        document.documentElement.scrollHeight - window.innerHeight;
-      if (!hasReachedBottom && y >= max - 64) {
-        hasReachedBottom = true;
-        return;
-      }
-      if (hasReachedBottom && y <= 32) {
-        hasReplayed = true;
-        const v = videoRef.current;
-        if (v) {
-          v.currentTime = 0;
-          void v.play().catch(() => {
-            /* play() can reject if the tab is hidden — fine. */
-          });
-        }
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [reduced, src]);
-
   return (
     <>
       {/* LCP layer — poster image painted before any video byte arrives. */}
@@ -124,8 +88,8 @@ export function BoatHeroVideo({ poster, posterMobile, src1080, src720, alt }: Pr
         className="object-cover"
       />
       {/* Video overlay — cross-fades in once it can play. Skipped
-          entirely under prefers-reduced-motion or Save-Data. No
-          `loop` attribute: plays once, freezes on last frame. */}
+          entirely under prefers-reduced-motion or Save-Data. Loops
+          continuously. */}
       {!reduced && src && (
         <video
           ref={videoRef}
@@ -133,6 +97,7 @@ export function BoatHeroVideo({ poster, posterMobile, src1080, src720, alt }: Pr
           poster={poster}
           autoPlay
           muted
+          loop
           playsInline
           preload="metadata"
           disableRemotePlayback
