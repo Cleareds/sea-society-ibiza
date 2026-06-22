@@ -1,4 +1,5 @@
 import type { Boat, Experience, Faq, Settings } from "@/lib/data/types";
+import { locales } from "@/lib/i18n/config";
 import { absoluteUrl, SITE_NAME } from "./metadata";
 
 export function organizationLd(settings: Settings) {
@@ -17,6 +18,9 @@ export function organizationLd(settings: Settings) {
     description:
       "Luxury yacht charter agency based at Botafoc Marina, Ibiza. Day, sunset and multi-day charters across the Balearic Islands aboard a curated fleet of motor yachts from Pershing, Sunseeker, Mangusta, Princess, Riva and more.",
     priceRange: "€€€€",
+    // Signals to Google that the agency serves visitors in all four
+    // site locales — strengthens the Knowledge Panel for non-EN queries.
+    knowsLanguage: [...locales],
     sameAs: settings.instagramUrl ? [settings.instagramUrl] : undefined,
     email: settings.email,
     telephone: settings.phone,
