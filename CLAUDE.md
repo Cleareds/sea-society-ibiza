@@ -12,8 +12,10 @@ contact form.
 - Supabase (Postgres + Storage) — project ref `shubsfjvqgipjnyauyab`
 - Vercel hosting (`cleareds/sea-society-ibiza`)
 - TypeScript strict; LSP-based code intelligence
-- GA4 (`G-D9XJL0VGJL`) + Meta Pixel (`1518380376361088`) — both
-  consent-gated via the cookie banner (`components/site/Analytics.tsx`)
+- GA4 via GTM container (`GTM-KTN8M8RB`) + Meta Pixel
+  (`1740700350443275`, loaded directly, not via GTM) — both
+  consent-gated via the cookie banner (`components/site/Analytics.tsx`);
+  GTM gated on analytics-or-marketing, Pixel on marketing only
 
 ## i18n — four locales, translation parity is non-negotiable
 
