@@ -12,7 +12,34 @@
 declare global {
   interface Window {
     dataLayer?: Record<string, unknown>[];
+    fbq?: (...args: unknown[]) => void;
   }
+}
+
+/**
+ * Fire a Meta Pixel standard event (Contact, ViewContent, …).
+ *
+ * Safe to call anywhere: no-ops if the pixel never loaded (visitor
+ * declined marketing consent). On a cold page load the pixel script is
+ * `afterInteractive`, so a component effect can run before `fbq` is
+ * defined — we retry briefly, then give up (so a declined-consent
+ * session doesn't poll forever). For click-driven events `fbq` is
+ * already present, so the first attempt fires immediately.
+ */
+export function trackPixel(event: string, params?: Record<string, unknown>): void {
+  if (typeof window === "undefined") return;
+  const fire = () => {
+    if (typeof window.fbq === "function") {
+      window.fbq("track", event, params);
+      return true;
+    }
+    return false;
+  };
+  if (fire()) return;
+  let tries = 0;
+  const id = window.setInterval(() => {
+    if (fire() || ++tries >= 12) window.clearInterval(id);
+  }, 250);
 }
 
 type Device = "mobile" | "tablet" | "desktop";
@@ -60,12 +87,19 @@ export interface BookHereContext {
  * viewport, not viewport at hydration.
  */
 export function trackBookHereClick(ctx: BookHereContext): void {
-  if (typeof window === "undefined" || !window.dataLayer) return;
-  window.dataLayer.push({
+  if (typeof window === "undefined") return;
+  window.dataLayer?.push({
     event: "book_here_click",
     placement: ctx.placement,
     page_path: window.location.pathname,
     device: detectDevice(),
+    boat: ctx.boat,
+    experience: ctx.experience,
+  });
+  // A WhatsApp / chat enquiry is a Meta "Contact" conversion. Params
+  // are non-standard but let the marketer segment by placement / boat.
+  trackPixel("Contact", {
+    placement: ctx.placement,
     boat: ctx.boat,
     experience: ctx.experience,
   });

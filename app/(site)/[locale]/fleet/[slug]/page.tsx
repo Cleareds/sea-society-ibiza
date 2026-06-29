@@ -6,6 +6,7 @@ import { Check, Ruler, Users, BedDouble, Gauge, Calendar, Cog, Bath, Anchor } fr
 import { Section } from "@/components/site/Section";
 import { BoatCard } from "@/components/site/BoatCard";
 import { BoatHeroVideo } from "@/components/site/BoatHeroVideo";
+import { PixelViewContent } from "@/components/site/PixelViewContent";
 import { Gallery } from "@/components/site/Gallery";
 import { boatVideoForSlug } from "@/lib/boat-videos";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
@@ -101,6 +102,12 @@ export default async function BoatDetailPage({
           ]),
           boatProductLd(boat),
         ]}
+      />
+      <PixelViewContent
+        category="boat"
+        id={boat.slug}
+        name={boat.name}
+        value={boat.priceFrom}
       />
 
       {/* Hero — full-bleed boat photo + name + model + tagline. For

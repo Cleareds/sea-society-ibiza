@@ -6,6 +6,7 @@ import { Clock, Users, Anchor } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { BookHereCTA } from "@/components/site/BookHereCTA";
+import { PixelViewContent } from "@/components/site/PixelViewContent";
 import { MarkdownBody } from "@/components/site/MarkdownBody";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -97,6 +98,12 @@ export default async function ExperienceDetailPage({
           ]),
           experienceTripLd(exp),
         ]}
+      />
+      <PixelViewContent
+        category="experience"
+        id={exp.slug}
+        name={exp.title}
+        value={exp.priceFrom ?? undefined}
       />
 
       {/* Hero — full-bleed photo + name + Book here CTA (bottom-right on
