@@ -35,14 +35,16 @@ export const getBoatBySlug = (slug: string, locale: Locale = "en") =>
   supabaseEnabled() ? supa.getBoatBySlug(slug, locale) : dummy.getBoatBySlug(slug);
 export const getFeaturedBoats = (limit?: number, locale: Locale = "en") =>
   supabaseEnabled() ? supa.getFeaturedBoats(limit, locale) : dummy.getFeaturedBoats(limit);
-export const getExperiences = (locale: Locale = "en") =>
-  supabaseEnabled() ? supa.getExperiences(locale) : dummy.getExperiences();
+export const getExperiences = (locale: Locale = "en", includeDrafts = false) =>
+  supabaseEnabled() ? supa.getExperiences(locale, includeDrafts) : dummy.getExperiences(locale, includeDrafts);
 export const getAllExperiences = () =>
   supabaseEnabled() ? supa.getAllExperiences() : dummy.getAllExperiences();
 export const getExperienceById = (id: string) =>
   supabaseEnabled() ? supa.getExperienceById(id) : dummy.getExperienceById(id);
-export const getExperienceBySlug = (slug: string, locale: Locale = "en") =>
-  supabaseEnabled() ? supa.getExperienceBySlug(slug, locale) : dummy.getExperienceBySlug(slug);
+export const getExperienceBySlug = (slug: string, locale: Locale = "en", includeDrafts = false) =>
+  supabaseEnabled()
+    ? supa.getExperienceBySlug(slug, locale, includeDrafts)
+    : dummy.getExperienceBySlug(slug, locale, includeDrafts);
 export const getDestinations = (locale: Locale = "en") =>
   supabaseEnabled() ? supa.getDestinations(locale) : dummy.getDestinations();
 export const getAllDestinations = () =>

@@ -15,22 +15,12 @@ import {
 } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getExperienceBySlug, getExperiences, getSettings } from "@/lib/data";
-import { isLocale, locales, localePath, type Locale } from "@/lib/i18n/config";
+import { isAdminView } from "@/lib/admin-auth";
+import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
-export const revalidate = 3600;
-export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  try {
-    const items = await getExperiences();
-    return locales.flatMap((locale) =>
-      items.map((x) => ({ locale, slug: x.slug })),
-    );
-  } catch {
-    return [];
-  }
-}
+// Dynamic: unpublished experiences are shown only to a logged-in admin.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -39,7 +29,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   const lcForMeta = isLocale(locale) ? locale : "en";
-  const exp = await getExperienceBySlug(slug, lcForMeta);
+  const admin = await isAdminView();
+  const exp = await getExperienceBySlug(slug, lcForMeta, admin);
   if (!exp) return { title: "Experience not found" };
   const meta = pageMetadata({
     title: exp.metaTitle || exp.title,
@@ -65,11 +56,13 @@ export default async function ExperienceDetailPage({
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
 
+  const admin = await isAdminView();
   const [exp, all, settings] = await Promise.all([
-    getExperienceBySlug(slug, lc),
-    getExperiences(lc),
+    getExperienceBySlug(slug, lc, admin),
+    getExperiences(lc, admin),
     getSettings(),
   ]);
+  // Drafts only reach admins (includeDrafts is admin-gated); public 404s.
   if (!exp) notFound();
 
   const related = all.filter((x) => x.id !== exp.id).slice(0, 3);
@@ -96,9 +89,14 @@ export default async function ExperienceDetailPage({
             { name: t("nav.experiences"), path: lp("/experiences") },
             { name: exp.title, path: lp(`/experiences/${exp.slug}`) },
           ]),
-          experienceTripLd(exp),
+          ...(exp.isPublished ? [experienceTripLd(exp)] : []),
         ]}
       />
+      {!exp.isPublished && (
+        <div className="bg-black px-5 py-2 text-center text-xs uppercase tracking-[0.15em] text-white">
+          Draft — visible only to you while logged in. Hidden from visitors.
+        </div>
+      )}
       <PixelViewContent
         category="experience"
         id={exp.slug}

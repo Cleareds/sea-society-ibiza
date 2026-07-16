@@ -24,8 +24,10 @@ export async function getFeaturedBoats(limit = 6): Promise<Boat[]> {
     .slice(0, limit);
 }
 
-export async function getExperiences(): Promise<Experience[]> {
-  return experiences.filter((e) => e.isPublished).sort((a, b) => a.sortOrder - b.sortOrder);
+export async function getExperiences(_locale = "en", includeDrafts = false): Promise<Experience[]> {
+  return experiences
+    .filter((e) => includeDrafts || e.isPublished)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
 export async function getAllExperiences(): Promise<Experience[]> {
@@ -36,8 +38,14 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
   return experiences.find((e) => e.id === id) ?? null;
 }
 
-export async function getExperienceBySlug(slug: string): Promise<Experience | null> {
-  return experiences.find((e) => e.slug === slug && e.isPublished) ?? null;
+export async function getExperienceBySlug(
+  slug: string,
+  _locale = "en",
+  includeDrafts = false,
+): Promise<Experience | null> {
+  const e = experiences.find((x) => x.slug === slug);
+  if (!e || (!e.isPublished && !includeDrafts)) return null;
+  return e;
 }
 
 export async function getDestinations(): Promise<Destination[]> {

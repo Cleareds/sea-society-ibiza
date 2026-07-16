@@ -2,6 +2,7 @@ import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, PageSe
 import type { Locale } from "@/lib/i18n/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseStaticClient } from "@/lib/supabase/static";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 interface ExperienceRow {
   id: string;
@@ -251,14 +252,16 @@ function mapExperience(r: ExperienceRow, locale: Locale = "en"): Experience {
   };
 }
 
-export async function getExperiences(locale: Locale = "en"): Promise<Experience[]> {
-  const supabase = createSupabaseStaticClient();
-  const { data, error } = await supabase
-    .from("experiences")
-    .select("*")
-    .eq("is_published", true)
-    .order("sort_order", { ascending: true })
-    .returns<ExperienceRow[]>();
+/**
+ * Published experiences (default), or all experiences incl. drafts when
+ * `includeDrafts` is true. Drafts read via the service-role client — only
+ * pass includeDrafts after an admin gate (see isAdminView).
+ */
+export async function getExperiences(locale: Locale = "en", includeDrafts = false): Promise<Experience[]> {
+  const supabase = includeDrafts ? createSupabaseAdminClient() : createSupabaseStaticClient();
+  let query = supabase.from("experiences").select("*").order("sort_order", { ascending: true });
+  if (!includeDrafts) query = query.eq("is_published", true);
+  const { data, error } = await query.returns<ExperienceRow[]>();
   if (error) throw error;
   return (data ?? []).map((r) => mapExperience(r, locale));
 }
@@ -289,17 +292,14 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
 export async function getExperienceBySlug(
   slug: string,
   locale: Locale = "en",
+  includeDrafts = false,
 ): Promise<Experience | null> {
-  const supabase = createSupabaseStaticClient();
-  const { data, error } = await supabase
-    .from("experiences")
-    .select("*")
-    .eq("slug", slug)
-    .eq("is_published", true)
-    .returns<ExperienceRow[]>()
-    .maybeSingle();
-  if (error) throw error;
-  return data ? mapExperience(data, locale) : null;
+  const supabase = includeDrafts ? createSupabaseAdminClient() : createSupabaseStaticClient();
+  let query = supabase.from("experiences").select("*").eq("slug", slug);
+  if (!includeDrafts) query = query.eq("is_published", true);
+  const { data, error } = await query.returns<ExperienceRow[]>().maybeSingle();
+  if (error || !data) return null;
+  return mapExperience(data, locale);
 }
 
 function mapDestination(r: DestinationRow, locale: Locale = "en"): Destination {

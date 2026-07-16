@@ -10,12 +10,14 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, experienceItemListLd } from "@/lib/seo/jsonld";
 import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 import { getExperiences } from "@/lib/data";
+import { isAdminView } from "@/lib/admin-auth";
 import { addOns } from "@/lib/data/dummy";
 // (photo dummy refs replaced by /sea-society/site/* assets)
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
 
-export const revalidate = 3600;
+// Dynamic: unpublished experiences are shown only to a logged-in admin.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -44,7 +46,8 @@ export default async function ExperiencesPage({
   const lc = locale as Locale;
   const t = getMessages(lc);
   const lp = (path: string) => localePath(lc, path);
-  const experiences = await getExperiences(lc);
+  const admin = await isAdminView();
+  const experiences = await getExperiences(lc, admin);
 
   return (
     <>
@@ -54,7 +57,7 @@ export default async function ExperiencesPage({
             { name: t("breadcrumb.home"), path: lp("/") },
             { name: t("nav.experiences"), path: lp("/experiences") },
           ]),
-          experienceItemListLd(experiences),
+          experienceItemListLd(experiences.filter((x) => x.isPublished)),
         ]}
       />
 
@@ -90,8 +93,13 @@ export default async function ExperiencesPage({
                 </Link>
               </div>
               <div className={i % 2 === 1 ? "md:order-1" : ""}>
-                <p className="text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
+                <p className="flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-[var(--color-primary)]">
                   0{i + 1}
+                  {!x.isPublished && (
+                    <span className="rounded-full bg-black/70 px-2.5 py-1 tracking-[0.15em] text-white">
+                      Draft · hidden
+                    </span>
+                  )}
                 </p>
                 <h2 className="mt-3 font-serif text-4xl text-[var(--color-on-surface)] md:text-5xl">
                   <Link
