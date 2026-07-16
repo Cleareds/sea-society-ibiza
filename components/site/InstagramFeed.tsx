@@ -54,7 +54,7 @@ export async function InstagramFeed({ handle, href, tone = "light", accentClassN
           {handle}
         </a>
       </div>
-      <ul className="grid w-full grid-cols-2 md:grid-cols-6">
+      <ul className="mx-auto grid w-full max-w-(--spacing-container-max) grid-cols-2 px-5 md:grid-cols-6 md:px-10">
         {media.map((m, i) => (
           <Tile key={m.id} media={m} hideOnMobile={i >= 6} eager={i < 6} />
         ))}

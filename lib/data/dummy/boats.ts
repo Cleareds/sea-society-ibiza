@@ -53,7 +53,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "27.45 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 2 twin" },
       { icon: "speed", label: "Max speed", value: "34 kn" },
       { icon: "year", label: "Refit", value: "2024" },
@@ -108,7 +108,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "32.92 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 10 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 10 overnight" },
       { icon: "cabins", label: "Cabins", value: "1 master · 2 VIP · 1 quadruple" },
       { icon: "speed", label: "Max speed", value: "36 kn" },
       { icon: "year", label: "Refit", value: "2023" },
@@ -160,7 +160,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "18.42 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin" },
       { icon: "speed", label: "Max speed", value: "36 kn" },
       { icon: "year", label: "Year", value: "2018" },
@@ -214,7 +214,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "18.94 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin" },
       { icon: "speed", label: "Max speed", value: "48 kn" },
       { icon: "year", label: "Year", value: "2025" },
@@ -268,7 +268,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "28.70 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "4 doubles" },
       { icon: "speed", label: "Max speed", value: "28 kn" },
       { icon: "year", label: "Year", value: "2020" },
@@ -321,7 +321,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "27.00 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 2 twins" },
       { icon: "speed", label: "Cruise", value: "13 kn (200 l/h)" },
       { icon: "anchor", label: "Stabilizers", value: "Zero-speed fins" },
@@ -374,7 +374,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "24.00 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin + 1 bunk" },
       { icon: "speed", label: "Max speed", value: "35 kn" },
       { icon: "year", label: "Refit", value: "2025" },
@@ -428,7 +428,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "27.42 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 2 twins" },
       { icon: "speed", label: "Max speed", value: "42 kn" },
       { icon: "year", label: "Refit", value: "2025" },
@@ -482,7 +482,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "16.12 m" },
-      { icon: "guests", label: "Guests", value: "9 day · 4 night" },
+      { icon: "guests", label: "Guests", value: "9 daytime · 4 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles" },
       { icon: "speed", label: "Max speed", value: "37 kn" },
       { icon: "year", label: "Refit", value: "2025" },
@@ -535,7 +535,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "24.50 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 2 twins" },
       { icon: "speed", label: "Max speed", value: "24 kn" },
       { icon: "year", label: "Refit", value: "2025 · new engines 2024" },
@@ -589,7 +589,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "22.25 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin" },
       { icon: "speed", label: "Max speed", value: "35 kn" },
       { icon: "year", label: "Refit", value: "2025" },
@@ -642,7 +642,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "22.00 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin" },
       { icon: "speed", label: "Max speed", value: "39 kn" },
       { icon: "year", label: "Refit", value: "2022" },
@@ -695,7 +695,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "22.26 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin" },
       { icon: "speed", label: "Cruise / max", value: "35 / 40 kn" },
       { icon: "year", label: "Refit", value: "2023" },
@@ -749,7 +749,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "21.60 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 4 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 4 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles" },
       { icon: "speed", label: "Max speed", value: "38 kn" },
       { icon: "year", label: "Refit", value: "2022" },
@@ -799,7 +799,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length / Beam", value: "23.60 m / 11 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 8 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 8 overnight" },
       { icon: "cabins", label: "Cabins", value: "4 doubles, all en-suite" },
       { icon: "anchor", label: "Sail area", value: "170 m² main · 340 m² gennaker" },
       { icon: "year", label: "Year", value: "2022 · refit 2024" },
@@ -849,7 +849,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "22.38 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 twin" },
       { icon: "speed", label: "Cruise", value: "22 kn" },
       { icon: "year", label: "Refit", value: "2023" },
@@ -898,7 +898,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "9.40 m" },
-      { icon: "guests", label: "Guests", value: "9 day" },
+      { icon: "guests", label: "Guests", value: "9 daytime" },
       { icon: "bathrooms", label: "Bathrooms", value: "1" },
       { icon: "speed", label: "Cruise", value: "22 kn" },
       { icon: "year", label: "Refit", value: "2022" },
@@ -947,7 +947,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "12.40 m" },
-      { icon: "guests", label: "Guests", value: "11 day" },
+      { icon: "guests", label: "Guests", value: "11 daytime" },
       { icon: "cabins", label: "Layout", value: "Open + 1 cabin" },
       { icon: "speed", label: "Cruise", value: "22 kn" },
       { icon: "year", label: "Refit", value: "2022" },
@@ -996,7 +996,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "11.98 m" },
-      { icon: "guests", label: "Guests", value: "9 day" },
+      { icon: "guests", label: "Guests", value: "9 daytime" },
       { icon: "cabins", label: "Layout", value: "Open cabin + sofa" },
       { icon: "speed", label: "Cruise", value: "22 kn" },
       { icon: "year", label: "Refit", value: "2022" },
@@ -1047,7 +1047,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "16.12 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "1 double + 1 twin + 1 bunk" },
       { icon: "speed", label: "Cruise", value: "22 kn" },
       { icon: "year", label: "Refit", value: "2024" },
@@ -1098,7 +1098,7 @@ export const boats: Boat[] = [
     whatIncluded: standardIncluded,
     highlights: [
       { icon: "length", label: "Length", value: "18.20 m" },
-      { icon: "guests", label: "Guests", value: "12 day · 6 night" },
+      { icon: "guests", label: "Guests", value: "12 daytime · 6 overnight" },
       { icon: "cabins", label: "Cabins", value: "2 doubles + 1 bunk" },
       { icon: "speed", label: "Cruise", value: "23 kn" },
       { icon: "year", label: "Refit", value: "2023" },

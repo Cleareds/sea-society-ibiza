@@ -373,6 +373,25 @@ export async function saveJourneyImages(
   return { status: "ok", message: "Journey tiles saved.", savedAt: Date.now() };
 }
 
+/**
+ * Persist a new fleet order. `orderedIds` is the full list of boat ids in
+ * the desired display order; each is written back as sort_order 1..n, which
+ * is exactly what the public /fleet grid and admin list sort by.
+ */
+export async function reorderBoats(orderedIds: string[]) {
+  if (!isSupabaseConfigured()) return;
+  if (!Array.isArray(orderedIds) || orderedIds.length === 0) return;
+  const supabase = await createSupabaseServerClient();
+  await Promise.all(
+    orderedIds.map((id, i) =>
+      supabase.from("boats").update({ sort_order: i + 1 }).eq("id", id),
+    ),
+  );
+  revalidatePath("/admin/boats");
+  revalidatePath("/fleet");
+  revalidatePath("/");
+}
+
 export async function deleteBoat(formData: FormData) {
   if (!isSupabaseConfigured()) return;
   const id = String(formData.get("id") ?? "");

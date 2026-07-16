@@ -298,7 +298,7 @@ export default async function BoatDetailPage({
                   Tell us your dates.
                 </p>
                 <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
-                  From €{eurFmt.format(boat.priceFrom)} / day + VAT
+                  From €{eurFmt.format(boat.priceFrom)} / day + VAT + fuel
                   {boat.baseHarbour ? ` · ${boat.baseHarbour}` : ""}
                 </p>
                 <p className="mt-6 text-sm leading-relaxed text-[var(--color-on-surface-variant)]">

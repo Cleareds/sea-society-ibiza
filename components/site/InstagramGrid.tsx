@@ -6,10 +6,12 @@ import type { Locale } from "@/lib/i18n/config";
  * "Follow the journey" — full-bleed photo wall.
  *
  * Layout brief:
- *   - Title row stays inside the page container (`max-w-(--spacing-container-max)`)
- *     so it aligns with the rest of the page copy.
- *   - The grid itself bleeds to the viewport edges with NO gap between
- *     tiles, NO rounded corners — reads as a single continuous wall.
+ *   - Title row AND the grid both sit inside the page container
+ *     (`max-w-(--spacing-container-max)`, same px padding) so the
+ *     heading, handle and photo wall all align to the site margin.
+ *   - Tiles keep NO gap and NO rounded corners — reads as a single
+ *     continuous wall, now inset to the page margin rather than
+ *     bleeding to the viewport edges.
  *   - Desktop:  6 cols × 3 rows = 18 tiles, smaller individual frames so
  *               the section reads as a tight Instagram-style mosaic.
  *   - Mobile:   2 cols × 3 rows = 6 tiles (the remaining 12 are hidden) —
@@ -64,7 +66,7 @@ export function InstagramGrid({ handle, href, tone = "light", accentClassName, t
           {handle}
         </a>
       </div>
-      <ul className="grid w-full grid-cols-2 md:grid-cols-6">
+      <ul className="mx-auto grid w-full max-w-(--spacing-container-max) grid-cols-2 px-5 md:grid-cols-6 md:px-10">
         {renderTiles.map((tile, i) => (
           <li
             key={tile.src + i}
