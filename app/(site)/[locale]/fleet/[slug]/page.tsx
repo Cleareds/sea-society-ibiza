@@ -182,7 +182,7 @@ export default async function BoatDetailPage({
                   <p className="text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
                     {h.label}
                   </p>
-                  <p className="font-serif text-lg leading-tight text-[var(--color-on-surface)] md:text-xl">
+                  <p className="font-serif text-lg leading-tight text-balance text-[var(--color-on-surface)] md:text-xl">
                     {h.value}
                   </p>
                 </div>

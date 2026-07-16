@@ -142,9 +142,17 @@ export function Footer({ settings, locale, t }: FooterProps) {
               <li>
                 <FooterLink
                   href={lp("/contact")}
-                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:underline focus-visible:outline-none"
+                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:outline-none focus-visible:underline"
                 >
                   {t("nav.contact")}
+                </FooterLink>
+              </li>
+              <li>
+                <FooterLink
+                  href={lp("/faq")}
+                  className="inline-flex min-h-[44px] items-center py-2 transition-colors hover:text-[var(--color-primary)] focus-visible:text-[var(--color-primary)] focus-visible:outline-none focus-visible:underline"
+                >
+                  {t("nav.faq")}
                 </FooterLink>
               </li>
             </ul>
