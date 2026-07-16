@@ -1,4 +1,4 @@
-import type { Boat, EnquiryInput, Experience, Destination, Faq, Settings } from "../types";
+import type { Boat, EnquiryInput, Experience, Destination, Faq, PageSeoRecord, Settings } from "../types";
 import { boats } from "./boats";
 import { experiences } from "./experiences";
 import { destinations } from "./destinations";
@@ -58,6 +58,15 @@ export async function getFaqs(): Promise<Faq[]> {
 
 export async function getSettings(): Promise<Settings> {
   return settings;
+}
+
+/** Dummy mode has no page-SEO overrides — pages use their copy.ts defaults. */
+export async function getPageSeo(): Promise<{ title?: string; description?: string } | null> {
+  return null;
+}
+
+export async function getAllPageSeo(): Promise<Record<string, PageSeoRecord>> {
+  return {};
 }
 
 export async function createEnquiry(input: EnquiryInput): Promise<void> {

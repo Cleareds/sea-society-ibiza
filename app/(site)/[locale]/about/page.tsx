@@ -7,7 +7,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { InstagramGrid } from "@/components/site/InstagramGrid";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 import { getSettings } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -33,7 +33,7 @@ export async function generateMetadata({
     fr: "Sea Society est créée par trois Belges — Lauren, Dorine et Leentje — qui orchestrent des expériences de charter inoubliables depuis Marina Botafoc, Ibiza, en partenariat avec Ibimar.",
     nl: "Sea Society wordt gerund door drie Belgische vrouwen — Lauren, Dorine en Leentje — die onvergetelijke charterervaringen samenstellen vanuit Marina Botafoc, Ibiza, in samenwerking met Ibimar.",
   };
-  return pageMetadata({
+  return pageMetadataWithSeo("about", {
     title: titleByLocale[lc],
     description: descByLocale[lc],
     path: "/about",

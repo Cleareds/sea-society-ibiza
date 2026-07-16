@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { defaultLocale, locales, localePath, type Locale } from "@/lib/i18n/config";
+import { getPageSeo } from "@/lib/data";
 
 export const SITE_NAME = "Sea Society Ibiza";
 export const SITE_TAGLINE = "Luxury Yacht Charter";
@@ -73,4 +74,22 @@ export function pageMetadata({
       images: [ogImage],
     },
   };
+}
+
+/**
+ * Like {@link pageMetadata}, but first checks the `page_seo` table for an
+ * admin-editable title/description override for `pageKey` in the input locale.
+ * Each field falls back to the passed-in default when no override is set, so
+ * callers keep their copy.ts defaults as the baseline.
+ */
+export async function pageMetadataWithSeo(
+  pageKey: string,
+  input: PageMetaInput,
+): Promise<Metadata> {
+  const seo = await getPageSeo(pageKey, input.locale ?? defaultLocale);
+  return pageMetadata({
+    ...input,
+    title: seo?.title ?? input.title,
+    description: seo?.description ?? input.description,
+  });
 }

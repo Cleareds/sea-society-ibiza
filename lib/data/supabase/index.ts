@@ -1,4 +1,4 @@
-import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, Settings, Testimonial } from "../types";
+import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, PageSeoRecord, Settings, Testimonial } from "../types";
 import type { Locale } from "@/lib/i18n/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseStaticClient } from "@/lib/supabase/static";
@@ -372,6 +372,50 @@ export async function getFaqs(): Promise<Faq[]> {
     sortOrder: r.sort_order,
     isPublished: r.is_published,
   }));
+}
+
+interface PageSeoRow {
+  page_key: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  i18n: Partial<Record<string, { meta_title?: string; meta_description?: string }>> | null;
+}
+
+/**
+ * Editable meta override for a top-level page. Returns only the fields that
+ * are actually set (English column, or the locale's i18n override); the
+ * caller falls back to the page's built-in copy.ts default for anything
+ * missing. Returns null when there's no row / nothing set.
+ */
+export async function getPageSeo(
+  pageKey: string,
+  locale: Locale = "en",
+): Promise<{ title?: string; description?: string } | null> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase
+    .from("page_seo")
+    .select("*")
+    .eq("page_key", pageKey)
+    .maybeSingle()
+    .returns<PageSeoRow>();
+  if (error || !data) return null;
+  const t = locale !== "en" ? data.i18n?.[locale] : undefined;
+  const title = (t?.meta_title ?? data.meta_title) || undefined;
+  const description = (t?.meta_description ?? data.meta_description) || undefined;
+  if (!title && !description) return null;
+  return { title, description };
+}
+
+/** Raw page_seo rows keyed by page_key — for the admin editor to prefill. */
+export async function getAllPageSeo(): Promise<Record<string, PageSeoRecord>> {
+  const supabase = createSupabaseStaticClient();
+  const { data, error } = await supabase.from("page_seo").select("*").returns<PageSeoRow[]>();
+  if (error || !data) return {};
+  const out: Record<string, PageSeoRecord> = {};
+  for (const r of data) {
+    out[r.page_key] = { metaTitle: r.meta_title, metaDescription: r.meta_description, i18n: r.i18n ?? {} };
+  }
+  return out;
 }
 
 export async function getSettings(): Promise<Settings> {

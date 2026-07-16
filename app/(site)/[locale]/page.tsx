@@ -7,7 +7,7 @@ import { HomeWater3DScene } from "@/components/site/HomeWater3DScene";
 import { InstagramGrid } from "@/components/site/InstagramGrid";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { websiteLd, fleetItemListLd } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 import { getFeaturedBoats, getSettings } from "@/lib/data";
 import { isLocale, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -29,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata({
+  return pageMetadataWithSeo("home", {
     title: "Luxury yacht charter in Ibiza & Formentera",
     description:
       "19 luxury yachts from Botafoc Marina, Ibiza. Day trips, sunset cruises and multi-day Balearic charters — handled by Ibimar with 20+ years on the water.",

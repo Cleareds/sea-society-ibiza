@@ -50,6 +50,10 @@ export const getAllDestinations = () =>
 export const getDestinationById = (id: string) =>
   supabaseEnabled() ? supa.getDestinationById(id) : dummy.getDestinationById(id);
 export const getFaqs = () => (supabaseEnabled() ? supa.getFaqs() : dummy.getFaqs());
+export const getPageSeo = (pageKey: string, locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getPageSeo(pageKey, locale) : dummy.getPageSeo();
+export const getAllPageSeo = () =>
+  supabaseEnabled() ? supa.getAllPageSeo() : dummy.getAllPageSeo();
 export const getSettings = () => (supabaseEnabled() ? supa.getSettings() : dummy.getSettings());
 export const createEnquiry = (input: import("./types").EnquiryInput) =>
   supabaseEnabled() ? supa.createEnquiry(input) : dummy.createEnquiry(input);

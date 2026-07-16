@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ParallaxJourney } from "@/components/site/ParallaxJourney";
 import { isLocale, type Locale } from "@/lib/i18n/config";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 
 export const revalidate = 3600;
 
@@ -59,7 +59,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata({
+  return pageMetadataWithSeo("journey", {
     title: "A journey, from the sky to the sea",
     description:
       "A cinematic descent through clouds, mountains and Mediterranean light — and into Sea Society Ibiza's fleet at Botafoc Marina.",

@@ -5,7 +5,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, faqPageLd } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 import { getFaqs } from "@/lib/data";
 import { isLocale, localePath, type Locale } from "@/lib/i18n/config";
 import { getMessages } from "@/lib/i18n/messages";
@@ -22,7 +22,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const lc = isLocale(locale) ? locale : "en";
   const c = getFaqCopy(lc);
-  return pageMetadata({
+  return pageMetadataWithSeo("faq", {
     title: c.metaTitle,
     description: c.metaDescription,
     path: "/faq",

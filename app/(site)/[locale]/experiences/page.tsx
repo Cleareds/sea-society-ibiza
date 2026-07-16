@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, experienceItemListLd } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 import { getExperiences } from "@/lib/data";
 import { addOns } from "@/lib/data/dummy";
 // (photo dummy refs replaced by /sea-society/site/* assets)
@@ -23,7 +23,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const meta = pageMetadata({
+  const meta = await pageMetadataWithSeo("experiences", {
     title: "Experiences",
     description:
       "Day trips, sunset cruises, multi-day Balearic charters and special occasions. Plus add-ons: catering, water toys, photographer, florals, champagne.",

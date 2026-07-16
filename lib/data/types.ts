@@ -124,6 +124,13 @@ export interface PageCopy {
   body: string;
 }
 
+/** Admin-editable meta override for a top-level page (see the page_seo table). */
+export interface PageSeoRecord {
+  metaTitle: string | null;
+  metaDescription: string | null;
+  i18n: Partial<Record<string, { meta_title?: string; meta_description?: string }>>;
+}
+
 /**
  * Partial per-locale overrides keyed by Locale (excluding "en", which is
  * stored canonically in the row's top-level columns). Any missing field

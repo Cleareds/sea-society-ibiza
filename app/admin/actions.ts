@@ -506,3 +506,51 @@ export async function saveBoat(
     boatId: id,
   };
 }
+
+// ---------- Page SEO (editable meta title/description) ----------
+
+/**
+ * Upsert the editable meta title/description for one top-level page.
+ * English lives in the top-level columns; es/fr/nl go into the i18n JSONB.
+ * Empty fields are stored as null / omitted so pages fall back to their
+ * built-in copy.ts defaults per field.
+ */
+export async function savePageSeo(formData: FormData) {
+  if (!isSupabaseConfigured()) return;
+  const pageKey = String(formData.get("pageKey") ?? "").trim();
+  if (!pageKey) return;
+
+  const clean = (k: string) => {
+    const v = String(formData.get(k) ?? "").trim();
+    return v || null;
+  };
+
+  const i18n: Record<string, { meta_title?: string; meta_description?: string }> = {};
+  for (const lc of ["es", "fr", "nl"]) {
+    const mt = clean(`${lc}_title`);
+    const md = clean(`${lc}_description`);
+    if (mt || md) {
+      const entry: { meta_title?: string; meta_description?: string } = {};
+      if (mt) entry.meta_title = mt;
+      if (md) entry.meta_description = md;
+      i18n[lc] = entry;
+    }
+  }
+
+  const supabase = await createSupabaseServerClient();
+  await supabase.from("page_seo").upsert(
+    {
+      page_key: pageKey,
+      meta_title: clean("en_title"),
+      meta_description: clean("en_description"),
+      i18n,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "page_key" },
+  );
+
+  // Metadata is generated per page in generateMetadata; revalidate the whole
+  // tree so every locale variant picks up the change.
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/seo");
+}

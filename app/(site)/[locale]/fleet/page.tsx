@@ -10,7 +10,7 @@ import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, fleetItemListLd } from "@/lib/seo/jsonld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { pageMetadataWithSeo } from "@/lib/seo/metadata";
 import { getBoats } from "@/lib/data";
 // (photo dummy refs replaced by /sea-society/site/* assets)
 import type { Boat } from "@/lib/data/types";
@@ -25,7 +25,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata({
+  return pageMetadataWithSeo("fleet", {
     title: "The Fleet",
     description:
       "Explore 19 luxury yachts available for charter from Botafoc Marina, Ibiza. Filter by type, capacity, brand and budget.",
