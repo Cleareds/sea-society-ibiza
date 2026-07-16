@@ -19,7 +19,9 @@
     "summary": "Affrètement de yachts de luxe depuis Marina Botafoc, Ibiza. Vingt ans sur l'eau, un seul appel.",
     "rightsReserved": "Tous droits réservés",
     "privacy": "Confidentialité",
-    "terms": "Conditions et cookies"
+    "terms": "Conditions et cookies",
+    "googleReviews": "{count} avis Google",
+    "onGoogle": "sur Google"
   },
   "cta": {
     "exploreTheFleet": "Découvrir la flotte",

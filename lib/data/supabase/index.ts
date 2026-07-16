@@ -50,6 +50,9 @@ interface SettingsRow {
   instagram_handle: string | null;
   facebook_url: string | null;
   tiktok_url: string | null;
+  google_rating: number | null;
+  google_review_count: number | null;
+  google_reviews_url: string | null;
   email: string | null;
   phone: string | null;
   address: string | null;
@@ -441,6 +444,9 @@ export async function getSettings(): Promise<Settings> {
     instagramHandle: data.instagram_handle ?? "",
     facebookUrl: data.facebook_url ?? undefined,
     tiktokUrl: data.tiktok_url ?? undefined,
+    googleRating: data.google_rating ?? undefined,
+    googleReviewCount: data.google_review_count ?? undefined,
+    googleReviewsUrl: data.google_reviews_url ?? undefined,
     email: data.email ?? "",
     phone: data.phone ?? "",
     address: data.address ?? "",

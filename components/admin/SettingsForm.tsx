@@ -92,6 +92,32 @@ export function SettingsForm({ settings, editable }: Props) {
         </fieldset>
       </Section>
 
+      <Section
+        title="Google reviews"
+        hint="Rating + count shown as a badge in the footer and added to the site's structured data (AggregateRating) for search results. Leave the rating blank to hide it entirely."
+      >
+        <fieldset className="grid gap-4 md:grid-cols-3" disabled={!editable}>
+          <Field
+            label="Average rating (e.g. 4.9)"
+            name="googleRating"
+            defaultValue={settings.googleRating != null ? String(settings.googleRating) : ""}
+            placeholder="4.9"
+          />
+          <Field
+            label="Number of reviews"
+            name="googleReviewCount"
+            defaultValue={settings.googleReviewCount != null ? String(settings.googleReviewCount) : ""}
+            placeholder="24"
+          />
+          <Field
+            label="Reviews link"
+            name="googleReviewsUrl"
+            defaultValue={settings.googleReviewsUrl ?? ""}
+            placeholder="https://g.page/…"
+          />
+        </fieldset>
+      </Section>
+
       <div className="flex flex-wrap items-center gap-4">
         <SubmitButton
           idleLabel="Save settings"

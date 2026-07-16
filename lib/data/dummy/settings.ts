@@ -11,6 +11,10 @@ export const settings: Settings = {
   email: "hello@seasocietyibiza.com",
   phone: "+32 479 38 80 46",
   address: "Botafoc Marina, 07800 Ibiza, Balearic Islands, Spain",
+  // Dev-only example values; production is entered in /admin/settings.
+  googleRating: 5.0,
+  googleReviewCount: 24,
+  googleReviewsUrl: "https://www.google.com/search?q=Sea+Society+Ibiza+reviews",
   stats: [
     { label: "Luxury yachts", value: "19" },
     { label: "Years of expertise", value: "20+" },

@@ -150,6 +150,12 @@ export interface Settings {
   email: string;
   phone: string;
   address: string;
+  /** Average Google rating (e.g. 4.9). Undefined hides the rating + AggregateRating markup. */
+  googleRating?: number;
+  /** Number of Google reviews behind the rating. */
+  googleReviewCount?: number;
+  /** Link to the Google reviews / business profile. */
+  googleReviewsUrl?: string;
   stats: Array<{ label: string; value: string }>;
   heroHeadline: string;
   heroSub: string;

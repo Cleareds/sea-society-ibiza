@@ -19,7 +19,9 @@
     "summary": "Luxury yacht charter from Botafoc Marina, Ibiza. Twenty years on the water, one phone call.",
     "rightsReserved": "All rights reserved",
     "privacy": "Privacy",
-    "terms": "Terms & cookies"
+    "terms": "Terms & cookies",
+    "googleReviews": "{count} Google reviews",
+    "onGoogle": "on Google"
   },
   "cta": {
     "exploreTheFleet": "Explore the fleet",

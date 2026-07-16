@@ -305,6 +305,12 @@ export async function saveSettings(
   const text = (key: string, col: string) => {
     if (formData.has(key)) row[col] = String(formData.get(key) ?? "") || null;
   };
+  const num = (key: string, col: string) => {
+    if (formData.has(key)) {
+      const v = String(formData.get(key) ?? "").trim();
+      row[col] = v === "" ? null : Number(v);
+    }
+  };
 
   text("whatsappNumber", "whatsapp_number");
   text("whatsappDefaultMessage", "whatsapp_default_message");
@@ -312,6 +318,9 @@ export async function saveSettings(
   text("instagramHandle", "instagram_handle");
   text("facebookUrl", "facebook_url");
   text("tiktokUrl", "tiktok_url");
+  num("googleRating", "google_rating");
+  num("googleReviewCount", "google_review_count");
+  text("googleReviewsUrl", "google_reviews_url");
   text("email", "email");
   text("phone", "phone");
   text("address", "address");

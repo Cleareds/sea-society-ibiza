@@ -22,6 +22,19 @@ export function organizationLd(settings: Settings) {
     // site locales — strengthens the Knowledge Panel for non-EN queries.
     knowsLanguage: [...locales],
     sameAs: settings.instagramUrl ? [settings.instagramUrl] : undefined,
+    // Google reviews aggregate — only emitted when a rating is set in
+    // /admin/settings, and backed by the visible rating badge in the footer.
+    ...(settings.googleRating
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: settings.googleRating,
+            reviewCount: settings.googleReviewCount ?? undefined,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
     email: settings.email,
     telephone: settings.phone,
     address: {

@@ -49,6 +49,14 @@ function TikTokIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function Star(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
+      <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
+    </svg>
+  );
+}
+
 interface FooterProps {
   settings: Settings;
   locale: Locale;
@@ -102,6 +110,29 @@ export function Footer({ settings, locale, t }: FooterProps) {
                 </a>
               )}
             </div>
+            {settings.googleRating ? (
+              <a
+                href={settings.googleReviewsUrl ?? undefined}
+                target={settings.googleReviewsUrl ? "_blank" : undefined}
+                rel={settings.googleReviewsUrl ? "noopener noreferrer" : undefined}
+                className="mt-5 inline-flex items-center gap-2 text-sm text-[var(--color-on-surface-variant)] transition-colors hover:text-[var(--color-primary)]"
+                aria-label={`${settings.googleRating.toFixed(1)} out of 5 from ${settings.googleReviewCount ?? ""} Google reviews`}
+              >
+                <span className="flex" aria-hidden>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 text-[#000]" />
+                  ))}
+                </span>
+                <span className="font-medium text-[var(--color-on-surface)]">
+                  {settings.googleRating.toFixed(1)}
+                </span>
+                <span>
+                  {settings.googleReviewCount
+                    ? t("footer.googleReviews", { count: String(settings.googleReviewCount) })
+                    : t("footer.onGoogle")}
+                </span>
+              </a>
+            ) : null}
           </div>
 
           <nav aria-label={t("footer.explore")}>
