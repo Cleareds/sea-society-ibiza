@@ -12,9 +12,11 @@ export const BLOCK_CATALOG: Array<{ type: ExperienceBlockType; label: string }> 
   { type: "paragraph", label: "Paragraph" },
   { type: "image", label: "Image" },
   { type: "quote", label: "Quote" },
+  { type: "columns", label: "Columns" },
 ];
 
-/** Which fields each block type uses (drives the editor + validation). */
+/** Which fields each block type uses (drives the editor + validation).
+ *  `columns` is handled specially (nested text/image cells). */
 export const BLOCK_FIELDS: Record<
   ExperienceBlockType,
   { localizedText: Array<"text" | "alt" | "caption" | "attribution">; hasImage: boolean }
@@ -23,7 +25,10 @@ export const BLOCK_FIELDS: Record<
   paragraph: { localizedText: ["text"], hasImage: false },
   image: { localizedText: ["alt", "caption"], hasImage: true },
   quote: { localizedText: ["text", "attribution"], hasImage: false },
+  columns: { localizedText: [], hasImage: false },
 };
+
+export const MAX_COLUMNS = 3;
 
 function pick(t: LocalizedText | undefined, locale: Locale): string | undefined {
   if (!t) return undefined;
@@ -46,5 +51,15 @@ export function resolveBlocks(
       alt: pick(b.alt, locale),
       caption: pick(b.caption, locale),
       attribution: pick(b.attribution, locale),
+      columns: Array.isArray(b.columns)
+        ? b.columns.map((c) => ({
+            id: c.id,
+            kind: c.kind,
+            text: pick(c.text, locale),
+            src: c.src || undefined,
+            alt: pick(c.alt, locale),
+            caption: pick(c.caption, locale),
+          }))
+        : undefined,
     }));
 }

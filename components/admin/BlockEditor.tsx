@@ -3,22 +3,33 @@
 import * as React from "react";
 import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { BLOCK_CATALOG, BLOCK_FIELDS } from "@/lib/experiences/blocks";
+import { BLOCK_CATALOG, BLOCK_FIELDS, MAX_COLUMNS } from "@/lib/experiences/blocks";
 import type { ExperienceBlockType } from "@/lib/data/types";
 
 const LOCALES = ["en", "es", "fr", "nl"] as const;
 type Lc = (typeof LOCALES)[number];
 
 type LocalizedField = "text" | "alt" | "caption" | "attribution";
+type LocalizedMap = Partial<Record<Lc, string>>;
+
+interface Column {
+  id: string;
+  kind: "text" | "image";
+  text?: LocalizedMap;
+  src?: string;
+  alt?: LocalizedMap;
+  caption?: LocalizedMap;
+}
 
 interface Block {
   id: string;
   type: ExperienceBlockType;
-  text?: Partial<Record<Lc, string>>;
+  text?: LocalizedMap;
   src?: string;
-  alt?: Partial<Record<Lc, string>>;
-  caption?: Partial<Record<Lc, string>>;
-  attribution?: Partial<Record<Lc, string>>;
+  alt?: LocalizedMap;
+  caption?: LocalizedMap;
+  attribution?: LocalizedMap;
+  columns?: Column[];
 }
 
 const FIELD_LABEL: Record<LocalizedField, string> = {
@@ -60,9 +71,44 @@ export function BlockEditor({
     update(id, (b) => ({ ...b, [field]: { ...(b[field] ?? {}), [lc]: value } }));
 
   const addBlock = (type: ExperienceBlockType) =>
-    setBlocks((prev) => [...prev, { id: newId(prev.length), type }]);
+    setBlocks((prev) => [
+      ...prev,
+      type === "columns"
+        ? {
+            id: newId(prev.length),
+            type,
+            columns: [
+              { id: newId(prev.length * 10 + 1), kind: "text" as const },
+              { id: newId(prev.length * 10 + 2), kind: "text" as const },
+            ],
+          }
+        : { id: newId(prev.length), type },
+    ]);
 
   const removeBlock = (id: string) => setBlocks((prev) => prev.filter((b) => b.id !== id));
+
+  // ---- columns helpers ----
+  const patchColumn = (blockId: string, colId: string, patch: (c: Column) => Column) =>
+    update(blockId, (b) => ({
+      ...b,
+      columns: (b.columns ?? []).map((c) => (c.id === colId ? patch(c) : c)),
+    }));
+
+  const setColText = (blockId: string, colId: string, field: "text" | "alt" | "caption", value: string) =>
+    patchColumn(blockId, colId, (c) => ({ ...c, [field]: { ...(c[field] ?? {}), [lc]: value } }));
+
+  const addColumn = (blockId: string) =>
+    update(blockId, (b) => {
+      const cols = b.columns ?? [];
+      if (cols.length >= MAX_COLUMNS) return b;
+      return { ...b, columns: [...cols, { id: newId(cols.length + 1), kind: "text" }] };
+    });
+
+  const removeColumn = (blockId: string, colId: string) =>
+    update(blockId, (b) => ({ ...b, columns: (b.columns ?? []).filter((c) => c.id !== colId) }));
+
+  const setColKind = (blockId: string, colId: string, kind: "text" | "image") =>
+    patchColumn(blockId, colId, (c) => ({ ...c, kind }));
 
   function onDragEnter(overId: string) {
     if (!dragId || dragId === overId) return;
@@ -171,6 +217,102 @@ export function BlockEditor({
                 )}
               </label>
             ))}
+
+            {b.type === "columns" && (
+              <div className="space-y-3">
+                <div
+                  className={`grid gap-3 ${
+                    (b.columns?.length ?? 0) >= 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"
+                  }`}
+                >
+                  {(b.columns ?? []).map((col) => (
+                    <div
+                      key={col.id}
+                      className="rounded-xl border border-[var(--color-outline-variant)]/50 p-3"
+                    >
+                      <div className="mb-2 flex items-center justify-between">
+                        <div className="flex gap-1 rounded-full border border-[var(--color-outline)] p-0.5">
+                          {(["text", "image"] as const).map((k) => (
+                            <button
+                              key={k}
+                              type="button"
+                              onClick={() => setColKind(b.id, col.id, k)}
+                              disabled={disabled}
+                              className={`rounded-full px-2 py-0.5 text-[0.65rem] uppercase tracking-[0.1em] ${
+                                col.kind === k
+                                  ? "bg-[var(--color-primary)] text-white"
+                                  : "text-[var(--color-on-surface-variant)]"
+                              }`}
+                            >
+                              {k}
+                            </button>
+                          ))}
+                        </div>
+                        {(b.columns?.length ?? 0) > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeColumn(b.id, col.id)}
+                            disabled={disabled}
+                            className="text-[var(--color-secondary)]"
+                            aria-label="Remove column"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      {col.kind === "image" ? (
+                        <div className="space-y-2">
+                          <ImageUpload
+                            boatSlug={slug ?? "experience"}
+                            value={col.src ?? ""}
+                            onChange={(url) => patchColumn(b.id, col.id, (c) => ({ ...c, src: url }))}
+                            disabled={disabled}
+                            bucket="experiences"
+                            label="Image"
+                            previewClassName="aspect-[4/3]"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Alt text"
+                            value={col.alt?.[lc] ?? ""}
+                            onChange={(e) => setColText(b.id, col.id, "alt", e.target.value)}
+                            disabled={disabled}
+                            className="h-9 w-full rounded-full border border-[var(--color-outline)] bg-transparent px-3 text-sm normal-case tracking-normal text-[var(--color-on-surface)] focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Caption"
+                            value={col.caption?.[lc] ?? ""}
+                            onChange={(e) => setColText(b.id, col.id, "caption", e.target.value)}
+                            disabled={disabled}
+                            className="h-9 w-full rounded-full border border-[var(--color-outline)] bg-transparent px-3 text-sm normal-case tracking-normal text-[var(--color-on-surface)] focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
+                          />
+                        </div>
+                      ) : (
+                        <textarea
+                          rows={5}
+                          placeholder="Text (markdown)"
+                          value={col.text?.[lc] ?? ""}
+                          onChange={(e) => setColText(b.id, col.id, "text", e.target.value)}
+                          disabled={disabled}
+                          className="w-full rounded-xl border border-[var(--color-outline)] bg-transparent p-3 text-sm normal-case tracking-normal text-[var(--color-on-surface)] focus-visible:border-[var(--color-primary)] focus-visible:outline-none"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {(b.columns?.length ?? 0) < 3 && (
+                  <button
+                    type="button"
+                    onClick={() => addColumn(b.id)}
+                    disabled={disabled}
+                    className="inline-flex items-center gap-1 rounded-full border border-[var(--color-outline)] px-3 py-1.5 text-xs hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Add column
+                  </button>
+                )}
+              </div>
+            )}
           </li>
         ))}
       </ul>

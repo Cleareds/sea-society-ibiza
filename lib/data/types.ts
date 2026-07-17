@@ -74,7 +74,27 @@ export interface Boat {
 /** Inline-localized text: English canonical, other locales optional. */
 export type LocalizedText = Partial<Record<"en" | "es" | "fr" | "nl", string>>;
 
-export type ExperienceBlockType = "heading" | "paragraph" | "image" | "quote";
+export type ExperienceBlockType = "heading" | "paragraph" | "image" | "quote" | "columns";
+
+/** One cell inside a columns block — either text or an image. Stored. */
+export interface ExperienceColumnStored {
+  id: string;
+  kind: "text" | "image";
+  text?: LocalizedText;
+  src?: string;
+  alt?: LocalizedText;
+  caption?: LocalizedText;
+}
+
+/** One cell inside a columns block, resolved to one locale. */
+export interface ExperienceColumn {
+  id: string;
+  kind: "text" | "image";
+  text?: string;
+  src?: string;
+  alt?: string;
+  caption?: string;
+}
 
 /** A content block as stored in the DB (text fields localized inline). */
 export interface ExperienceBlockStored {
@@ -85,6 +105,7 @@ export interface ExperienceBlockStored {
   alt?: LocalizedText;
   caption?: LocalizedText;
   attribution?: LocalizedText;
+  columns?: ExperienceColumnStored[];
 }
 
 /** A content block resolved to one locale, ready to render. */
@@ -96,6 +117,7 @@ export interface ExperienceBlock {
   alt?: string;
   caption?: string;
   attribution?: string;
+  columns?: ExperienceColumn[];
 }
 
 export interface Experience {

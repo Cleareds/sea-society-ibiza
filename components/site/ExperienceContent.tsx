@@ -43,6 +43,40 @@ export function ExperienceContent({ blocks }: { blocks: ExperienceBlock[] }) {
                 )}
               </figure>
             ) : null;
+          case "columns":
+            return b.columns && b.columns.length > 0 ? (
+              <div
+                key={b.id}
+                className={`grid gap-6 sm:gap-8 ${
+                  b.columns.length >= 3 ? "md:grid-cols-3" : "md:grid-cols-2"
+                }`}
+              >
+                {b.columns.map((col) =>
+                  col.kind === "image" ? (
+                    col.src ? (
+                      <figure key={col.id}>
+                        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                          <Image
+                            src={col.src}
+                            alt={col.alt ?? ""}
+                            fill
+                            sizes="(min-width: 768px) 45vw, 90vw"
+                            className="object-cover"
+                          />
+                        </div>
+                        {col.caption && (
+                          <figcaption className="mt-2 text-sm text-[var(--color-on-surface-variant)]">
+                            {col.caption}
+                          </figcaption>
+                        )}
+                      </figure>
+                    ) : null
+                  ) : col.text ? (
+                    <MarkdownBody key={col.id} source={col.text} className="max-w-none" />
+                  ) : null,
+                )}
+              </div>
+            ) : null;
           case "quote":
             return b.text ? (
               <blockquote
