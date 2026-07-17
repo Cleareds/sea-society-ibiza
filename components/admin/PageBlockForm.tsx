@@ -8,7 +8,8 @@ import { initialPageBlockState, type SavePageBlockState } from "@/app/admin/acti
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { MarkdownField } from "@/components/admin/MarkdownField";
-import type { Destination, Experience } from "@/lib/data/types";
+import { BlockEditor } from "@/components/admin/BlockEditor";
+import type { Destination, Experience, ExperienceBlockStored } from "@/lib/data/types";
 
 const FLASH_MS = 2000;
 
@@ -19,9 +20,11 @@ type Block =
 interface Props {
   block: Block;
   editable: boolean;
+  /** Raw (all-locale) content blocks for the experience block editor. */
+  contentBlocks?: ExperienceBlockStored[];
 }
 
-export function PageBlockForm({ block, editable }: Props) {
+export function PageBlockForm({ block, editable, contentBlocks }: Props) {
   const router = useRouter();
   const action = block.kind === "experience" ? saveExperience : saveDestination;
   const [state, formAction] = useActionState<SavePageBlockState, FormData>(
@@ -88,13 +91,31 @@ export function PageBlockForm({ block, editable }: Props) {
         {block.kind === "experience" && (
           <>
             <label className="block text-xs uppercase tracking-[0.15em] text-[var(--color-on-surface-variant)]">
-              Long description (markdown) — body of the detail page
+              Long description (markdown) — used only if no content blocks below
               <MarkdownField
                 name="longDescription"
                 defaultValue={exp?.longDescription ?? ""}
                 rows={10}
               />
             </label>
+
+            <div className="rounded-2xl border border-[var(--color-outline-variant)]/50 p-4">
+              <p className="text-xs uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]">
+                Page content — blocks
+              </p>
+              <p className="mt-1 mb-4 text-xs text-[var(--color-on-surface-variant)]">
+                Build the detail-page body: add blocks, drag to reorder, edit each
+                language via the tabs. When present, these replace the plain body
+                above. Preview a draft by leaving it unpublished and opening its
+                page while logged in.
+              </p>
+              <BlockEditor
+                name="content"
+                defaultValue={contentBlocks ?? []}
+                slug={initial?.slug}
+                disabled={!editable}
+              />
+            </div>
             <div className="grid gap-4 md:grid-cols-3">
               <Field label="Duration (e.g. 3 hours)" name="duration" defaultValue={exp?.duration ?? ""} />
               <Field label="Group size (e.g. Up to 12)" name="groupSize" defaultValue={exp?.groupSize ?? ""} />

@@ -41,6 +41,8 @@ export const getAllExperiences = () =>
   supabaseEnabled() ? supa.getAllExperiences() : dummy.getAllExperiences();
 export const getExperienceById = (id: string) =>
   supabaseEnabled() ? supa.getExperienceById(id) : dummy.getExperienceById(id);
+export const getExperienceContentRaw = (id: string) =>
+  supabaseEnabled() ? supa.getExperienceContentRaw(id) : dummy.getExperienceContentRaw(id);
 export const getExperienceBySlug = (slug: string, locale: Locale = "en", includeDrafts = false) =>
   supabaseEnabled()
     ? supa.getExperienceBySlug(slug, locale, includeDrafts)

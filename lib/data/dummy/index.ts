@@ -1,4 +1,4 @@
-import type { Boat, EnquiryInput, Experience, Destination, Faq, PageSeoRecord, Settings } from "../types";
+import type { Boat, EnquiryInput, Experience, ExperienceBlockStored, Destination, Faq, PageSeoRecord, Settings } from "../types";
 import { boats } from "./boats";
 import { experiences } from "./experiences";
 import { destinations } from "./destinations";
@@ -46,6 +46,10 @@ export async function getExperienceBySlug(
   const e = experiences.find((x) => x.slug === slug);
   if (!e || (!e.isPublished && !includeDrafts)) return null;
   return e;
+}
+
+export async function getExperienceContentRaw(_id: string): Promise<ExperienceBlockStored[]> {
+  return [];
 }
 
 export async function getDestinations(): Promise<Destination[]> {

@@ -8,6 +8,7 @@ import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { BookHereCTA } from "@/components/site/BookHereCTA";
 import { PixelViewContent } from "@/components/site/PixelViewContent";
 import { MarkdownBody } from "@/components/site/MarkdownBody";
+import { ExperienceContent } from "@/components/site/ExperienceContent";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   breadcrumbLd,
@@ -184,13 +185,19 @@ export default async function ExperienceDetailPage({
       <Section>
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-8">
-            <p className="font-serif text-2xl leading-relaxed text-[var(--color-on-surface)] md:text-3xl">
-              {exp.body}
-            </p>
-            {exp.longDescription && (
-              <div className="mt-8 max-w-2xl">
-                <MarkdownBody source={exp.longDescription} />
-              </div>
+            {exp.content.length > 0 ? (
+              <ExperienceContent blocks={exp.content} />
+            ) : (
+              <>
+                <p className="font-serif text-2xl leading-relaxed text-[var(--color-on-surface)] md:text-3xl">
+                  {exp.body}
+                </p>
+                {exp.longDescription && (
+                  <div className="mt-8 max-w-2xl">
+                    <MarkdownBody source={exp.longDescription} />
+                  </div>
+                )}
+              </>
             )}
 
             {exp.gallery.length > 0 && (

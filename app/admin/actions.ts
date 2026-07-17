@@ -173,6 +173,18 @@ export async function saveExperience(
   const metaDescription = String(formData.get("metaDescription") ?? "").trim();
   const galleryRaw = String(formData.get("gallery") ?? "").trim();
 
+  // Block-based content body (JSON from the BlockEditor). Invalid → [].
+  let content: unknown = [];
+  const contentRaw = String(formData.get("content") ?? "");
+  if (contentRaw) {
+    try {
+      const parsed = JSON.parse(contentRaw);
+      if (Array.isArray(parsed)) content = parsed;
+    } catch {
+      content = [];
+    }
+  }
+
   // Gallery is a textarea, one image per line as `path :: alt-text`.
   // Lines without `::` are accepted with empty alt — keeps the editor
   // forgiving while letting power users supply alt text.
@@ -199,6 +211,7 @@ export async function saveExperience(
       meta_title: metaTitle || null,
       meta_description: metaDescription || null,
       gallery,
+      content,
     },
     prev,
     formData,

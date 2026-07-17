@@ -16,6 +16,7 @@ export const experiences: Experience[] = [
     gallery: [],
     heroImage: img("exp-day-trips"),
     sortOrder: 1,
+    content: [],
     isPublished: true,
     metaTitle: "Ibiza day charters — 9 hour private yacht trips",
     metaDescription:
@@ -34,6 +35,7 @@ export const experiences: Experience[] = [
     gallery: [],
     heroImage: img("exp-sunset"),
     sortOrder: 2,
+    content: [],
     isPublished: true,
     metaTitle: "Ibiza sunset cruise — private yacht at golden hour",
     metaDescription:
@@ -52,6 +54,7 @@ export const experiences: Experience[] = [
     gallery: [],
     heroImage: img("exp-multi-day"),
     sortOrder: 3,
+    content: [],
     isPublished: true,
     metaTitle: "Multi-day Balearic yacht charters — Ibiza, Mallorca, Cabrera",
     metaDescription:
@@ -70,6 +73,7 @@ export const experiences: Experience[] = [
     gallery: [],
     heroImage: img("exp-special"),
     sortOrder: 4,
+    content: [],
     isPublished: true,
     metaTitle: "Sea Society Experiences — Ibiza yacht charter",
     metaDescription:

@@ -71,6 +71,33 @@ export interface Boat {
   metaDescription: string;
 }
 
+/** Inline-localized text: English canonical, other locales optional. */
+export type LocalizedText = Partial<Record<"en" | "es" | "fr" | "nl", string>>;
+
+export type ExperienceBlockType = "heading" | "paragraph" | "image" | "quote";
+
+/** A content block as stored in the DB (text fields localized inline). */
+export interface ExperienceBlockStored {
+  id: string;
+  type: ExperienceBlockType;
+  text?: LocalizedText;
+  src?: string;
+  alt?: LocalizedText;
+  caption?: LocalizedText;
+  attribution?: LocalizedText;
+}
+
+/** A content block resolved to one locale, ready to render. */
+export interface ExperienceBlock {
+  id: string;
+  type: ExperienceBlockType;
+  text?: string;
+  src?: string;
+  alt?: string;
+  caption?: string;
+  attribution?: string;
+}
+
 export interface Experience {
   id: string;
   slug: string;
@@ -78,6 +105,8 @@ export interface Experience {
   intro: string;
   body: string;
   longDescription: string;
+  /** Block-based body (CMS). Empty = fall back to body/longDescription. */
+  content: ExperienceBlock[];
   gallery: BoatGalleryImage[];
   duration?: string;
   groupSize?: string;

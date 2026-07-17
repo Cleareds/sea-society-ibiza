@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PageBlockForm } from "@/components/admin/PageBlockForm";
-import { getExperienceById } from "@/lib/data";
+import { getExperienceById, getExperienceContentRaw } from "@/lib/data";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -15,7 +15,10 @@ export default async function EditExperiencePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const experience = await getExperienceById(id);
+  const [experience, contentBlocks] = await Promise.all([
+    getExperienceById(id),
+    getExperienceContentRaw(id),
+  ]);
   if (!experience) notFound();
 
   return (
@@ -26,7 +29,11 @@ export default async function EditExperiencePage({
         </p>
         <h1 className="mt-2 font-serif text-4xl">{experience.title}</h1>
       </div>
-      <PageBlockForm block={{ kind: "experience", data: experience }} editable={isSupabaseConfigured()} />
+      <PageBlockForm
+        block={{ kind: "experience", data: experience }}
+        contentBlocks={contentBlocks}
+        editable={isSupabaseConfigured()}
+      />
     </div>
   );
 }

@@ -1,8 +1,9 @@
-import type { Boat, BoatType, Destination, EnquiryInput, Experience, Faq, PageSeoRecord, Settings, Testimonial } from "../types";
+import type { Boat, BoatType, Destination, EnquiryInput, Experience, ExperienceBlockStored, Faq, PageSeoRecord, Settings, Testimonial } from "../types";
 import type { Locale } from "@/lib/i18n/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseStaticClient } from "@/lib/supabase/static";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { resolveBlocks } from "@/lib/experiences/blocks";
 
 interface ExperienceRow {
   id: string;
@@ -20,6 +21,7 @@ interface ExperienceRow {
   hero_image: string | null;
   sort_order: number;
   is_published: boolean;
+  content: ExperienceBlockStored[] | null;
 }
 
 interface DestinationRow {
@@ -247,6 +249,7 @@ function mapExperience(r: ExperienceRow, locale: Locale = "en"): Experience {
     priceFrom: r.price_from ?? undefined,
     metaTitle: t?.meta_title ?? r.meta_title ?? undefined,
     metaDescription: t?.meta_description ?? r.meta_description ?? undefined,
+    content: resolveBlocks(r.content, locale),
     heroImage: r.hero_image ?? "",
     sortOrder: r.sort_order,
     isPublished: r.is_published,
@@ -267,8 +270,9 @@ export async function getExperiences(locale: Locale = "en", includeDrafts = fals
   return (data ?? []).map((r) => mapExperience(r, locale));
 }
 
+// Admin-only: service role so drafts are visible/editable in the admin.
 export async function getAllExperiences(): Promise<Experience[]> {
-  const supabase = createSupabaseStaticClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("experiences")
     .select("*")
@@ -278,8 +282,9 @@ export async function getAllExperiences(): Promise<Experience[]> {
   return (data ?? []).map((r) => mapExperience(r));
 }
 
+// Admin-only: service role so a draft experience can be opened for editing.
 export async function getExperienceById(id: string): Promise<Experience | null> {
-  const supabase = createSupabaseStaticClient();
+  const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase
     .from("experiences")
     .select("*")
@@ -288,6 +293,19 @@ export async function getExperienceById(id: string): Promise<Experience | null> 
     .maybeSingle();
   if (error) throw error;
   return data ? mapExperience(data) : null;
+}
+
+/** Admin-only: raw stored content blocks (all locales) for the block editor. */
+export async function getExperienceContentRaw(id: string): Promise<ExperienceBlockStored[]> {
+  const supabase = createSupabaseAdminClient();
+  const { data, error } = await supabase
+    .from("experiences")
+    .select("content")
+    .eq("id", id)
+    .returns<{ content: ExperienceBlockStored[] | null }[]>()
+    .maybeSingle();
+  if (error || !data) return [];
+  return data.content ?? [];
 }
 
 export async function getExperienceBySlug(
