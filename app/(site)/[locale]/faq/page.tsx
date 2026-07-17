@@ -57,7 +57,7 @@ export default async function FaqPage({
   const c = getFaqCopy(lc);
   const lp = (path: string) => localePath(lc, path);
 
-  const faqs = await getFaqs();
+  const faqs = await getFaqs(lc);
   const groups = groupByCategory(faqs);
 
   return (

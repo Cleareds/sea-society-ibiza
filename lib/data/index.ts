@@ -51,7 +51,8 @@ export const getAllDestinations = () =>
   supabaseEnabled() ? supa.getAllDestinations() : dummy.getAllDestinations();
 export const getDestinationById = (id: string) =>
   supabaseEnabled() ? supa.getDestinationById(id) : dummy.getDestinationById(id);
-export const getFaqs = () => (supabaseEnabled() ? supa.getFaqs() : dummy.getFaqs());
+export const getFaqs = (locale: Locale = "en") =>
+  supabaseEnabled() ? supa.getFaqs(locale) : dummy.getFaqs(locale);
 export const getPageSeo = (pageKey: string, locale: Locale = "en") =>
   supabaseEnabled() ? supa.getPageSeo(pageKey, locale) : dummy.getPageSeo();
 export const getAllPageSeo = () =>

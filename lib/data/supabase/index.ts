@@ -41,6 +41,7 @@ interface FaqRow {
   category: string | null;
   sort_order: number;
   is_published: boolean;
+  i18n: Partial<Record<string, Partial<{ question: string; answer: string }>>> | null;
 }
 
 interface SettingsRow {
@@ -358,7 +359,7 @@ export async function getDestinationById(id: string): Promise<Destination | null
   return data ? mapDestination(data) : null;
 }
 
-export async function getFaqs(): Promise<Faq[]> {
+export async function getFaqs(locale: Locale = "en"): Promise<Faq[]> {
   const supabase = createSupabaseStaticClient();
   const { data, error } = await supabase
     .from("faqs")
@@ -367,14 +368,17 @@ export async function getFaqs(): Promise<Faq[]> {
     .order("sort_order", { ascending: true })
     .returns<FaqRow[]>();
   if (error) throw error;
-  return (data ?? []).map((r) => ({
-    id: r.id,
-    question: r.question,
-    answer: r.answer,
-    category: r.category ?? "",
-    sortOrder: r.sort_order,
-    isPublished: r.is_published,
-  }));
+  return (data ?? []).map((r) => {
+    const t = locale !== "en" ? r.i18n?.[locale] : undefined;
+    return {
+      id: r.id,
+      question: t?.question ?? r.question,
+      answer: t?.answer ?? r.answer,
+      category: r.category ?? "",
+      sortOrder: r.sort_order,
+      isPublished: r.is_published,
+    };
+  });
 }
 
 interface PageSeoRow {

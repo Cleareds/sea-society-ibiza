@@ -2,7 +2,7 @@ import type { Boat, EnquiryInput, Experience, Destination, Faq, PageSeoRecord, S
 import { boats } from "./boats";
 import { experiences } from "./experiences";
 import { destinations } from "./destinations";
-import { faqs } from "./faqs";
+import { faqs, faqI18n } from "./faqs";
 import { settings } from "./settings";
 
 export async function getBoats(): Promise<Boat[]> {
@@ -60,8 +60,14 @@ export async function getDestinationById(id: string): Promise<Destination | null
   return destinations.find((d) => d.id === id) ?? null;
 }
 
-export async function getFaqs(): Promise<Faq[]> {
-  return faqs.filter((f) => f.isPublished).sort((a, b) => a.sortOrder - b.sortOrder);
+export async function getFaqs(locale = "en"): Promise<Faq[]> {
+  return faqs
+    .filter((f) => f.isPublished)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .map((f) => {
+      const t = locale !== "en" ? faqI18n[f.id]?.[locale] : undefined;
+      return t ? { ...f, question: t.question ?? f.question, answer: t.answer ?? f.answer } : f;
+    });
 }
 
 export async function getSettings(): Promise<Settings> {
