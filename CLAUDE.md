@@ -12,10 +12,12 @@ contact form.
 - Supabase (Postgres + Storage) — project ref `shubsfjvqgipjnyauyab`
 - Vercel hosting (`cleareds/sea-society-ibiza`)
 - TypeScript strict; LSP-based code intelligence
-- GA4 via GTM container (`GTM-KTN8M8RB`) + Meta Pixel
-  (`1740700350443275`, loaded directly, not via GTM) — both
+- GA4 + Meta Pixel via GTM container (`GTM-KTN8M8RB`) —
   consent-gated via the cookie banner (`components/site/Analytics.tsx`);
-  GTM gated on analytics-or-marketing, Pixel on marketing only
+  GTM loads once analytics-or-marketing consent is granted. The site
+  no longer loads a Meta Pixel directly — both pixel tags live inside
+  the GTM container itself (manage/remove them at
+  tagmanager.google.com, not in this repo).
 
 ## i18n — four locales, translation parity is non-negotiable
 
